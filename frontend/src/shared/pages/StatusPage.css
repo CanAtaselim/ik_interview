@@ -1,0 +1,10 @@
+.status-page {
+  display: grid;
+  place-items: center;
+  min-height: 60dvh;
+}
+
+.status-page__link {
+  align-items: center;
+  text-decoration: none;
+}

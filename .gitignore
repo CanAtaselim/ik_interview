@@ -1,0 +1,29 @@
+# Gizli değerler
+.env
+*.local
+
+# .NET
+bin/
+obj/
+*.user
+.vs/
+TestResults/
+backend/**/logs/
+backend/**/storage/
+
+# Node
+node_modules/
+dist/
+coverage/
+
+# Editör / işletim sistemi
+.idea/
+.vscode/*
+!.vscode/extensions.json
+.DS_Store
+
+# Makineye özel
+tools/demo-data/.state.json
+.claude/settings.local.json
+.claude/projects/
+*.log

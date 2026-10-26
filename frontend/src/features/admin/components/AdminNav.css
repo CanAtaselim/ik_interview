@@ -1,0 +1,40 @@
+/* Yönetim sekmeleri: pastel zemin üstünde, aralarında boşluk olan hap biçimli bağlantılar */
+.admin-nav {
+  display: inline-flex;
+  max-width: 100%;
+  gap: var(--space-1);
+  margin-bottom: var(--space-6);
+  padding: var(--space-1);
+  overflow-x: auto;
+  border-radius: var(--radius-md);
+  background: var(--color-primary-soft);
+}
+
+.admin-nav__link {
+  flex-shrink: 0;
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-sm);
+  color: var(--color-text-muted);
+  font-weight: var(--font-weight-medium);
+  text-decoration: none;
+  white-space: nowrap;
+  transition:
+    background-color var(--transition-fast),
+    color var(--transition-fast);
+}
+
+.admin-nav__link:hover {
+  background: rgb(255 255 255 / 0.6);
+  color: var(--color-text);
+}
+
+.admin-nav__link.active {
+  background: var(--color-surface);
+  box-shadow: var(--shadow-card);
+  color: var(--color-primary);
+}
+
+.admin-nav__link:focus-visible {
+  box-shadow: var(--focus-ring);
+  outline: none;
+}

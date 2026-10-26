@@ -1,0 +1,36 @@
+.availability-panel {
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-bg);
+}
+
+.availability-panel__title {
+  margin: 0 0 var(--space-2);
+  font-size: var(--font-size-body);
+  font-weight: var(--font-weight-semibold);
+}
+
+.availability-panel__list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.availability-panel__name {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.availability-panel__row .cell-sub {
+  margin: var(--space-1) 0 0;
+}
+
+.availability-panel__note {
+  color: var(--color-warning-strong);
+}

@@ -1,0 +1,86 @@
+.question-text {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+}
+
+.version-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.version-list li {
+  padding: var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+}
+
+/* Şablon düzenleyici: seçili sorular ve eklenebilecek sorular */
+.template-questions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: question;
+}
+
+.template-questions__item {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+}
+
+.template-questions__item::before {
+  min-width: var(--space-6);
+  padding-top: var(--space-1);
+  color: var(--color-text-muted);
+  font-weight: var(--font-weight-semibold);
+  content: counter(question) '.';
+  counter-increment: question;
+}
+
+.template-questions__picker .template-questions__item::before {
+  content: none;
+}
+
+.template-questions__main {
+  flex: 1;
+  min-width: 0;
+  padding-top: var(--space-1);
+  overflow-wrap: anywhere;
+}
+
+.template-questions__actions {
+  display: flex;
+  flex-shrink: 0;
+}
+
+.template-questions__picker {
+  max-height: 320px;
+  overflow-y: auto;
+}
+
+.dialog-actions__start .p-button + .p-button {
+  margin-left: var(--space-2);
+}
+
+.template-search,
+.template-search .p-inputtext {
+  width: 100%;
+}
+
+.template-search {
+  margin-bottom: var(--space-2);
+}

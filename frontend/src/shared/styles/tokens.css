@@ -1,0 +1,88 @@
+/* Tüm görsel kararlar burada toplanır; bileşenlerde sabit renk veya px yazılmaz. */
+:root {
+  /* Vurgu: yumuşak lavanta-indigo. Beyaz metinle AA kontrast sağlar. */
+  --color-primary: #5b4fe0;
+  --color-primary-hover: #4c40c9;
+  --color-primary-soft: #ece9ff; /* pastel lavanta */
+  --color-primary-faint: #f6f4ff;
+  --color-on-primary: #ffffff;
+  --color-bg: #f5f4fb; /* sayfa zemini: çok açık lavanta */
+  --color-surface: #ffffff; /* kart */
+  --color-surface-hover: #f1effb;
+  --color-border: #e8e6f4;
+  --color-border-strong: #d4d1e8;
+  --color-text: #1e1b3a;
+  --color-text-muted: #66628a;
+  --color-success: #2f9e6b;
+  --color-warning: #d98a1f;
+  --color-danger: #d9475f;
+  --color-danger-soft: #ffe4e8; /* pastel gül */
+  /* Etiketlerde açık pastel zemin üzerinde okunaklı (WCAG AA) koyu tonlar */
+  --color-success-soft: #d8f5e6; /* pastel nane */
+  --color-success-strong: #17603f;
+  --color-warning-soft: #fff0cf; /* pastel şeftali-limon */
+  --color-warning-strong: #8a5200;
+  --color-danger-strong: #9f1f3a;
+  --color-info-soft: #dbeafe; /* pastel gökyüzü */
+  --color-info-strong: #3b3399;
+  --color-sky-strong: #1e4f8f;
+  --color-neutral-soft: #eeedf6;
+  --color-neutral-strong: #3f3b63;
+  --color-backdrop: rgb(30 27 58 / 0.38);
+
+  /* Kanban ve rozetlerde dönüşümlü kullanılan pastel tonlar */
+  --pastel-lavender: #ece9ff;
+  --pastel-sky: #dbeafe;
+  --pastel-mint: #d8f5e6;
+  --pastel-peach: #ffe6d5;
+  --pastel-rose: #ffe4e8;
+  --pastel-lemon: #fff4cc;
+
+  --sidebar-bg: linear-gradient(180deg, #f1edff 0%, #f7f4ff 55%, #fdf3ff 100%);
+  --brand-gradient: linear-gradient(135deg, #7a6cf5 0%, #5b4fe0 100%);
+
+  --radius-sm: 10px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  --radius-full: 999px;
+
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-12: 48px;
+
+  --shadow-card: 0 1px 2px rgb(60 50 140 / 0.04), 0 4px 16px rgb(60 50 140 / 0.06);
+  --shadow-card-hover: 0 2px 4px rgb(60 50 140 / 0.06), 0 8px 24px rgb(60 50 140 / 0.1);
+  --shadow-popover: 0 6px 12px -4px rgb(60 50 140 / 0.08), 0 16px 32px -6px rgb(60 50 140 / 0.16);
+  --shadow-button: 0 1px 2px rgb(91 79 224 / 0.25), 0 4px 10px rgb(91 79 224 / 0.18);
+  --focus-ring: 0 0 0 3px rgb(91 79 224 / 0.22);
+
+  --font-sans: 'Inter Variable', 'Inter', system-ui, sans-serif;
+  --font-size-sm: 13px;
+  --font-size-body: 14px;
+  --font-size-section: 16px;
+  --font-size-page: 24px;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --line-height-body: 1.5;
+
+  --sidebar-width: 256px;
+  --sidebar-width-collapsed: 68px;
+  --topbar-height: 64px;
+  --content-max-width: none; /* içerik tam genişlik; kenar boşluğu --content-gutter ile */
+  --content-gutter: clamp(16px, 2.5vw, 48px);
+  --form-max-width: 400px;
+  --dialog-width: 720px;
+  --control-height: 40px;
+  --icon-size: 16px;
+  --icon-size-lg: 28px;
+  --avatar-size: 32px;
+
+  --transition-fast: 160ms ease;
+  --z-topbar: 10;
+  --z-drawer: 20;
+}

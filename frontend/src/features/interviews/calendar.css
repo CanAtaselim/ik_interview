@@ -1,0 +1,142 @@
+/* FullCalendar'ı uygulamanın token'larına bağlar. */
+.interview-calendar {
+  --fc-border-color: var(--color-border);
+  --fc-page-bg-color: var(--color-surface);
+  --fc-neutral-bg-color: var(--color-primary-faint);
+  --fc-non-business-color: rgb(110 100 200 / 0.06);
+  --fc-today-bg-color: var(--color-primary-faint);
+  --fc-now-indicator-color: var(--color-danger);
+  --fc-highlight-color: var(--color-primary-soft);
+  --fc-event-bg-color: #ddd8ff;
+  --fc-event-border-color: var(--color-primary);
+  --fc-event-text-color: var(--color-info-strong);
+  --fc-button-bg-color: var(--color-primary-soft);
+  --fc-button-border-color: transparent;
+  --fc-button-text-color: var(--color-primary);
+  --fc-button-hover-bg-color: #e0dcff;
+  --fc-button-hover-border-color: transparent;
+  --fc-button-active-bg-color: var(--color-surface);
+  --fc-button-active-border-color: transparent;
+
+  padding: var(--space-5);
+  font-size: var(--font-size-sm);
+}
+
+/* Önceki/sonraki gibi grup düğmeleri bitişik durmasın */
+.interview-calendar .fc-button-group {
+  gap: var(--space-2);
+}
+
+.interview-calendar.interview-calendar .fc-button-group > .fc-button:not(:first-child),
+.interview-calendar.interview-calendar .fc-button-group > .fc-button:not(:last-child) {
+  margin: 0;
+  border-radius: var(--radius-sm);
+}
+
+.interview-calendar .fc-header-toolbar {
+  gap: var(--space-3);
+  margin-bottom: var(--space-5);
+}
+
+.interview-calendar .fc-col-header-cell-cushion {
+  padding: var(--space-2) var(--space-1);
+  color: var(--color-text-muted);
+  font-weight: var(--font-weight-semibold);
+  text-decoration: none;
+}
+
+.interview-calendar .fc-toolbar-title {
+  font-size: var(--font-size-section);
+  font-weight: var(--font-weight-semibold);
+}
+
+.interview-calendar .fc-button {
+  min-height: var(--control-height);
+  border-radius: var(--radius-sm);
+  font-weight: var(--font-weight-medium);
+  box-shadow: none;
+}
+
+.interview-calendar .fc-button:focus-visible {
+  box-shadow: var(--focus-ring);
+}
+
+.interview-calendar .fc-button-primary:not(:disabled).fc-button-active {
+  color: var(--color-primary);
+}
+
+.interview-calendar .fc-event {
+  border-width: 0 0 0 3px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+}
+
+.interview-calendar .fc-event-main {
+  padding: 2px var(--space-1);
+}
+
+/* Durum renkleri: metin her zaman durumu da söyler (yalnızca renge güvenilmez). */
+.interview-calendar .event--completed {
+  --fc-event-bg-color: var(--pastel-mint);
+  --fc-event-border-color: var(--color-success);
+  --fc-event-text-color: var(--color-success-strong);
+}
+
+.interview-calendar .event--noshow {
+  --fc-event-bg-color: var(--pastel-rose);
+  --fc-event-border-color: var(--color-danger);
+  --fc-event-text-color: var(--color-danger-strong);
+}
+
+.interview-calendar .event--cancelled {
+  --fc-event-bg-color: var(--color-neutral-soft);
+  --fc-event-border-color: var(--color-border-strong);
+  --fc-event-text-color: var(--color-neutral-strong);
+  text-decoration: line-through;
+}
+
+.interview-calendar .event--availability {
+  --fc-event-bg-color: var(--color-success-soft);
+  --fc-event-border-color: var(--color-success);
+  --fc-event-text-color: var(--color-success-strong);
+}
+
+.interview-calendar .event--busy {
+  --fc-event-bg-color: var(--pastel-sky);
+  --fc-event-border-color: var(--color-sky-strong);
+  --fc-event-text-color: var(--color-sky-strong);
+  cursor: default;
+}
+
+.calendar-event__title {
+  overflow: hidden;
+  font-weight: var(--font-weight-semibold);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.calendar-event__sub {
+  overflow: hidden;
+  opacity: 0.9;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media (max-width: 768px) {
+  .interview-calendar {
+    padding: var(--space-2);
+  }
+
+  .interview-calendar .fc-header-toolbar {
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+}
+
+.calendar-filters {
+  margin-bottom: var(--space-4);
+}
+
+.calendar-filters .p-dropdown {
+  min-width: 220px;
+}

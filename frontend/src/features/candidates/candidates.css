@@ -1,0 +1,402 @@
+/* Liste */
+.inline-tag {
+  margin-left: var(--space-2);
+}
+
+.toolbar__search--wide {
+  max-width: 440px;
+}
+
+.tag-button {
+  padding: var(--space-1) var(--space-2);
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: var(--color-neutral-soft);
+  color: var(--color-neutral-strong);
+  font: inherit;
+  font-size: var(--font-size-sm);
+  cursor: pointer;
+  transition:
+    background-color var(--transition-fast),
+    color var(--transition-fast);
+}
+
+.tag-button:hover {
+  background: var(--color-primary-soft);
+  color: var(--color-primary);
+}
+
+.filter-chip .p-tag-value {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.filter-chip button {
+  display: inline-grid;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  cursor: pointer;
+}
+
+/* Mükerrer uyarısı */
+.duplicate-warning {
+  display: flex;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
+  background: var(--color-warning-soft);
+  color: var(--color-warning-strong);
+}
+
+.duplicate-warning > i {
+  margin-top: var(--space-1);
+}
+
+.duplicate-warning ul {
+  margin: var(--space-1) 0 0;
+  padding-left: var(--space-4);
+}
+
+.duplicate-warning a {
+  color: inherit;
+  font-weight: var(--font-weight-semibold);
+}
+
+.duplicate-warning .muted {
+  color: inherit;
+}
+
+.selected-file {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin: var(--space-1) 0;
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+}
+
+.selected-file > span {
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+/* Aday kartı */
+.candidate-summary {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin: calc(var(--space-4) * -1) 0 var(--space-6);
+}
+
+.contact-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1) var(--space-4);
+  color: var(--color-text-muted);
+}
+
+/* Ön görüşme */
+.screenings {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.screenings__actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.screening {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+}
+
+.screening__bar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding-right: var(--space-2);
+}
+
+.screening__bar > .screening__header {
+  flex: 1;
+  min-width: 0;
+  width: auto;
+}
+
+.screening__header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  width: 100%;
+  min-height: calc(var(--control-height) + var(--space-2));
+  padding: 0 var(--space-4);
+  border: 0;
+  border-radius: var(--radius-md);
+  background: transparent;
+  color: var(--color-text);
+  font: inherit;
+  font-weight: var(--font-weight-semibold);
+  text-align: left;
+  cursor: pointer;
+}
+
+.screening__header:hover {
+  background: var(--color-surface-hover);
+}
+
+.screening__header i {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+}
+
+.screening__body {
+  padding: var(--space-4);
+  border-top: 1px solid var(--color-border);
+}
+
+.screening-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+}
+
+.autosave-status {
+  position: sticky;
+  top: var(--topbar-height);
+  z-index: 1;
+  margin: calc(var(--space-4) * -1) calc(var(--space-4) * -1) 0;
+  padding: var(--space-2) var(--space-4);
+  border-bottom: 1px solid var(--color-border);
+  background: var(--color-bg);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+}
+
+.autosave-status[data-status='saved'] {
+  color: var(--color-success-strong);
+}
+
+.autosave-status[data-status='error'] {
+  color: var(--color-danger);
+}
+
+.form-section {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-3);
+}
+
+.form-section > .form-grid,
+.form-section > .row-fields {
+  width: 100%;
+}
+
+.form-section > .section-title {
+  margin: 0;
+}
+
+.row-fields {
+  display: grid;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.row-fields--education {
+  grid-template-columns: 2fr 1.6fr 1.7fr 1fr auto;
+}
+
+.row-fields--language {
+  grid-template-columns: 2fr 1fr auto;
+}
+
+.row-fields .p-autocomplete {
+  width: 100%;
+  min-width: 0;
+}
+
+.row-fields .p-autocomplete .p-inputtext {
+  width: 100%;
+}
+
+.experience-input {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.experience-input .p-inputnumber {
+  flex: 1;
+  min-width: 0;
+}
+
+.experience-input .p-inputnumber .p-inputtext {
+  width: 100%;
+}
+
+.row-fields .p-inputtext,
+.row-fields .p-inputnumber,
+.row-fields .p-dropdown {
+  width: 100%;
+  min-width: 0;
+}
+
+@media (max-width: 768px) {
+  .row-fields--education,
+  .row-fields--language {
+    grid-template-columns: minmax(0, 1fr) auto;
+    padding-bottom: var(--space-3);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .row-fields--education > :not(.p-button),
+  .row-fields--language > :not(.p-button) {
+    grid-column: 1;
+  }
+
+  .row-fields > .p-button {
+    grid-column: 2;
+    grid-row: 1;
+  }
+}
+
+@media (max-width: 768px) {
+  .screening__body {
+    padding: var(--space-3);
+  }
+
+  .autosave-status {
+    margin: calc(var(--space-3) * -1) calc(var(--space-3) * -1) 0;
+    padding: var(--space-2) var(--space-3);
+  }
+}
+
+.warning-stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+/* Süreçler sekmesi */
+.application-list {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.application-list__item {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-4) 0;
+  border-top: 1px solid var(--color-border);
+}
+
+.application-list__main {
+  display: flex;
+  flex: 1 1 280px;
+  flex-direction: column;
+  gap: var(--space-1);
+  min-width: 0;
+}
+
+/* Aday listesi: durum renkleri. Kara liste kırmızı, süreci devam eden sarı (pastel). */
+.p-datatable .p-datatable-tbody > tr.candidate-row--blacklisted > td {
+  background: var(--color-danger-soft);
+}
+
+.p-datatable .p-datatable-tbody > tr.candidate-row--blacklisted > td:first-child {
+  box-shadow: inset 4px 0 0 var(--color-danger);
+}
+
+.p-datatable .p-datatable-tbody > tr.candidate-row--in-process > td {
+  background: var(--color-warning-soft);
+}
+
+.p-datatable .p-datatable-tbody > tr.candidate-row--in-process > td:first-child {
+  box-shadow: inset 4px 0 0 var(--color-warning);
+}
+
+.p-datatable .p-datatable-tbody > tr.candidate-row--blacklisted:hover > td {
+  background: color-mix(in srgb, var(--color-danger-soft) 70%, var(--color-danger) 12%);
+}
+
+.p-datatable .p-datatable-tbody > tr.candidate-row--in-process:hover > td {
+  background: color-mix(in srgb, var(--color-warning-soft) 70%, var(--color-warning) 14%);
+}
+
+.process-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-2);
+}
+
+.process-cell__item {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+}
+
+/* Renkli süreç kutucukları */
+.status-pill {
+  display: inline-block;
+  padding: 2px var(--space-3);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  line-height: 1.5;
+  white-space: nowrap;
+}
+
+.status-pill--active {
+  background: var(--color-warning-soft);
+  color: var(--color-warning-strong);
+  box-shadow: inset 0 0 0 1px var(--color-warning);
+}
+
+.status-pill--hired {
+  background: var(--color-success-soft);
+  color: var(--color-success-strong);
+}
+
+.status-pill--closed {
+  background: var(--color-surface-hover);
+  color: var(--color-text-muted);
+}
+
+.status-pill--pool {
+  background: var(--color-primary-soft);
+  color: var(--color-primary);
+}
+
+.status-pill--blacklist {
+  background: var(--color-danger-soft);
+  color: var(--color-danger-strong);
+  box-shadow: inset 0 0 0 1px var(--color-danger);
+}
+
+.status-pill--pending {
+  background: var(--pastel-peach);
+  color: var(--color-warning-strong);
+}
+
+.cv-button {
+  width: 2.25rem;
+  height: 2.25rem;
+}
+
+.toolbar__city {
+  max-width: 160px;
+}

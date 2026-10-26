@@ -1,0 +1,225 @@
+.scorecard {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  max-width: 860px;
+}
+
+.scorecard-rubric {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1) var(--space-4);
+  margin: 0;
+  padding: 0;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+  list-style: none;
+}
+
+.scorecard-rubric strong {
+  color: var(--color-text);
+}
+
+.scorecard-item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.scorecard-item__head {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+}
+
+.scorecard-item__number {
+  min-width: var(--space-6);
+  color: var(--color-text-muted);
+  font-weight: var(--font-weight-semibold);
+}
+
+.scorecard-item__text {
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.scorecard-item__text p {
+  margin: 0;
+  font-weight: var(--font-weight-medium);
+}
+
+.scorecard-item summary {
+  color: var(--color-primary);
+  cursor: pointer;
+}
+
+/* Büyük, dokunmatik dostu puan düğmeleri */
+.score-buttons {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: var(--space-2);
+  max-width: 420px;
+}
+
+.score-buttons button {
+  min-height: calc(var(--control-height) + var(--space-2));
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font: inherit;
+  font-size: var(--font-size-section);
+  font-weight: var(--font-weight-semibold);
+  cursor: pointer;
+  transition:
+    background-color var(--transition-fast),
+    border-color var(--transition-fast);
+}
+
+.score-buttons button:hover:not(:disabled) {
+  border-color: var(--color-primary);
+}
+
+.score-buttons button[aria-checked='true'] {
+  border-color: var(--color-primary);
+  background: var(--color-primary);
+  color: var(--color-on-primary);
+}
+
+.score-buttons button:focus-visible {
+  box-shadow: var(--focus-ring);
+  outline: none;
+}
+
+.score-buttons button:disabled {
+  cursor: default;
+}
+
+.score-hint {
+  min-height: 1.4em;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+}
+
+.recommendation-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.scorecard-add {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.scorecard-add .p-inputtext {
+  flex: 1 1 280px;
+  min-width: 0;
+}
+
+.scorecard-footer {
+  position: sticky;
+  bottom: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  padding-bottom: calc(var(--space-3) + env(safe-area-inset-bottom, 0px));
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-popover);
+}
+
+.scorecard-score {
+  font-size: var(--font-size-section);
+  font-weight: var(--font-weight-semibold);
+}
+
+@media (max-width: 640px) {
+  .score-buttons {
+    max-width: none;
+  }
+}
+
+.autosave-status-inline {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+}
+
+.autosave-status-inline[data-status='saved'] {
+  color: var(--color-success-strong);
+}
+
+.autosave-status-inline[data-status='error'] {
+  color: var(--color-danger);
+}
+
+/* Aday karşılaştırma tablosu */
+.comparison-wrap {
+  overflow-x: auto;
+}
+
+.comparison {
+  width: 100%;
+  border-collapse: collapse;
+  font-variant-numeric: tabular-nums;
+}
+
+.comparison th,
+.comparison td {
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 1px solid var(--color-border);
+  text-align: left;
+  vertical-align: top;
+}
+
+.comparison thead th {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  white-space: nowrap;
+}
+
+.comparison tbody th {
+  min-width: 200px;
+  font-weight: var(--font-weight-medium);
+}
+
+.comparison tbody tr:last-child th,
+.comparison tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.score-bar {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 110px;
+}
+
+.score-bar__track {
+  flex: 1;
+  height: 8px;
+  overflow: hidden;
+  border-radius: var(--radius-full);
+  background: var(--color-neutral-soft);
+}
+
+.score-bar__fill {
+  display: block;
+  height: 100%;
+  border-radius: var(--radius-full);
+  background: var(--color-primary);
+}
+
+.score-bar__value {
+  min-width: 2.5em;
+  font-weight: var(--font-weight-semibold);
+  text-align: right;
+}

@@ -1,0 +1,109 @@
+.notification-bell.p-button {
+  position: relative;
+  overflow: visible;
+}
+
+.notification-bell .p-badge {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  min-width: 1.2rem;
+  height: 1.2rem;
+  font-size: 0.7rem;
+  line-height: 1.2rem;
+}
+
+.notification-panel.p-overlaypanel {
+  width: min(400px, calc(100vw - var(--space-8)));
+}
+
+.notification-panel .p-overlaypanel-content {
+  padding: 0;
+}
+
+.notification-panel__header,
+.notification-panel__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+}
+
+.notification-panel__header {
+  border-bottom: 1px solid var(--color-border);
+}
+
+.notification-panel__footer {
+  border-top: 1px solid var(--color-border);
+  font-size: var(--font-size-sm);
+}
+
+.notification-panel__empty {
+  margin: 0;
+  padding: var(--space-6) var(--space-4);
+  color: var(--color-text-muted);
+  text-align: center;
+}
+
+.notification-list {
+  max-height: min(420px, 60vh);
+  margin: 0;
+  padding: 0;
+  overflow-y: auto;
+  list-style: none;
+}
+
+.notification-item {
+  display: flex;
+  gap: var(--space-3);
+  width: 100%;
+  padding: var(--space-3) var(--space-4);
+  border: 0;
+  border-bottom: 1px solid var(--color-border);
+  background: transparent;
+  color: var(--color-text);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.notification-item:hover {
+  background: var(--color-surface-hover);
+}
+
+.notification-item:focus-visible {
+  box-shadow: inset var(--focus-ring);
+  outline: none;
+}
+
+.notification-item__dot {
+  flex-shrink: 0;
+  width: 8px;
+  height: 8px;
+  margin-top: 0.5em;
+  border-radius: var(--radius-full);
+  background: transparent;
+}
+
+.notification-item[data-unread='true'] .notification-item__dot {
+  background: var(--color-primary);
+}
+
+.notification-item__main {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.notification-item[data-unread='true'] .notification-item__title {
+  font-weight: var(--font-weight-semibold);
+}
+
+.notification-item__body,
+.notification-item__time {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+}

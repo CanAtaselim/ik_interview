@@ -1,0 +1,13 @@
+.money-input {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.money-input .p-inputnumber {
+  flex: 1;
+  min-width: 0;
+}
+
+.money-input .p-inputnumber .p-inputtext {
+  width: 100%;
+}

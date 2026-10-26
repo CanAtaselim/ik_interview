@@ -1,0 +1,389 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  min-height: 100dvh;
+}
+
+body {
+  margin: 0;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-sans);
+  font-size: var(--font-size-body);
+  line-height: var(--line-height-body);
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3,
+p {
+  margin: 0;
+}
+
+a {
+  color: var(--color-primary);
+}
+
+:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.card {
+  min-width: 0;
+  max-width: 100%;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-card);
+}
+
+/* İç içe kartlar (liste öğeleri, mini paneller): dıştaki panele taşmadan, aynı boşlukla sığar. */
+.card .card {
+  box-shadow: none;
+  background: var(--color-primary-faint);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+  }
+}
+
+/* Kartlar */
+.card {
+  overflow: hidden;
+}
+
+.card--padded {
+  padding: var(--space-6);
+}
+
+.section-title {
+  display: block;
+  margin-bottom: var(--space-3);
+  font-size: var(--font-size-section);
+  font-weight: var(--font-weight-semibold);
+}
+
+.detail-sections {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.tag-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.multiline {
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}
+
+.muted {
+  color: var(--color-text-muted);
+}
+
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-bottom: var(--space-3);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+  text-decoration: none;
+}
+
+.back-link:hover {
+  color: var(--color-primary);
+}
+
+/* Liste üstü filtre çubuğu */
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3) var(--space-4);
+  padding: var(--space-4) var(--space-5);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.toolbar__search {
+  flex: 1 1 240px;
+  max-width: 360px;
+}
+
+.toolbar__search .p-inputtext {
+  width: 100%;
+}
+
+.toolbar__title {
+  flex: 1;
+  margin: 0;
+}
+
+.toolbar__check {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-left: var(--space-2);
+  cursor: pointer;
+}
+
+.toolbar__message {
+  margin: var(--space-4);
+}
+
+/* Tablolar */
+.table-link {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--color-text);
+  font: inherit;
+  font-weight: var(--font-weight-semibold);
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.table-link:hover {
+  color: var(--color-primary);
+  text-decoration: underline;
+}
+
+.cell-sub {
+  margin-top: var(--space-1);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+}
+
+.col-narrow,
+.col-actions {
+  width: 1%;
+  white-space: nowrap;
+}
+
+.row-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-1);
+}
+
+.is-refreshing {
+  opacity: 0.6;
+  transition: opacity var(--transition-fast);
+}
+
+/* Formlar ve pencereler */
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-4);
+}
+
+.form-grid__wide {
+  grid-column: 1 / -1;
+}
+
+.form-grid .p-inputtext,
+.form-grid .p-dropdown,
+.form-grid .p-inputnumber,
+.form-grid .p-calendar,
+.form-grid .p-chips,
+.form-grid .p-chips-multiple-container {
+  width: 100%;
+}
+
+.form-dialog {
+  width: min(var(--dialog-width), calc(100vw - var(--space-8)));
+}
+
+/* İçinde liste düzenlenen geniş pencere (ör. şablon soruları) */
+.form-dialog--wide {
+  width: min(960px, calc(100vw - var(--space-8)));
+}
+
+.dialog-title {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.dialog-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--space-3);
+  width: 100%;
+}
+
+.dialog-actions__start {
+  margin-right: auto;
+}
+
+@media (max-width: 640px) {
+  .form-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* Dar ekranda tabloda yalnızca en gerekli sütunlar kalır; ayrıntı satıra tıklayınca görülür. */
+@media (max-width: 768px) {
+  .col-desktop {
+    display: none;
+  }
+}
+
+/* "Geri al" gibi tek işlem sunan bildirim */
+.toast-action {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+}
+
+.toast-action > span {
+  flex: 1;
+}
+
+/* Dikkat gerektiren durumlar için uyarı kutusu (mükerrer, kara liste) */
+.notice {
+  display: flex;
+  gap: var(--space-3);
+  min-width: 0;
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
+  background: var(--color-warning-soft);
+  color: var(--color-warning-strong);
+}
+
+.notice--danger {
+  background: var(--color-danger-soft);
+  color: var(--color-danger-strong);
+}
+
+.notice > i {
+  margin-top: var(--space-1);
+}
+
+.notice > div {
+  flex: 1;
+}
+
+.notice ul {
+  margin: var(--space-1) 0 0;
+  padding-left: var(--space-4);
+}
+
+.notice a {
+  color: inherit;
+  font-weight: var(--font-weight-semibold);
+}
+
+/* Başlık ve yanında küçük bir işlem (ör. "Düzenle") */
+.section-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.section-heading .section-title {
+  margin: 0;
+}
+
+.plain-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin: var(--space-3) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* Salt okunur gösterilebilen form alanlarını kenarlıksız gruplar */
+.plain-fieldset {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+/* Sayfa başlığının altındaki bilgi kutusu */
+.page-notice {
+  margin-bottom: var(--space-4);
+}
+
+/* Karar gerekçesi yazılan kutu (onay/ret, kara listeden çıkarma) */
+.decision-box {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  min-width: 0;
+  padding: var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-primary-faint);
+}
+
+/* Dosya listesi (aday kartı, CV değerlendirme) */
+.document-list {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.document-list__item {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) 0;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.document-list__item:last-child {
+  border-bottom: 0;
+}
+
+.document-list__item > i {
+  color: var(--color-text-muted);
+  font-size: var(--icon-size-lg);
+}
+
+.document-list__main {
+  flex: 1 1 200px;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+/* Buton görünümlü bağlantı (gezinme için) */
+.link-button {
+  align-items: center;
+  text-decoration: none;
+}
