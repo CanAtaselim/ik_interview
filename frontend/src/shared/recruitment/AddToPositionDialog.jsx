@@ -70,7 +70,7 @@ export default function AddToPositionDialog({ candidate, onClose }) {
               placeholder={isLoading ? 'Yükleniyor…' : 'Açık pozisyon seçin'}
               emptyMessage="Açık pozisyon yok. Önce bir pozisyon açılmalı."
               disabled={isLoading}
-              filter={options.length > 8}
+              filter
               filterInputAutoFocus
             />
           </FormField>

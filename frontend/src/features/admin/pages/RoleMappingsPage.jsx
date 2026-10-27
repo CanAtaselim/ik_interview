@@ -112,6 +112,8 @@ export default function RoleMappingsPage() {
                   setRole(event.value);
                   setErrors((current) => ({ ...current, role: undefined }));
                 }}
+                filter
+                filterInputAutoFocus
               />
             </FormField>
             <Button type="submit" label="Ekle" icon="pi pi-plus" loading={create.isPending} />

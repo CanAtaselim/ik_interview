@@ -142,6 +142,8 @@ export default function QuestionBankPage() {
             placeholder="Tüm tipler"
             aria-label="Tipe göre filtrele"
             showClear
+            filter
+            filterInputAutoFocus
           />
           <label className="toolbar__check" htmlFor="filter-inactive">
             <Checkbox

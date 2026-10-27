@@ -19,6 +19,9 @@ using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Sunucuya özel değerler (bağlantı dizesi, imza anahtarı): depoya girmez, yayın klasörüne kopyalanır.
+builder.Configuration.AddJsonFile("appsettings.Local.json", optional: true, reloadOnChange: false);
+
 builder.Host.UseSerilog((context, services, configuration) => configuration
     .ReadFrom.Configuration(context.Configuration)
     .ReadFrom.Services(services)
@@ -92,6 +95,23 @@ builder.Services.AddOptions<CorsOptions>()
 builder.Services.AddOpenApi();
 
 var app = builder.Build();
+
+// Rotalar "/api/v1/..." ve "/hubs/..." biçimindedir. API, IIS'te sitenin altında "/api" uygulaması
+// olarak çalışırsa IIS bu öneki PathBase'e taşır ve rotalar eşleşmez; önek Path'e geri eklenir.
+// Bildirim kanalı hem "/hubs/..." hem "/api/hubs/..." adresiyle erişilebilir.
+app.Use((context, next) =>
+{
+    var request = context.Request;
+    if (request.PathBase == "/api" && request.Path.StartsWithSegments("/v1"))
+        request.Path = "/api" + request.Path;
+    else if (request.Path.StartsWithSegments("/api/hubs", out var rest))
+        request.Path = "/hubs" + rest;
+
+    return next();
+});
+
+// Yönlendirme, yukarıdaki Path düzeltmesinden sonra çalışmalı; aksi halde çerçeve onu en başa kendisi ekler.
+app.UseRouting();
 
 if (app.Configuration.GetValue<bool>("Database:ApplyMigrationsOnStartup"))
     await app.Services.InitializeDatabase();

@@ -225,6 +225,8 @@ export default function ScheduleInterviewDialog({
                 onChange={(event) => change(setApplicationId, 'applicationId')(event.value)}
                 placeholder="Süreç seçin"
                 invalid={Boolean(errors.applicationId)}
+                filter
+                filterInputAutoFocus
               />
             </FormField>
           )}
@@ -290,6 +292,8 @@ export default function ScheduleInterviewDialog({
             value={duration}
             options={durationOptions}
             onChange={(event) => change(setDuration, 'durationMinutes')(event.value)}
+            filter
+            filterInputAutoFocus
           />
         </FormField>
 
@@ -308,10 +312,11 @@ export default function ScheduleInterviewDialog({
               emptyMessage="Seçilebilecek kişi yok. Kullanıcılar ilk girişlerinden sonra listelenir."
               emptyFilterMessage="Eşleşen kişi yok."
               display="chip"
-              filter={interviewerOptions.length > 8}
               showSelectAll={false}
               invalid={Boolean(errors.interviewerUserIds)}
               disabled={loadingInterviewers}
+              filter
+              filterInputAutoFocus
             />
           </FormField>
         </div>
@@ -378,9 +383,9 @@ export default function ScheduleInterviewDialog({
                 isReschedule ? 'Şablonsuz' : 'Otomatik: pozisyonun bu tipe uygun şablonu'
               }
               showClear
-              filter={templates.length > 8}
-              filterInputAutoFocus
               emptyMessage="Aktif şablon yok."
+              filter
+              filterInputAutoFocus
             />
           </FormField>
         </div>

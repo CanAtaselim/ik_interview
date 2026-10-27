@@ -91,9 +91,40 @@
   color: var(--color-primary);
 }
 
+/* Bekleyen iş sayısı: menü yazısının sağında */
+.app-sidebar__link {
+  position: relative;
+}
+
+.app-sidebar__badge {
+  display: inline-grid;
+  place-items: center;
+  min-width: calc(var(--icon-size) + var(--space-1));
+  height: calc(var(--icon-size) + var(--space-1));
+  margin-left: auto;
+  padding: 0 var(--space-1);
+  border-radius: var(--radius-full);
+  background: var(--color-danger);
+  color: var(--color-on-primary);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  line-height: 1;
+}
+
 .app-shell[data-collapsed='true'] .app-sidebar__name,
 .app-shell[data-collapsed='true'] .app-sidebar__label {
   display: none;
+}
+
+/* Menü daraltılınca sayı, simgenin sağ üst köşesine geçer */
+.app-shell[data-collapsed='true'] .app-sidebar__badge {
+  position: absolute;
+  top: var(--space-1);
+  right: var(--space-1);
+  min-width: var(--icon-size);
+  height: var(--icon-size);
+  margin: 0;
+  font-size: var(--font-size-xs, 0.6875rem);
 }
 
 /* Üst çubuk ve içerik */
@@ -198,6 +229,14 @@
   .app-shell[data-collapsed='true'] .app-sidebar__name,
   .app-shell[data-collapsed='true'] .app-sidebar__label {
     display: inline;
+  }
+
+  .app-shell[data-collapsed='true'] .app-sidebar__badge {
+    position: static;
+    min-width: calc(var(--icon-size) + var(--space-1));
+    height: calc(var(--icon-size) + var(--space-1));
+    margin-left: auto;
+    font-size: var(--font-size-sm);
   }
 
   .app-shell[data-mobile-open='true'] .app-shell__backdrop {

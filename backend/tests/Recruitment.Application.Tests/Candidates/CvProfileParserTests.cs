@@ -131,4 +131,61 @@ public sealed class CvProfileParserTests
         profile.GitHubUrl.ShouldBe("https://github.com/aliveli");
         profile.Email.ShouldBe("ali@ornek.com");
     }
+
+    [Fact]
+    public void Parse_KnownSkillsInText_AreFoundWithoutFalseMatches()
+    {
+        string[] lines =
+        [
+            "Ayşe Yılmaz",
+            "ASP.NET Core ve PostgreSQL ile API geliştirdim. JavaScript, React ve Docker kullandım.",
+            "Takım içinde Scrum uyguladım; C# ve Git deneyimim var.",
+        ];
+
+        var skills = CvProfileParser.Parse(lines).Skills;
+
+        skills.ShouldBe(["ASP.NET Core", "PostgreSQL", "JavaScript", "React", "Docker", "Scrum", "C#", "Git"], ignoreOrder: true);
+        skills.ShouldNotContain("Java");
+        skills.ShouldNotContain("SQL");
+        skills.ShouldNotContain(".NET");
+    }
+
+    [Fact]
+    public void Parse_SkillsSection_ReadsItemsAndStopsAtNextHeader()
+    {
+        string[] lines =
+        [
+            "Ali Veli",
+            "Yetenekler",
+            "• Postgres, Redis",
+            "- Oracle Forms | Raporlama",
+            "Deneyim",
+            "Şirket A.Ş. Kıdemli Geliştirici",
+        ];
+
+        var skills = CvProfileParser.Parse(lines).Skills;
+
+        skills.ShouldContain("PostgreSQL");
+        skills.ShouldContain("Redis");
+        skills.ShouldContain("Oracle Forms");
+        skills.ShouldContain("Raporlama");
+        skills.ShouldNotContain("Şirket A.Ş. Kıdemli Geliştirici");
+    }
+
+    [Fact]
+    public void Parse_InlineSkillsHeader_ReadsItems()
+    {
+        var skills = CvProfileParser.Parse(["Skills: Kafka, gRPC; Kubernetes"]).Skills;
+
+        skills.ShouldBe(["Kafka", "gRPC", "Kubernetes"], ignoreOrder: true);
+    }
+
+    [Fact]
+    public void Parse_MoreThanLimit_KeepsFirstOnes()
+    {
+        var skills = CvProfileParser.Parse(["Yetenekler: C#, Java, Python, PHP, Ruby, Rust, Scala, Dart, Flutter, React, Angular, Docker, Git, SQL, Redis, Kafka, Linux"]).Skills;
+
+        skills.Count.ShouldBe(15);
+        skills[0].ShouldBe("C#");
+    }
 }

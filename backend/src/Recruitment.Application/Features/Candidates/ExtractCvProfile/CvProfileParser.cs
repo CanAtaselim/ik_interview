@@ -10,13 +10,14 @@ public sealed record CvProfile(
     string? Phone,
     string? LinkedInUrl,
     string? GitHubUrl,
-    string? City)
+    string? City,
+    IReadOnlyList<string> Skills)
 {
-    public static readonly CvProfile Empty = new(null, null, null, null, null, null, null);
+    public static readonly CvProfile Empty = new(null, null, null, null, null, null, null, Array.Empty<string>());
 }
 
 /// <summary>
-/// CV metninden ad soyad, e-posta, telefon ve LinkedIn/GitHub adresini bulur. Tahmine dayanır:
+/// CV metninden ad soyad, e-posta, telefon, LinkedIn/GitHub adresi, il ve yetenekleri bulur. Tahmine dayanır:
 /// emin olunamayan alan boş bırakılır, yanlış değer önerilmez.
 /// </summary>
 public static partial class CvProfileParser
@@ -40,7 +41,8 @@ public static partial class CvProfileParser
     {
         var (first, last) = detectName ? FindName(lines) : (null, null);
         return new CvProfile(
-            first, last, FindEmail(lines), FindPhone(lines), FindLinkedIn(lines), FindGitHub(lines), FindCity(lines));
+            first, last, FindEmail(lines), FindPhone(lines), FindLinkedIn(lines), FindGitHub(lines), FindCity(lines),
+            CvSkillExtractor.Extract(lines));
     }
 
     // Başlıktaki iletişim bloğu: ilk birkaç kısa satır.

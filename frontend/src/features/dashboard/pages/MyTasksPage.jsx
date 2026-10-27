@@ -1,7 +1,5 @@
 import { Tag } from 'primereact/tag';
 import { Link } from 'react-router';
-import { useHiringRequests } from '@/features/hiring-requests/queries';
-import { HR_ROLES, INTERVIEWER_ROLES, Role } from '@/shared/auth/roles';
 import { useAuth } from '@/shared/auth/useAuth';
 import EmptyState from '@/shared/components/EmptyState';
 import PageHeader from '@/shared/components/PageHeader';
@@ -9,55 +7,18 @@ import StatusTag from '@/shared/components/StatusTag';
 import TableSkeleton from '@/shared/components/TableSkeleton';
 import { CV_REVIEW_DECISION, URGENCY } from '@/shared/constants/labels';
 import { ROUTES } from '@/shared/constants/routes';
-import { useCvReviews, useInterviews } from '@/shared/recruitment/queries';
 import { formatDate, formatTimeRange } from '@/shared/utils/format';
+import { MAX_ITEMS, useMyTasks } from '../useMyTasks';
 import '../dashboard.css';
-
-const APPROVER_ROLES = [Role.DepartmentManager, Role.HrManager];
-const MAX_ITEMS = 10;
-const UPCOMING_DAYS = 7;
-
-// Sorgu anahtarı her render'da değişmesin diye saat başına yuvarlanır.
-const upcomingRange = () => {
-  const from = new Date();
-  from.setMinutes(0, 0, 0);
-  const to = new Date(from);
-  to.setDate(to.getDate() + UPCOMING_DAYS);
-  return { from: from.toISOString(), to: to.toISOString() };
-};
 
 /**
  * Ana sayfa: kullanıcıdan aksiyon bekleyen işler. Her öğe tek tıkla ilgili ekrana götürür.
  * İş üreten modüller (mülakat, değerlendirme) eklendikçe yeni bölümler buraya gelecek.
  */
 export default function MyTasksPage() {
-  const { user, hasAnyRole } = useAuth();
+  const { user } = useAuth();
   const firstName = user.displayName.split(' ')[0];
-
-  const cvReviews = useCvReviews(
-    { status: 'Waiting', mine: true, pageSize: MAX_ITEMS },
-    { enabled: hasAnyRole([Role.TeamLead]) },
-  );
-  const overdueReviews = useCvReviews(
-    { status: 'Overdue', pageSize: MAX_ITEMS },
-    { enabled: hasAnyRole(HR_ROLES) },
-  );
-  const upcoming = useInterviews(
-    { ...upcomingRange(), mine: true, status: 'Scheduled' },
-    { enabled: hasAnyRole(INTERVIEWER_ROLES) },
-  );
-  const awaitingOutcome = useInterviews(
-    { awaitingOutcome: true },
-    { enabled: hasAnyRole(HR_ROLES) },
-  );
-  const toScore = useInterviews(
-    { awaitingMyScorecard: true },
-    { enabled: hasAnyRole(INTERVIEWER_ROLES) },
-  );
-  const approvals = useHiringRequests(
-    { awaitingMyDecision: true, pageSize: MAX_ITEMS },
-    { enabled: hasAnyRole(APPROVER_ROLES) },
-  );
+  const { cvReviews, overdueReviews, upcoming, awaitingOutcome, toScore, approvals } = useMyTasks();
 
   // Mülakat listeleri sayfalanmaz; diğer bölümlerle aynı biçime getirilir.
   const asPage = (items) => items && { items: items.slice(0, MAX_ITEMS), totalCount: items.length };

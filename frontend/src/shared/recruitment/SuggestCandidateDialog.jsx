@@ -116,6 +116,8 @@ export default function SuggestCandidateDialog({ candidate, applications = [], o
                 value={target}
                 options={targetOptions}
                 onChange={(event) => setTarget(event.value)}
+                filter
+                filterInputAutoFocus
               />
             </FormField>
           </div>
@@ -135,11 +137,12 @@ export default function SuggestCandidateDialog({ candidate, applications = [], o
               emptyMessage="Seçilebilecek takım lideri yok. Kullanıcılar ilk girişlerinden sonra listelenir."
               emptyFilterMessage="Eşleşen takım lideri yok."
               display="chip"
-              filter={leadOptions.length > 8}
               showSelectAll={false}
               invalid={Boolean(reviewerError)}
               disabled={isLoading}
               aria-describedby={reviewerError ? 'suggest-reviewers-error' : undefined}
+              filter
+              filterInputAutoFocus
             />
           </FormField>
         </div>

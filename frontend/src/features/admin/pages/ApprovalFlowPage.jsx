@@ -106,6 +106,8 @@ function FlowEditor({ flow }) {
             options={available.map((role) => ({ value: role, label: ROLE_LABELS[role] }))}
             onChange={(event) => setAdding(event.value)}
             placeholder="Onaycı ekle"
+            filter
+            filterInputAutoFocus
           />
           <Button
             type="button"

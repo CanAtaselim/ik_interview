@@ -41,7 +41,7 @@ export default function DictionarySelect({
       invalid={invalid}
       showClear={showClear}
       disabled={disabled || isLoading}
-      filter={items.length > 8}
+      filter
       filterInputAutoFocus
     />
   );

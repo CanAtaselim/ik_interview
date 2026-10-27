@@ -85,9 +85,10 @@ export default function PositionTemplatesDialog({ position, onClose }) {
               placeholder={isLoading ? 'Yükleniyor…' : 'Şablon seçin'}
               emptyMessage="Aktif şablon yok."
               display="chip"
-              filter={options.length > 8}
               showSelectAll={false}
               disabled={isLoading}
+              filter
+              filterInputAutoFocus
             />
           </FormField>
         </div>

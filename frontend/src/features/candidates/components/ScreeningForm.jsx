@@ -356,6 +356,8 @@ export default function ScreeningForm({ candidateId, screening }) {
                   placeholder="Seviye"
                   aria-label="Seviye"
                   showClear
+                  filter
+                  filterInputAutoFocus
                 />
               )}
             />
@@ -425,6 +427,8 @@ export default function ScreeningForm({ candidateId, screening }) {
                   onChange={(event) => field.onChange(event.value ?? null)}
                   placeholder="Seçin"
                   showClear
+                  filter
+                  filterInputAutoFocus
                 />
               )}
             />
@@ -450,10 +454,10 @@ export default function ScreeningForm({ candidateId, screening }) {
                     setValue('locationDistrict', null);
                   }}
                   placeholder="İl seçin"
-                  filter
-                  filterInputAutoFocus
                   filterLocale="tr"
                   showClear
+                  filter
+                  filterInputAutoFocus
                 />
               )}
             />
@@ -470,10 +474,10 @@ export default function ScreeningForm({ candidateId, screening }) {
                   onChange={(event) => field.onChange(event.value ?? null)}
                   placeholder={province ? 'İlçe seçin' : 'Önce il seçin'}
                   disabled={!province}
-                  filter
-                  filterInputAutoFocus
                   filterLocale="tr"
                   showClear
+                  filter
+                  filterInputAutoFocus
                 />
               )}
             />

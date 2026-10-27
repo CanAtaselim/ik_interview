@@ -7,7 +7,7 @@ import { useAuthStore } from '@/shared/auth/authStore';
 import { useToast } from '@/shared/components/toast';
 import { notificationKeys } from './queries';
 
-const HUB_PATH = '/hubs/notifications';
+const HUB_PATH = '/api/hubs/notifications';
 const RETRY_MS = 10_000;
 
 // Bildirim türü → tazelenecek ekran verisi (ör. CV önerilince "Bekleyen işlerim" listesi).
@@ -27,7 +27,7 @@ const AFFECTED_QUERIES = {
   BlacklistApprovalPending: [['blacklist']],
 };
 
-/** Hub adresi, API ile aynı sunucuda ("/api/v1" → "/hubs/notifications"). */
+/** Hub adresi, API ile aynı sunucuda ("/api/v1" → "/api/hubs/notifications"). */
 function hubUrl() {
   return new URL(
     HUB_PATH,

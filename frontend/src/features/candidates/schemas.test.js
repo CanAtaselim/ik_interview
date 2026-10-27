@@ -193,4 +193,19 @@ describe('CV’den formu önceden doldurma', () => {
     expect(cvPrefillPatch({}, null)).toEqual({});
     expect(cvPrefillPatch({}, { firstName: null, email: null })).toEqual({});
   });
+
+  it('yetenekleri etiketlere ekler; formda olanı tekrarlamaz', () => {
+    const patch = cvPrefillPatch({ tags: ['c#'] }, { skills: ['C#', 'Docker', 'SQL'] });
+    expect(patch.tags).toEqual(['Docker', 'SQL']);
+  });
+
+  it('etiket sınırını (20) aşmaz', () => {
+    const current = { tags: Array.from({ length: 19 }, (_, i) => `etiket${i}`) };
+    expect(cvPrefillPatch(current, { skills: ['A', 'B', 'C'] }).tags).toEqual(['A']);
+    expect(cvPrefillPatch({ tags: Array(20).fill('x') }, { skills: ['A'] })).not.toHaveProperty('tags');
+  });
+
+  it('yetenek yoksa tags eklemez', () => {
+    expect(cvPrefillPatch({ tags: [] }, { skills: [] })).not.toHaveProperty('tags');
+  });
 });

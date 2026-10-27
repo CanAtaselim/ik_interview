@@ -5,3 +5,4 @@
 **/TestResults
 tests
 .vs
+**/appsettings.Local.json

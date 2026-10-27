@@ -79,13 +79,28 @@ const CV_PREFILL_FIELDS = [
   'city',
 ];
 
-/** CV'den okunan bilgilerden, formda hâlâ boş olan alanlara yazılacakları seçer (yazılanı ezmez). */
+const MAX_TAGS = 20;
+
+/**
+ * CV'den okunan bilgilerden, formda hâlâ boş olan alanlara yazılacakları seçer (yazılanı ezmez).
+ * Yetenekler `tags` alanına eklenir: formda olmayanlar, en fazla 20 etikete kadar. Dönen `tags`
+ * yalnızca yeni eklenecek olanları içerir.
+ */
 export function cvPrefillPatch(current, profile) {
-  return Object.fromEntries(
+  const patch = Object.fromEntries(
     CV_PREFILL_FIELDS.filter(
       (field) => profile?.[field] && !String(current?.[field] ?? '').trim(),
     ).map((field) => [field, profile[field]]),
   );
+
+  const existing = current?.tags ?? [];
+  const known = new Set(existing.map((tag) => tag.toLocaleLowerCase('tr')));
+  const added = (profile?.skills ?? [])
+    .filter((skill) => skill && !known.has(skill.toLocaleLowerCase('tr')))
+    .slice(0, Math.max(0, MAX_TAGS - existing.length));
+  if (added.length > 0) patch.tags = added;
+
+  return patch;
 }
 
 const emptyToNull = (value) => (value === '' ? null : value);

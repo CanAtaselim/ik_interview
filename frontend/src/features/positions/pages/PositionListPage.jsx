@@ -103,6 +103,8 @@ export default function PositionListPage() {
             placeholder="Tüm durumlar"
             aria-label="Duruma göre filtrele"
             showClear
+            filter
+            filterInputAutoFocus
           />
         </div>
 

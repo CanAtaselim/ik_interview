@@ -268,6 +268,8 @@ export default function CandidateListPage() {
             placeholder="Tüm süreçler"
             aria-label="Sürece göre filtrele"
             showClear
+            filter
+            filterInputAutoFocus
           />
           <Dropdown
             value={blacklist}
@@ -276,6 +278,8 @@ export default function CandidateListPage() {
             placeholder="Kara liste: hepsi"
             aria-label="Kara listeye göre filtrele"
             showClear
+            filter
+            filterInputAutoFocus
           />
           <InputText
             value={cityText}

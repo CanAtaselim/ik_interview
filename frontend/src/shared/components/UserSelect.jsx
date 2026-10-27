@@ -35,7 +35,7 @@ export default function UserSelect({
       invalid={invalid}
       disabled={isLoading}
       showClear
-      filter={users.length > 8}
+      filter
       filterInputAutoFocus
     />
   );

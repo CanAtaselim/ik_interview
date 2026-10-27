@@ -4,7 +4,7 @@ import { Chips } from 'primereact/chips';
 import { Dialog } from 'primereact/dialog';
 import { InputText } from 'primereact/inputtext';
 import { InputTextarea } from 'primereact/inputtextarea';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { findBlacklistMatches } from '@/shared/api/blacklist';
 import DictionarySelect from '@/shared/components/DictionarySelect';
@@ -39,6 +39,9 @@ export default function CandidateFormDialog({ candidate = null, onClose, onSaved
   const [blacklistMatches, setBlacklistMatches] = useState([]);
   const [file, setFile] = useState(null);
   const { typeId: cvTypeId } = useDocumentType(null);
+  // CV'den yazılan alanlar ve yazılan değerler; CV kaldırılınca yalnızca elle değiştirilmemiş olanlar temizlenir.
+  const prefilled = useRef({});
+  const prefillRequest = useRef(0);
 
   const {
     register,
@@ -71,17 +74,44 @@ export default function CandidateFormDialog({ candidate = null, onClose, onSaved
     if (foundMatches.status === 'fulfilled') setBlacklistMatches(foundMatches.value);
   };
 
+  // CV'den yazılan alanları geri alır; kullanıcı sonradan elle değiştirdiyse dokunmaz.
+  const clearPrefilled = () => {
+    prefillRequest.current += 1;
+    const { tags: addedTags = [], ...fields } = prefilled.current;
+    const cleared = Object.entries(fields).filter(([field, value]) => getValues(field) === value);
+    cleared.forEach(([field]) => setValue(field, '', { shouldDirty: true }));
+    // Etiketlerden yalnızca CV'den eklenenler çıkar; kullanıcının yazdıkları kalır.
+    if (addedTags.length > 0) {
+      const remaining = getValues('tags').filter((tag) => !addedTags.includes(tag));
+      setValue('tags', remaining, { shouldDirty: true });
+    }
+    prefilled.current = {};
+    if (cleared.length > 0) checkWarnings();
+  };
+
+  const removeFile = () => {
+    setFile(null);
+    clearPrefilled();
+  };
+
   // Seçilen CV'den okunabilen bilgiler formun boş alanlarına yazılır. Okunamazsa hiçbir şey
   // söylenmez; kullanıcı alanları elle doldurur.
   const selectFile = async (selected) => {
     setFile(selected);
+    clearPrefilled();
     if (!/\.(pdf|docx?)$/i.test(selected.name)) return;
+    const request = prefillRequest.current;
     try {
-      const patch = cvPrefillPatch(getValues(), await prefillFromCv(selected));
-      Object.entries(patch).forEach(([field, value]) =>
+      const profile = await prefillFromCv(selected);
+      // Yanıt beklenirken CV kaldırıldıysa veya değiştirildiyse sonuç yok sayılır.
+      if (request !== prefillRequest.current) return;
+      const { tags: addedTags, ...fields } = cvPrefillPatch(getValues(), profile);
+      Object.entries(fields).forEach(([field, value]) =>
         setValue(field, value, { shouldDirty: true }),
       );
-      if (Object.keys(patch).length > 0) checkWarnings();
+      if (addedTags) setValue('tags', [...getValues('tags'), ...addedTags], { shouldDirty: true });
+      prefilled.current = addedTags ? { ...fields, tags: addedTags } : fields;
+      if (Object.keys(fields).length > 0) checkWarnings();
     } catch {
       // Bilgi okunamadı; önemli değil.
     }
@@ -273,7 +303,7 @@ export default function CandidateFormDialog({ candidate = null, onClose, onSaved
                   text
                   severity="secondary"
                   aria-label="Seçilen dosyayı kaldır"
-                  onClick={() => setFile(null)}
+                  onClick={removeFile}
                 />
               </div>
             ) : (

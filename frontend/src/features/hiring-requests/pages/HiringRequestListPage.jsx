@@ -128,6 +128,8 @@ export default function HiringRequestListPage() {
             placeholder="Tüm durumlar"
             aria-label="Duruma göre filtrele"
             showClear
+            filter
+            filterInputAutoFocus
           />
           {hasAnyRole(APPROVER_ROLES) && (
             <label className="toolbar__check" htmlFor="awaiting-me">

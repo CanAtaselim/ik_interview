@@ -97,6 +97,8 @@ export default function BlacklistPage() {
             placeholder="Tüm durumlar"
             aria-label="Duruma göre filtrele"
             showClear
+            filter
+            filterInputAutoFocus
           />
         </div>
 

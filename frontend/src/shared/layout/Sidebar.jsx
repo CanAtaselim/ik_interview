@@ -1,4 +1,5 @@
 import { NavLink } from 'react-router';
+import { useMyTasks } from '@/features/dashboard/useMyTasks';
 import { useAuth } from '@/shared/auth/useAuth';
 import { ROUTES } from '@/shared/constants/routes';
 
@@ -13,6 +14,8 @@ import { ROUTES } from '@/shared/constants/routes';
 export default function Sidebar({ navigation, collapsed, onNavigate }) {
   const { hasAnyRole } = useAuth();
   const visibleItems = navigation.filter((item) => hasAnyRole(item.roles));
+  // Bekleyen iş sayısı "Bekleyen işlerim" menüsünün yanında görünür.
+  const { count: taskCount } = useMyTasks();
 
   return (
     <aside className="app-sidebar">
@@ -36,6 +39,15 @@ export default function Sidebar({ navigation, collapsed, onNavigate }) {
               >
                 <i className={item.icon} aria-hidden="true" />
                 <span className="app-sidebar__label">{item.label}</span>
+                {item.path === ROUTES.home && taskCount > 0 && (
+                  <span
+                    className="app-sidebar__badge"
+                    role="status"
+                    aria-label={`${taskCount} bekleyen iş`}
+                  >
+                    {taskCount > 99 ? '99+' : taskCount}
+                  </span>
+                )}
               </NavLink>
             </li>
           ))}
