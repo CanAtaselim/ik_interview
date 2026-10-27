@@ -47,6 +47,7 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbCon
     public DbSet<Scorecard> Scorecards => Set<Scorecard>();
     public DbSet<Notification> Notifications => Set<Notification>();
     public DbSet<NotificationPreference> NotificationPreferences => Set<NotificationPreference>();
+    public DbSet<UserPreference> UserPreferences => Set<UserPreference>();
     public DbSet<OutgoingEmail> OutgoingEmails => Set<OutgoingEmail>();
     public DbSet<EmailTemplate> EmailTemplates => Set<EmailTemplate>();
     public DbSet<OutboxMessage> OutboxMessages => Set<OutboxMessage>();

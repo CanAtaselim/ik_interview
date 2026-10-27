@@ -41,6 +41,26 @@
   --sidebar-bg: linear-gradient(180deg, #f1edff 0%, #f7f4ff 55%, #fdf3ff 100%);
   --brand-gradient: linear-gradient(135deg, #7a6cf5 0%, #5b4fe0 100%);
 
+  /* Grafik renkleri. Kategori sırası sabittir (renk ölçeği doğrulanmış): seri sırası değişince renk kayar,
+     bu yüzden seriler her zaman bu sırayla atanır. Durum renkleri (başarı/uyarı/tehlike) serilere verilmez. */
+  --chart-1: #2a78d6;
+  --chart-2: #eb6834;
+  --chart-3: #1baf7a;
+  --chart-4: #eda100;
+  --chart-5: #e87ba4;
+  --chart-6: #008300;
+  --chart-7: #6250d6;
+  --chart-8: #e34948;
+  /* Büyüklük (tek renk, açıktan koyuya): ısı haritası ve huni */
+  --chart-seq-100: #cde2fb;
+  --chart-seq-250: #86b6ef;
+  --chart-seq-300: #6da7ec;
+  --chart-seq-400: #3987e5;
+  --chart-seq-500: #256abf;
+  --chart-seq-600: #184f95;
+  --chart-seq-700: #0d366b;
+  --chart-grid: #e8e6f4;
+
   --radius-sm: 10px;
   --radius-md: 14px;
   --radius-lg: 20px;

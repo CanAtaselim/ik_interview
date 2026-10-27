@@ -53,7 +53,11 @@ frontend/
       utils/              format.js (tarih, para, telefon), errors.js (ProblemDetails → form hataları)
       styles/             tokens.css, theme-overrides.css, global.css
     features/
-      dashboard/          MyTasksPage.jsx ("Bekleyen işlerim")
+      dashboard/          MyTasksPage.jsx ("Bekleyen işlerim"), DashboardPage.jsx (IK Yöneticisi kart dashboard'u:
+                          cards/ tema başına kartlar, charts/ ortak grafik bileşenleri, grafik renkleri tokens.css --chart-*;
+                          kartlar SortableGrid içinde, her ChartCard bir cardId taşır. Kart sırası kullanıcı bazlı
+                          user_preferences tablosunda ("dashboard.layout", yalnızca grid -> kart kimlikleri sırası);
+                          yeni kart eklemek eski düzeni bozmaz, kimliği benzersiz tut)
       candidates/
         api.js            saf fonksiyonlar: getCandidate(id), createCandidate(data) ...
         queries.js        useCandidate(id), useCreateCandidate() ... + query key factory

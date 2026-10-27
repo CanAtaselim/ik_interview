@@ -2,6 +2,7 @@
 export const ROUTES = Object.freeze({
   home: '/',
   login: '/login',
+  dashboard: '/dashboard',
   hiringRequests: '/hiring-requests',
   /** @param {string} id Listeyi, verilen talebin detayı açık halde gösterir. */
   hiringRequest: (id) => `/hiring-requests?selected=${id}`,

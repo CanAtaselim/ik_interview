@@ -20,7 +20,9 @@ using Serilog;
 var builder = WebApplication.CreateBuilder(args);
 
 // Sunucuya özel değerler (bağlantı dizesi, imza anahtarı): depoya girmez, yayın klasörüne kopyalanır.
-builder.Configuration.AddJsonFile("appsettings.Local.json", optional: true, reloadOnChange: false);
+// Testler kendi ayarlarıyla çalışır; geliştiricinin yerel dosyası onları bozmasın.
+if (!builder.Environment.IsEnvironment("Testing"))
+    builder.Configuration.AddJsonFile("appsettings.Local.json", optional: true, reloadOnChange: false);
 
 builder.Host.UseSerilog((context, services, configuration) => configuration
     .ReadFrom.Configuration(context.Configuration)

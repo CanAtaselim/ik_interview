@@ -67,7 +67,7 @@ Bir özelliği her zaman uçtan uca, bu sırayla ekle. Her adımda ilgili refera
 
 Kullanıcı aksini söylemedikçe yalnızca aktif fazın modüllerini geliştir; ileri faz için şimdiden kod yazma, sadece genişlemeye açık arayüz bırak.
 
-- **Faz 1 (MVP):** Roller + LDAP/JWT, kadro talebi + onay akışı, pozisyon, aday havuzu + IK ön görüşme formu + kara liste, süreç hattı (kanban), CV önerme ve değerlendirme, mülakat planlama (sistem içi müsaitlik), soru bankası, değerlendirme ve puanlama, bildirimler (uygulama içi + SMTP), audit log, kullanılabilirlik ilkeleri.
+- **Faz 1 (MVP):** Roller + LDAP/JWT, kadro talebi + onay akışı, pozisyon, aday havuzu + IK ön görüşme formu + kara liste, süreç hattı (kanban), CV önerme ve değerlendirme, mülakat planlama (sistem içi müsaitlik), soru bankası, değerlendirme ve puanlama, bildirimler (uygulama içi + SMTP), audit log, kullanılabilirlik ilkeleri, IK Yöneticisi dashboard'u (Faz 1 verisiyle; diğer roller sonra açılır).
 - **Faz 2:** Teklif yönetimi, onboarding (birimlere e-posta ile görev), Outlook/Exchange takvim entegrasyonu, raporlama ve dashboard.
 - **Faz 3 (en son):** Çalışan referans programı, referans kontrolü, case/ödev, Jira otomatik ticket, AI destekleri (sağlayıcı belli değil; şu an aksiyon yok).
 - **Bekleyen:** Kariyer.net / LinkedIn entegrasyonu (IK kararı bekleniyor).
@@ -87,3 +87,4 @@ Kullanıcı aksini söylemedikçe yalnızca aktif fazın modüllerini geliştir;
 - Yeni NuGet/npm paketi eklemeden önce gerçekten gerekli mi düşün; eklersen nedenini söyle ve lisansını kontrol et.
 - Gizli bilgileri (LDAP şifresi, JWT anahtarı, SMTP şifresi) koda veya repoya yazma; `appsettings.json`'da boş alan bırak, geliştirmede `dotnet user-secrets` kullan.
 - Bu skill'deki bir kural kullanıcının yeni kararıyla çelişirse kullanıcının kararını uygula ve skill dosyasını güncellemeyi öner.
+- Veritabanı şeması değiştiyse (yeni migration) işin sonunda idempotent SQL scriptini `docs/sql/<migration>.sql` olarak üret ve kullanıcıya ver: canlı sunucuda migration otomatik çalışmaz, elle uygulanır. Komut: `dotnet-ef migrations script <önceki> <yeni> -i -p src/Recruitment.Infrastructure -s src/Recruitment.Api -o ../docs/sql/<yeni>.sql`.

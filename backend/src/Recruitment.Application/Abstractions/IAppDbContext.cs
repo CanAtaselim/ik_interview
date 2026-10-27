@@ -42,6 +42,7 @@ public interface IAppDbContext
     DbSet<Scorecard> Scorecards { get; }
     DbSet<Notification> Notifications { get; }
     DbSet<NotificationPreference> NotificationPreferences { get; }
+    DbSet<UserPreference> UserPreferences { get; }
     DbSet<OutgoingEmail> OutgoingEmails { get; }
     DbSet<EmailTemplate> EmailTemplates { get; }
 

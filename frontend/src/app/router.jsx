@@ -11,6 +11,7 @@ import CandidateDetailPage from '@/features/candidates/pages/CandidateDetailPage
 import CandidateListPage from '@/features/candidates/pages/CandidateListPage';
 import CvReviewDetailPage from '@/features/cv-reviews/pages/CvReviewDetailPage';
 import CvReviewListPage from '@/features/cv-reviews/pages/CvReviewListPage';
+import DashboardPage from '@/features/dashboard/pages/DashboardPage';
 import MyTasksPage from '@/features/dashboard/pages/MyTasksPage';
 import NotificationSettingsPage from '@/features/notifications/pages/NotificationSettingsPage';
 import AvailabilityPage from '@/features/interviews/pages/AvailabilityPage';
@@ -58,6 +59,11 @@ const appRoutes = [
     path: ROUTES.home,
     element: <MyTasksPage />,
     handle: { roles: null, menu: { label: 'Bekleyen işlerim', icon: 'pi pi-inbox' } },
+  },
+  {
+    path: ROUTES.dashboard,
+    element: <DashboardPage />,
+    handle: { roles: [Role.HrManager], menu: { label: 'Dashboard', icon: 'pi pi-chart-bar' } },
   },
   {
     path: ROUTES.candidates,
