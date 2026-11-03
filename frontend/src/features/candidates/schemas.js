@@ -182,6 +182,8 @@ export function toScreeningForm(screening) {
     locationNote: screening.locationNote ?? '',
     openToRelocation: screening.openToRelocation,
     hasTravelRestriction: screening.hasTravelRestriction,
+    hasDisability: screening.hasDisability,
+    disabilityDescription: screening.disabilityDescription ?? '',
     militaryStatus: screening.militaryStatus,
     overallRating: screening.overallRating,
   };
@@ -220,5 +222,8 @@ export function toScreeningInput(values) {
     locationDistrict: values.locationProvince ? values.locationDistrict || null : null,
     locationNote: text(values.locationNote),
     hasTravelRestriction: values.hasTravelRestriction ?? null,
+    hasDisability: values.hasDisability ?? null,
+    disabilityDescription:
+      values.hasDisability === true ? text(values.disabilityDescription) : null,
   };
 }

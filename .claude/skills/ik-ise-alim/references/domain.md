@@ -96,7 +96,7 @@ Kurallar:
 > - `InterviewedAt` kayıt açılırken şimdiye ayarlanır; İK geçmiş tarihe çevirebilir (CR-09 ✅).
 > - İşlem yapanların adı "Ad Soyad (Unvan)" biçiminde gösterilir (`UserLabel.Format`; aday kartı, zaman çizelgesi, raporlar; CR-10 ✅).
 > - Yabancı dil `Language` sözlüğünden seçilir (ad olarak saklanır; seed: İngilizce, Almanca, Fransızca; yenisi yönetim panelinden; CR-03/CR-11 ✅).
-> - CR-12: `HasDisability` (Var/Yok) + `DisabilityDescription` (Var ise zorunlu). Özel nitelikli veri: yalnızca `HrOnly`, `TeamLead`/`Executive`'den gizli, aramaya girmez, erişim audit'e yazılır (KVKK).
+> - `HasDisability` (Var/Yok) + `DisabilityDescription` (Var ise doldurulur; formda uyarı, sunucuda zorunlu değil çünkü form otomatik kaydedilir). Özel nitelikli veri (KVKK): yalnızca İK görür, `RestrictedCandidateDto`'ya konmaz, aramaya girmez; değişiklikler AuditLog'a yazılır (CR-12 ✅).
 
 **Candidate** — kişinin kendisi, tek kayıt:
 - Zorunlu olan **yalnızca** `FirstName`, `LastName` ve en az bir iletişim (`Email` veya `Phone`). Geri kalan her şey opsiyonel.

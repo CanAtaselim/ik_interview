@@ -177,6 +177,8 @@ internal sealed class GetCandidateDossierQueryHandler(
                 new("Konum notu", s.LocationNote),
                 new("Taşınmaya açık", s.OpenToRelocation),
                 new("Seyahat kısıtı var", s.HasTravelRestriction),
+                new("Engel durumu var", s.HasDisability),
+                new("Engel durumu açıklaması", s.DisabilityDescription),
                 new("Askerlik", s.MilitaryStatus is { } military ? ReportLabels.Of(military) : null),
                 new("İK genel puanı (1-5)", s.OverallRating),
                 new("İK yorumu", s.HrComment),

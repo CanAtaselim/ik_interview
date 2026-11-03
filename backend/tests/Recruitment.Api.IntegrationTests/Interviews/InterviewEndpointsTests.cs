@@ -291,6 +291,8 @@ public sealed class InterviewEndpointsTests(ApiFactory factory) : IClassFixture<
             experienceSummary = "7 yıl backend",
             expectedSalary = new { amount = 185000, currency = "TRY", isNet = true },
             hrComment = "Pazarlık payı var",
+            hasDisability = true,
+            disabilityDescription = "Gizli engel açıklaması",
         });
         var pdf = TestFiles.Pdf("Kafka deneyimi");
         var documentId = (await (await hr.Client.PostAsync(
@@ -301,7 +303,7 @@ public sealed class InterviewEndpointsTests(ApiFactory factory) : IClassFixture<
         var raw = await (await lead.Client.GetAsync($"{Url}/{id}")).Content.ReadAsStringAsync();
         raw.ShouldContain("7 yıl backend");
         raw.ShouldContain("Mimariye ağırlık verin.");
-        foreach (var hidden in new[] { "salary", "185000", "hrComment", "Pazarlık", "ornek.com", "özel not", "phone" })
+        foreach (var hidden in new[] { "salary", "185000", "hrComment", "Pazarlık", "ornek.com", "özel not", "phone", "disability", "Gizli engel" })
             raw.ShouldNotContain(hidden, Case.Insensitive);
 
         var link = await lead.Post($"{Url}/{id}/documents/{documentId}/download-link");

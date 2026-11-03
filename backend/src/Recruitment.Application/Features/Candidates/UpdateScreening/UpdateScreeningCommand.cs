@@ -33,6 +33,8 @@ public sealed record UpdateScreeningCommand(
     string? LocationNote,
     bool? OpenToRelocation,
     bool? HasTravelRestriction,
+    bool? HasDisability,
+    string? DisabilityDescription,
     MilitaryStatus? MilitaryStatus,
     int? OverallRating) : ICommand<Unit>;
 
@@ -77,6 +79,7 @@ internal sealed class UpdateScreeningCommandValidator : AbstractValidator<Update
                      (c => c.ExperienceSummary, "Deneyim özeti"), (c => c.Motivation, "Motivasyon"),
                      (c => c.HrComment, "İK yorumu"), (c => c.EducationNote, "Eğitim açıklaması"),
                      (c => c.LanguagesNote, "Yabancı dil açıklaması"), (c => c.LocationNote, "Lokasyon açıklaması"),
+                     (c => c.DisabilityDescription, "Engel durumu açıklaması"),
                  })
         {
             RuleFor(c => c)

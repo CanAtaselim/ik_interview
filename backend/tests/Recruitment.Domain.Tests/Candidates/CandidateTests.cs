@@ -29,7 +29,22 @@ public sealed class CandidateTests
         IReadOnlyList<LanguageSkill>? languages = null,
         params string[] technicalTags) =>
         new(null, null, educations ?? [], null, languages ?? [], null, null, technicalTags, technicalSkills, null, null,
-            totalMonths, null, null, null, noticeWeeks, hrComment, null, null, null, null, null, null, null, null, rating);
+            totalMonths, null, null, null, noticeWeeks, hrComment, null, null, null, null, null, null, null, null, null, null, rating);
+
+    [Fact]
+    public void UpdateScreening_Disability_KeepsDescriptionOnlyWhenPresent_AndStaysOutOfSearch()
+    {
+        var candidate = NewCandidate();
+        var screening = candidate.StartScreening(_hrUserId, _clock);
+
+        candidate.UpdateScreening(screening.Id, Details() with { HasDisability = true, DisabilityDescription = " %40 görme kaybı " });
+        screening.HasDisability.ShouldBe(true);
+        screening.DisabilityDescription.ShouldBe("%40 görme kaybı");
+        candidate.SearchText.ShouldNotContain("görme");
+
+        candidate.UpdateScreening(screening.Id, Details() with { HasDisability = false, DisabilityDescription = "kalmamalı" });
+        screening.DisabilityDescription.ShouldBeNull();
+    }
 
     private Candidate NewCandidate(params string[] tags)
     {

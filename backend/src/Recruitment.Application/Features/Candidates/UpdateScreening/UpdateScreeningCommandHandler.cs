@@ -39,6 +39,8 @@ internal sealed class UpdateScreeningCommandHandler(IAppDbContext db) : ICommand
             command.LocationNote,
             command.OpenToRelocation,
             command.HasTravelRestriction,
+            command.HasDisability,
+            command.DisabilityDescription,
             command.MilitaryStatus,
             command.OverallRating));
 

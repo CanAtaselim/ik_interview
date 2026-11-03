@@ -493,6 +493,30 @@ export default function ScreeningForm({ candidateId, screening }) {
           </FormField>
           {selectButton('openToRelocation', 'Taşınmaya açık mı?', YES_NO_OPTIONS)}
           {selectButton('hasTravelRestriction', 'Seyahat engeli', TRAVEL_RESTRICTION_OPTIONS)}
+          {selectButton('hasDisability', 'Engel durumu', TRAVEL_RESTRICTION_OPTIONS)}
+          {values.hasDisability === true && (
+            <div className="form-grid__wide">
+              <FormField
+                label="Engel durumu açıklaması"
+                htmlFor={id('disabilityDescription')}
+                required
+                hint="Yalnızca İK görür; mülakatçıya ve takım liderine gösterilmez."
+                error={
+                  values.disabilityDescription?.trim()
+                    ? undefined
+                    : 'Engel durumu "Var" ise açıklamayı doldurmalısınız.'
+                }
+              >
+                <InputTextarea
+                  id={id('disabilityDescription')}
+                  rows={2}
+                  autoResize
+                  maxLength={1000}
+                  {...register('disabilityDescription')}
+                />
+              </FormField>
+            </div>
+          )}
           {textArea(
             'locationNote',
             'Lokasyon açıklaması (isteğe bağlı)',

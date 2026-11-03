@@ -35,6 +35,7 @@ const apiScreening = (overrides = {}) => ({
   locationNote: null,
   openToRelocation: null,
   hasTravelRestriction: null,
+  hasDisability: null,
   militaryStatus: null,
   overallRating: null,
   ...overrides,
@@ -135,6 +136,28 @@ describe('ön görüşme formu ↔ API', () => {
     expect(
       toScreeningInput({ ...form, hasTravelRestriction: null }).hasTravelRestriction,
     ).toBeNull();
+  });
+});
+
+describe('engel durumu', () => {
+  it('açıklama yalnızca "Var" iken gönderilir', () => {
+    const form = toScreeningForm(apiScreening());
+    const yes = toScreeningInput({
+      ...form,
+      hasDisability: true,
+      disabilityDescription: ' Ortopedik ',
+    });
+    expect(yes.hasDisability).toBe(true);
+    expect(yes.disabilityDescription).toBe(' Ortopedik ');
+
+    const no = toScreeningInput({
+      ...form,
+      hasDisability: false,
+      disabilityDescription: 'kalmasın',
+    });
+    expect(no.hasDisability).toBe(false);
+    expect(no.disabilityDescription).toBeNull();
+    expect(toScreeningInput({ ...form, hasDisability: null }).hasDisability).toBeNull();
   });
 });
 

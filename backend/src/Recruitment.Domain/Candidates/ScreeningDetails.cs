@@ -60,5 +60,7 @@ public sealed record ScreeningDetails(
     string? LocationNote,
     bool? OpenToRelocation,
     bool? HasTravelRestriction,
+    bool? HasDisability,
+    string? DisabilityDescription,
     MilitaryStatus? MilitaryStatus,
     int? OverallRating);

@@ -437,6 +437,8 @@ public sealed class CandidateEndpointsTests(ApiFactory factory) : IClassFixture<
             locationNote = "Anadolu yakasında oturuyor",
             openToRelocation = false,
             hasTravelRestriction = true,
+            hasDisability = true,
+            disabilityDescription = "Ortopedik engel",
             militaryStatus = "Done",
             overallRating = 4,
         });
@@ -459,6 +461,8 @@ public sealed class CandidateEndpointsTests(ApiFactory factory) : IClassFixture<
         screening.GetProperty("locationDistrict").GetString().ShouldBe("Kadıköy");
         screening.GetProperty("locationNote").GetString().ShouldBe("Anadolu yakasında oturuyor");
         screening.GetProperty("hasTravelRestriction").GetBoolean().ShouldBeTrue();
+        screening.GetProperty("hasDisability").GetBoolean().ShouldBeTrue();
+        screening.GetProperty("disabilityDescription").GetString().ShouldBe("Ortopedik engel");
         screening.TryGetProperty("currentBenefits", out _).ShouldBeFalse();
         screening.TryGetProperty("otherProcesses", out _).ShouldBeFalse();
         screening.GetProperty("expectedSalary").GetProperty("isNet").GetBoolean().ShouldBeTrue();

@@ -632,6 +632,10 @@ namespace Recruitment.Infrastructure.Persistence.Migrations
                         .HasColumnType("character varying(256)")
                         .HasColumnName("deleted_by");
 
+                    b.Property<string>("DisabilityDescription")
+                        .HasColumnType("text")
+                        .HasColumnName("disability_description");
+
                     b.Property<string>("EducationNote")
                         .HasColumnType("text")
                         .HasColumnName("education_note");
@@ -648,6 +652,10 @@ namespace Recruitment.Infrastructure.Persistence.Migrations
                     b.Property<int?>("FieldExperienceMonths")
                         .HasColumnType("integer")
                         .HasColumnName("field_experience_months");
+
+                    b.Property<bool?>("HasDisability")
+                        .HasColumnType("boolean")
+                        .HasColumnName("has_disability");
 
                     b.Property<bool?>("HasTravelRestriction")
                         .HasColumnType("boolean")

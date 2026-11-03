@@ -57,6 +57,15 @@ public sealed class Screening : Entity
 
     /// <summary>Seyahat engeli var mı (<c>true</c>), yok mu (<c>false</c>), sorulmadı mı (<c>null</c>)?</summary>
     public bool? HasTravelRestriction { get; private set; }
+
+    /// <summary>
+    /// Engel durumu (Var/Yok). Özel nitelikli kişisel veridir (KVKK): yalnızca İK görür, mülakatçıya ve
+    /// yönetime giden görünümlere hiç konmaz, aramaya girmez.
+    /// </summary>
+    public bool? HasDisability { get; private set; }
+
+    /// <summary>Engel durumu "Var" iken açıklama; "Var" değilse temizlenir.</summary>
+    public string? DisabilityDescription { get; private set; }
     public MilitaryStatus? MilitaryStatus { get; private set; }
     public int? OverallRating { get; private set; }
 
@@ -104,6 +113,8 @@ public sealed class Screening : Entity
         LocationNote = Clean(details.LocationNote);
         OpenToRelocation = details.OpenToRelocation;
         HasTravelRestriction = details.HasTravelRestriction;
+        HasDisability = details.HasDisability;
+        DisabilityDescription = details.HasDisability == true ? Clean(details.DisabilityDescription) : null;
         MilitaryStatus = details.MilitaryStatus;
         OverallRating = details.OverallRating;
 
