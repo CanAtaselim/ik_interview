@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Recruitment.Application.Abstractions;
 using Recruitment.Application.Common;
 using Recruitment.Application.Features.Questions;
+using Recruitment.Domain.Interviews;
 
 namespace Recruitment.Application.Features.InterviewTemplates.UpdateInterviewTemplate;
 
@@ -10,7 +11,8 @@ namespace Recruitment.Application.Features.InterviewTemplates.UpdateInterviewTem
 /// başladığında sorular o anki halleriyle değerlendirmeye kopyalanır.
 /// </summary>
 public sealed record UpdateInterviewTemplateCommand(
-    Guid Id, string Name, Guid DepartmentId, Guid? LevelId, Guid? InterviewTypeId, IReadOnlyList<Guid> QuestionIds)
+    Guid Id, string Name, Guid DepartmentId, Guid? LevelId, Guid? InterviewTypeId, IReadOnlyList<Guid> QuestionIds,
+    InterviewerRole TargetRole = InterviewerRole.Technical)
     : ICommand<Unit>, IInterviewTemplateFields;
 
 internal sealed class UpdateInterviewTemplateCommandValidator : InterviewTemplateFieldsValidator<UpdateInterviewTemplateCommand>;
@@ -26,7 +28,7 @@ internal sealed class UpdateInterviewTemplateCommandHandler(IAppDbContext db, IC
         if (await db.FindInvalidTemplate(currentUser, command, template.OrderedQuestionIds, ct) is { } invalid)
             return invalid;
 
-        template.Update(command.Name, command.DepartmentId, command.LevelId, command.InterviewTypeId, command.QuestionIds);
+        template.Update(command.Name, command.DepartmentId, command.LevelId, command.InterviewTypeId, command.QuestionIds, command.TargetRole);
         await db.SaveChangesAsync(ct);
         return Unit.Value;
     }

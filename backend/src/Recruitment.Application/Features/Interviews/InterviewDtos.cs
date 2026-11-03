@@ -4,7 +4,7 @@ using Recruitment.Domain.Interviews;
 
 namespace Recruitment.Application.Features.Interviews;
 
-public sealed record InterviewerDto(Guid UserId, string DisplayName);
+public sealed record InterviewerDto(Guid UserId, string DisplayName, InterviewerRole Role);
 
 /// <param name="IsMine">İsteği yapan kullanıcı bu mülakatın mülakatçısı mı?</param>
 /// <param name="AwaitingOutcome">Başlangıç saati geçti, sonucu (yapıldı / gelmedi) girilmedi.</param>

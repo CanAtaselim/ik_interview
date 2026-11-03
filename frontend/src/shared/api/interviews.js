@@ -6,11 +6,12 @@ import { http, toApiUrl } from './http';
  *   positionId: string, positionTitle: string, typeId: string, typeName: string,
  *   mode: 'InPerson' | 'Online', startsAt: string, endsAt: string, durationMinutes: number,
  *   roomId: string | null, roomName: string | null, meetingUrl: string | null,
- *   status: InterviewStatus, interviewers: { userId: string, displayName: string }[],
+ *   status: InterviewStatus, interviewers: { userId: string, displayName: string, role: 'Technical' | 'Hr' }[],
  *   isMine: boolean, awaitingOutcome: boolean }} Interview
  * @typedef {{ typeId: string, mode: 'InPerson' | 'Online', startsAt: string, durationMinutes: number,
  *   roomId: string | null, meetingUrl: string | null, note: string | null,
- *   interviewerUserIds: string[], confirmConflicts?: boolean }} InterviewPlan
+ *   interviewerUserIds: string[], interviewerRoles?: Record<string, 'Technical' | 'Hr'>,
+ *   confirmConflicts?: boolean }} InterviewPlan
  */
 
 // ASP.NET dizi parametresini "userIds=A&userIds=B" biçiminde bekler.

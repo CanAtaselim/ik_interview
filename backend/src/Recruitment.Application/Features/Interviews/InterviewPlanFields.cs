@@ -5,6 +5,7 @@ using Recruitment.Application.Common;
 using Recruitment.Application.Features.Dictionaries;
 using Recruitment.Domain.Dictionaries;
 using Recruitment.Domain.Interviews;
+using Recruitment.Domain.Questions;
 using Recruitment.Domain.Users;
 
 namespace Recruitment.Application.Features.Interviews;
@@ -26,6 +27,9 @@ public interface IInterviewPlanFields
 
     /// <summary>Planlama, değişiklik ve iptal adaya .ics ekli e-postayla bildirilsin mi?</summary>
     bool NotifyCandidate { get; }
+
+    /// <summary>Mülakatçının mülakattaki rolü (İK / Teknik); verilmeyenin rolü sistem rolünden belirlenir.</summary>
+    IReadOnlyDictionary<Guid, InterviewerRole>? InterviewerRoles { get; }
 
     /// <summary>İK, mülakatçı veya oda çakışması uyarısını görüp yine de planlamak istediğini bildirdi.</summary>
     bool ConfirmConflicts { get; }
@@ -77,7 +81,37 @@ internal static class InterviewPlanChecks
         fields.Note,
         fields.InterviewerUserIds,
         fields.TemplateId,
-        fields.NotifyCandidate);
+        fields.NotifyCandidate,
+        fields.InterviewerRoles);
+
+    /// <summary>
+    /// Rolü verilmeyen mülakatçıların rolünü sistem rolünden belirler: yalnızca İK rolü olanlar İK,
+    /// takım lideri/yönetici rolü de olanlar teknik sayılır.
+    /// </summary>
+    public static async Task<InterviewPlan> WithInterviewerRoles(this IAppDbContext db, InterviewPlan plan, CancellationToken ct)
+    {
+        var ids = plan.InterviewerUserIds.Distinct().ToList();
+        var userRoles = await db.Users.AsNoTracking()
+            .Where(u => ids.Contains(u.Id))
+            .Select(u => new { u.Id, Roles = u.Roles.Select(r => r.Role).ToList() })
+            .ToListAsync(ct);
+
+        var roles = new Dictionary<Guid, InterviewerRole>();
+        foreach (var user in userRoles)
+        {
+            var isHr = user.Roles.Any(r => r is Role.HrSpecialist or Role.HrManager);
+            var isTechnical = user.Roles.Any(r => r is Role.TeamLead or Role.DepartmentManager);
+            roles[user.Id] = isHr && !isTechnical ? InterviewerRole.Hr : InterviewerRole.Technical;
+        }
+
+        if (plan.InterviewerRoles is not null)
+        {
+            foreach (var (id, role) in plan.InterviewerRoles.Where(entry => ids.Contains(entry.Key)))
+                roles[id] = role;
+        }
+
+        return plan with { InterviewerRoles = roles };
+    }
 
     /// <summary>Sözlük seçimleri ve mülakatçılar geçerli mi? Geçerliyse <c>null</c>.</summary>
     public static async Task<Error?> FindInvalidPlan(this IAppDbContext db, IInterviewPlanFields fields, CancellationToken ct)
@@ -105,23 +139,30 @@ internal static class InterviewPlanChecks
     /// <summary>
     /// Pozisyonun şablonlarından mülakat tipine uyanı; tipi belirtilmemiş tek şablon varsa onu seçer.
     /// </summary>
-    public static async Task<Guid?> SuggestTemplate(this IAppDbContext db, Guid positionId, Guid typeId, CancellationToken ct)
+    public static async Task<Guid?> SuggestTemplate(
+        this IAppDbContext db, Guid positionId, Guid typeId, CancellationToken ct, InterviewerRole role = InterviewerRole.Technical)
     {
         var position = await db.Positions.AsNoTracking().FirstOrDefaultAsync(p => p.Id == positionId, ct);
-        if (position is null || position.InterviewTemplateIds.Count == 0)
-            return null;
+        var attached = position?.InterviewTemplateIds.ToList() ?? [];
 
-        var ids = position.InterviewTemplateIds.ToList();
-        var templates = await db.InterviewTemplates.AsNoTracking()
-            .Where(t => ids.Contains(t.Id) && t.IsActive)
-            .Select(t => new { t.Id, t.InterviewTypeId })
-            .ToListAsync(ct);
+        var fromPosition = await Pick(
+            db.InterviewTemplates.AsNoTracking().Where(t => attached.Contains(t.Id) && t.IsActive && t.TargetRole == role), typeId, ct);
+        if (fromPosition is not null || role == InterviewerRole.Technical)
+            return fromPosition;
 
-        var sameType = templates.FirstOrDefault(t => t.InterviewTypeId == typeId);
+        // İK değerlendirme soruları pozisyona özel olmak zorunda değildir; pozisyonda yoksa genel İK şablonu seçilir.
+        return await Pick(db.InterviewTemplates.AsNoTracking().Where(t => t.IsActive && t.TargetRole == role), typeId, ct);
+    }
+
+    private static async Task<Guid?> Pick(IQueryable<InterviewTemplate> templates, Guid typeId, CancellationToken ct)
+    {
+        var found = await templates.Select(t => new { t.Id, t.InterviewTypeId }).ToListAsync(ct);
+
+        var sameType = found.FirstOrDefault(t => t.InterviewTypeId == typeId);
         if (sameType is not null)
             return sameType.Id;
 
-        var general = templates.Where(t => t.InterviewTypeId is null).ToList();
+        var general = found.Where(t => t.InterviewTypeId is null).ToList();
         return general.Count == 1 ? general[0].Id : null;
     }
 

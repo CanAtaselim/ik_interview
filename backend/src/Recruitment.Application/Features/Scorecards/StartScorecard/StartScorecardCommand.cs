@@ -9,7 +9,8 @@ namespace Recruitment.Application.Features.Scorecards.StartScorecard;
 
 /// <summary>
 /// Mülakatçının değerlendirmesini açar; yoksa oluşturur (tekrar çağrılabilir). Mülakatın soru
-/// şablonundaki sorular o anki halleriyle kopyalanır.
+/// şablonundaki sorular o anki halleriyle kopyalanır. İK mülakatçısı İK değerlendirme şablonunu, diğerleri
+/// mülakatın (teknik) şablonunu alır.
 /// </summary>
 public sealed record StartScorecardCommand(Guid InterviewId) : ICommand<Guid>;
 
@@ -35,7 +36,7 @@ internal sealed class StartScorecardCommandHandler(IAppDbContext db, ICurrentUse
         if (interview.Status is InterviewStatus.Cancelled or InterviewStatus.NoShow)
             return ScorecardErrors.InterviewClosed;
 
-        var scorecard = Scorecard.Start(interview.Id, currentUser.UserId, await Snapshot(interview.TemplateId, ct));
+        var scorecard = Scorecard.Start(interview.Id, currentUser.UserId, await Snapshot(await interview.TemplateFor(db, currentUser.UserId, ct), ct));
         db.Scorecards.Add(scorecard);
         await db.SaveChangesAsync(ct);
         return scorecard.Id;

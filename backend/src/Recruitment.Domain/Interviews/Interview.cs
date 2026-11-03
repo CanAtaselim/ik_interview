@@ -14,16 +14,22 @@ public sealed record InterviewPlan(
     string? Note,
     IReadOnlyCollection<Guid> InterviewerUserIds,
     Guid? TemplateId = null,
-    bool NotifyCandidate = false);
+    bool NotifyCandidate = false,
+    IReadOnlyDictionary<Guid, InterviewerRole>? InterviewerRoles = null);
 
 /// <summary>Mülakata atanmış kişi.</summary>
 public sealed class InterviewInterviewer
 {
     private InterviewInterviewer() { }
 
-    internal InterviewInterviewer(Guid userId) => UserId = userId;
+    internal InterviewInterviewer(Guid userId, InterviewerRole role)
+    {
+        UserId = userId;
+        Role = role;
+    }
 
     public Guid UserId { get; private set; }
+    public InterviewerRole Role { get; internal set; }
 }
 
 /// <summary>Adayın bir pozisyondaki süreci içinde yapılan mülakat.</summary>
@@ -169,6 +175,9 @@ public sealed class Interview : AggregateRoot
 
     public bool IsAssignedTo(Guid userId) => _interviewers.Any(i => i.UserId == userId);
 
+    /// <summary>Atanmış mülakatçının rolü; atanmamışsa <c>null</c>.</summary>
+    public InterviewerRole? RoleOf(Guid userId) => _interviewers.FirstOrDefault(i => i.UserId == userId)?.Role;
+
     /// <summary>24 saat ve 1 saat kala birer hatırlatma; ikisi birden düşerse yalnızca yakın olan gider.</summary>
     public bool SendDueReminder(TimeProvider clock)
     {
@@ -228,8 +237,12 @@ public sealed class Interview : AggregateRoot
         NotifyCandidate = plan.NotifyCandidate;
 
         _interviewers.RemoveAll(i => !interviewers.Contains(i.UserId));
+        InterviewerRole RoleFor(Guid id) =>
+            plan.InterviewerRoles is not null && plan.InterviewerRoles.TryGetValue(id, out var role) ? role : InterviewerRole.Technical;
+        foreach (var existing in _interviewers)
+            existing.Role = RoleFor(existing.UserId);
         var added = interviewers.Where(id => !IsAssignedTo(id)).ToList();
-        _interviewers.AddRange(added.Select(id => new InterviewInterviewer(id)));
+        _interviewers.AddRange(added.Select(id => new InterviewInterviewer(id, RoleFor(id))));
 
         // Zaman değişince hatırlatmalar yeniden hesaplanır; davet zaten yakın bir saate gönderiliyorsa
         // aynı aralıktaki hatırlatma ayrıca gitmez.

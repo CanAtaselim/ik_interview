@@ -5,6 +5,7 @@ using Recruitment.Application.Common;
 using Recruitment.Application.Features.Dictionaries;
 using Recruitment.Application.Features.Questions;
 using Recruitment.Domain.Dictionaries;
+using Recruitment.Domain.Interviews;
 using Recruitment.Domain.Questions;
 
 namespace Recruitment.Application.Features.InterviewTemplates;
@@ -16,6 +17,9 @@ public interface IInterviewTemplateFields
     Guid? LevelId { get; }
     Guid? InterviewTypeId { get; }
     IReadOnlyList<Guid> QuestionIds { get; }
+
+    /// <summary>Şablonu kullanacak mülakatçı rolü (teknik / İK).</summary>
+    InterviewerRole TargetRole { get; }
 }
 
 internal abstract class InterviewTemplateFieldsValidator<T> : AbstractValidator<T>
@@ -27,6 +31,7 @@ internal abstract class InterviewTemplateFieldsValidator<T> : AbstractValidator<
             .NotEmpty().WithMessage("Şablonun adını yazmalısınız.")
             .MaximumLength(InterviewTemplate.NameMaxLength)
             .WithMessage($"Ad en fazla {InterviewTemplate.NameMaxLength} karakter olabilir.");
+        RuleFor(c => c.TargetRole).IsInEnum().WithMessage("Şablonun teknik mi İK mülakatçısı için mi olduğunu seçmelisiniz.");
         RuleFor(c => c.DepartmentId).NotEmpty().WithMessage("Şablonun ait olduğu birimi seçmelisiniz.");
         RuleFor(c => c.QuestionIds)
             .NotEmpty().WithMessage("Şablona en az bir soru eklemelisiniz.")
@@ -80,6 +85,7 @@ internal static class InterviewTemplateChecks
             dictionary.Where(d => d.Id == t.InterviewTypeId).Select(d => d.Name).FirstOrDefault(),
             t.IsActive,
             t.Questions.Count,
+            t.TargetRole,
             isHr || (ownDepartment != null && t.DepartmentId == ownDepartment)));
     }
 }

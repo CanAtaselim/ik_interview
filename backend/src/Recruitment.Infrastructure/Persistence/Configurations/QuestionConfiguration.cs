@@ -1,3 +1,4 @@
+using Recruitment.Domain.Interviews;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Recruitment.Domain.Dictionaries;
@@ -47,6 +48,7 @@ internal sealed class InterviewTemplateConfiguration : IEntityTypeConfiguration<
     {
         builder.Property(t => t.Name).HasMaxLength(InterviewTemplate.NameMaxLength);
         builder.Ignore(t => t.OrderedQuestionIds);
+        builder.Property(t => t.TargetRole).HasConversion<string>().HasMaxLength(20).HasDefaultValue(InterviewerRole.Technical);
 
         builder.HasOne<DictionaryItem>().WithMany().HasForeignKey(t => t.DepartmentId).OnDelete(DeleteBehavior.Restrict);
         builder.HasOne<DictionaryItem>().WithMany().HasForeignKey(t => t.LevelId).OnDelete(DeleteBehavior.Restrict);

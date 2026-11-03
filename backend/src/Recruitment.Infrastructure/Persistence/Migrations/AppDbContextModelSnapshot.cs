@@ -2230,6 +2230,14 @@ namespace Recruitment.Infrastructure.Persistence.Migrations
                         .HasColumnType("character varying(200)")
                         .HasColumnName("name");
 
+                    b.Property<string>("TargetRole")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasDefaultValue("Technical")
+                        .HasColumnName("target_role");
+
                     b.Property<DateTimeOffset?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("updated_at");
@@ -3076,6 +3084,14 @@ namespace Recruitment.Infrastructure.Persistence.Migrations
                             b1.Property<Guid>("UserId")
                                 .HasColumnType("uuid")
                                 .HasColumnName("user_id");
+
+                            b1.Property<string>("Role")
+                                .IsRequired()
+                                .ValueGeneratedOnAdd()
+                                .HasMaxLength(20)
+                                .HasColumnType("character varying(20)")
+                                .HasDefaultValue("Technical")
+                                .HasColumnName("role");
 
                             b1.HasKey("InterviewId", "UserId")
                                 .HasName("pk_interview_interviewers");

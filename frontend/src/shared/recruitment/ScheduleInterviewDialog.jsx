@@ -77,9 +77,15 @@ export default function ScheduleInterviewDialog({
   const [duration, setDuration] = useState(
     interview?.durationMinutes ?? initialDurationMinutes ?? 60,
   );
-  const [interviewerIds, setInterviewerIds] = useState(
-    interview?.interviewers.map((item) => item.userId) ?? [],
+  // Mülakatçılar rolüne göre iki alanda seçilir (ör. 1 İK + 1 Takım Lideri); rol, hangi değerlendirme
+  // sorularını göreceğini belirler. Eski kayıtlarda rol yoksa teknik sayılır.
+  const [hrIds, setHrIds] = useState(
+    interview?.interviewers.filter((item) => item.role === 'Hr').map((item) => item.userId) ?? [],
   );
+  const [technicalIds, setTechnicalIds] = useState(
+    interview?.interviewers.filter((item) => item.role !== 'Hr').map((item) => item.userId) ?? [],
+  );
+  const interviewerIds = [...technicalIds, ...hrIds];
   const [mode, setMode] = useState(interview?.mode ?? 'InPerson');
   const [roomId, setRoomId] = useState(interview?.roomId ?? null);
   const [meetingUrl, setMeetingUrl] = useState(interview?.meetingUrl ?? '');
@@ -97,6 +103,9 @@ export default function ScheduleInterviewDialog({
     value: user.id,
     label: user.department ? `${user.displayName} · ${user.department}` : user.displayName,
   }));
+  // Aynı kişi iki rolde birden seçilemez.
+  const optionsExcluding = (ids) =>
+    interviewerOptions.filter((option) => !ids.includes(option.value));
   const endsAt = startsAt ? dayjs(startsAt).add(duration, 'minute').toDate() : null;
 
   // Plan değişince eski uyarılar geçersiz olur; yeniden sorulur.
@@ -140,6 +149,10 @@ export default function ScheduleInterviewDialog({
       meetingUrl: mode === 'Online' ? meetingUrl.trim() || null : null,
       note: note.trim() || null,
       interviewerUserIds: interviewerIds,
+      interviewerRoles: Object.fromEntries([
+        ...technicalIds.map((id) => [id, 'Technical']),
+        ...hrIds.map((id) => [id, 'Hr']),
+      ]),
       templateId,
       notifyCandidate,
       confirmConflicts: conflicts.length > 0,
@@ -299,21 +312,47 @@ export default function ScheduleInterviewDialog({
 
         <div className="form-grid__wide">
           <FormField
-            label="Mülakatçılar"
+            label="Teknik mülakatçılar / takım liderleri"
             htmlFor="interview-interviewers"
             error={errors.interviewerUserIds}
+            hint="Birime göre teknik soruları görür ve değerlendirir."
           >
             <MultiSelect
               inputId="interview-interviewers"
-              value={interviewerIds}
-              options={interviewerOptions}
-              onChange={(event) => change(setInterviewerIds, 'interviewerUserIds')(event.value)}
+              value={technicalIds}
+              options={optionsExcluding(hrIds)}
+              onChange={(event) => change(setTechnicalIds, 'interviewerUserIds')(event.value)}
               placeholder={loadingInterviewers ? 'Yükleniyor…' : 'Bir veya birden çok kişi seçin'}
               emptyMessage="Seçilebilecek kişi yok. Kullanıcılar ilk girişlerinden sonra listelenir."
               emptyFilterMessage="Eşleşen kişi yok."
               display="chip"
               showSelectAll={false}
               invalid={Boolean(errors.interviewerUserIds)}
+              disabled={loadingInterviewers}
+              filter
+              filterInputAutoFocus
+            />
+          </FormField>
+        </div>
+
+        <div className="form-grid__wide">
+          <FormField
+            label="İK katılımcıları"
+            htmlFor="interview-hr-interviewers"
+            hint="İK değerlendirme sorularını görür; kendi değerlendirmesini ve yorumunu girer."
+          >
+            <MultiSelect
+              inputId="interview-hr-interviewers"
+              value={hrIds}
+              options={optionsExcluding(technicalIds)}
+              onChange={(event) => change(setHrIds, 'interviewerUserIds')(event.value)}
+              placeholder={
+                loadingInterviewers ? 'Yükleniyor…' : 'İK’dan katılacak kişiler (isteğe bağlı)'
+              }
+              emptyMessage="Seçilebilecek kişi yok."
+              emptyFilterMessage="Eşleşen kişi yok."
+              display="chip"
+              showSelectAll={false}
               disabled={loadingInterviewers}
               filter
               filterInputAutoFocus

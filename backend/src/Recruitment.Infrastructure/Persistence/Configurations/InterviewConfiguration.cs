@@ -39,6 +39,7 @@ internal sealed class InterviewConfiguration : IEntityTypeConfiguration<Intervie
             interviewers.HasKey("InterviewId", nameof(InterviewInterviewer.UserId));
             interviewers.Property(x => x.UserId).ValueGeneratedNever();
             interviewers.HasOne<User>().WithMany().HasForeignKey(x => x.UserId).OnDelete(DeleteBehavior.Restrict);
+            interviewers.Property(x => x.Role).HasConversion<string>().HasMaxLength(20).HasDefaultValue(InterviewerRole.Technical);
             interviewers.HasIndex(x => x.UserId);
         });
         builder.Navigation(i => i.Interviewers).UsePropertyAccessMode(PropertyAccessMode.Field);

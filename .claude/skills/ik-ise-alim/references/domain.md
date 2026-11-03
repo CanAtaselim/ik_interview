@@ -187,7 +187,7 @@ Kurallar:
 
 ## 9. Mülakat planlama (Interview)
 
-> **Bekleyen değişiklik (CR-13):** Planlamada birden çok mülakatçı seçilebilir (ör. 1 İK + 1 Takım Lideri); her mülakatçının mülakattaki rolü (`InterviewerRole`: İK / Teknik) tutulur.
+Planlamada birden çok mülakatçı seçilir (ör. 1 İK + 1 Takım Lideri); her mülakatçının mülakattaki rolü (`InterviewerRole`: `Hr` / `Technical`, `interview_interviewers.role`) tutulur. Rol verilmezse sistem rolünden çıkarılır (CR-13 ✅).
 
 Alanlar: `ApplicationId`, `TypeId` (sözlük: Telefon, Teknik, Case sunumu, Yönetici, Kültür uyumu), `Mode` (`InPerson` / `Online`), `StartsAt`, `DurationMinutes`, `RoomId` (yüz yüze), `MeetingUrl` (online), `Interviewers` (çoka-çok, en az 1), `InterviewTemplateId`, `Status` (`Scheduled` / `Completed` / `Cancelled` / `NoShow`), `CalendarEventId` (Faz 2).
 
@@ -200,7 +200,7 @@ Kurallar:
 
 ## 10. Soru bankası (Question, InterviewTemplate)
 
-> **Bekleyen değişiklik (CR-14):** Soru/şablon için hedef rol (Teknik / İK) eklenecek; İK değerlendirme soruları kümesi ve İK yorum alanı.
+`InterviewTemplate.TargetRole` (`Technical` / `Hr`): İK değerlendirme soruları ayrı bir İK şablonudur; mülakatçı rolüne göre seçilir (CR-14 ✅).
 
 `Question`: `DepartmentId`, `PositionTitle` (ops.), `LevelId` (ops.), `CompetencyId` (sözlük), `Type` (`Technical` / `Behavioral` / `Case`), `Difficulty` (1–3), `Weight` (varsayılan 1), `Text`, `Guidance` (beklenen cevap/ipuçları), `IsActive`, `Version`.
 
@@ -213,7 +213,7 @@ Kurallar:
 
 ## 11. Değerlendirme ve puanlama (Scorecard)
 
-> **Bekleyen değişiklik (CR-14, CR-15):** Scorecard, mülakatçının rolüne uyan şablon ve sorularla oluşturulur (Teknik/Takım Lideri → birime göre teknik sorular; İK → İK soruları + yorum). İK, teknik mülakatta kendi scorecard'ını girebilir. Bağımsız değerlendirme kuralı İK için de geçerli.
+Scorecard, mülakatçının rolüne uyan şablonla açılır (Teknik/Takım Lideri → mülakatın teknik şablonu; İK → İK şablonu, yorum `GeneralNote`). İK, teknik mülakatta kendi scorecard'ını girer (CR-14, CR-15 ✅). Bağımsız değerlendirme ve aşama çıkış kuralı İK için de geçerlidir.
 
 `Scorecard`: `InterviewId`, `InterviewerUserId`, `Items` (`ScorecardItem`: soru snapshot, ağırlık, `Score` 1–5 ops., `Note`), `GeneralNote`, `Recommendation` (`StrongHire` / `Hire` / `Undecided` / `NoHire` / `StrongNoHire`), `Status` (`Draft` / `Submitted`), `SubmittedAt`.
 

@@ -28,7 +28,7 @@ internal sealed class GetInterviewDetailQueryHandler(IAppDbContext db, ICurrentU
             interview.CancellationReason,
             names.Users.GetValueOrDefault(interview.ScheduledByUserId, string.Empty),
             candidate,
-            await LoadTemplate(interview.TemplateId, ct));
+            await LoadTemplate(await interview.TemplateFor(db, currentUser.UserId, ct), ct));
     }
 
     // Şablon pasif yapılmış olsa da mülakata bağlı kalır ve gösterilir.

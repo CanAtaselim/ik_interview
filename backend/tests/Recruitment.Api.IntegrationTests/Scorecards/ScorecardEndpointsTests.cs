@@ -20,7 +20,8 @@ public sealed class ScorecardEndpointsTests(ApiFactory factory) : IClassFixture<
     private sealed record Setup(Guid PositionId, Guid CandidateId, Guid ApplicationId, Guid InterviewId);
 
     /// <summary>Şablonlu bir teknik mülakat planlar ve saatini geçmişe çeker (değerlendirilebilir hale gelir).</summary>
-    private async Task<Setup> Interview(ApiUser hr, ApiUser author, ApiUser[] interviewers, bool past = true, Guid? positionId = null)
+    private async Task<Setup> Interview(ApiUser hr, ApiUser author, ApiUser[] interviewers, bool past = true, Guid? positionId = null,
+        Dictionary<Guid, string>? roles = null)
     {
         var departmentId = await author.DictionaryItemId("Department", Department);
         var technical = await author.DictionaryItemId("Competency", "Teknik bilgi");
@@ -49,6 +50,7 @@ public sealed class ScorecardEndpointsTests(ApiFactory factory) : IClassFixture<
             startsAt = new DateTimeOffset(DateTimeOffset.UtcNow.Date, TimeSpan.Zero).AddDays(Random.Shared.Next(30, 3000)).AddHours(9),
             durationMinutes = 60,
             interviewerUserIds = interviewers.Select(i => i.Id).ToArray(),
+            interviewerRoles = roles,
             templateId,
             confirmConflicts = true,
         });
@@ -108,6 +110,64 @@ public sealed class ScorecardEndpointsTests(ApiFactory factory) : IClassFixture<
 
         (await other.Post($"/api/v1/interviews/{setup.InterviewId}/scorecard")).StatusCode.ShouldBe(HttpStatusCode.NotFound);
         (await hr.Post($"/api/v1/interviews/{setup.InterviewId}/scorecard")).StatusCode.ShouldBe(HttpStatusCode.Forbidden);
+    }
+
+    [Fact]
+    public async Task HrInterviewer_GetsHrTemplate_WhileTechnicalInterviewerGetsTechnicalQuestions()
+    {
+        var hr = await Hr();
+        var lead = await Lead();
+        var departmentId = await hr.DictionaryItemId("Department", "İnsan Kaynakları");
+        var hrQuestion = await hr.Create("/api/v1/questions", new
+        {
+            departmentId,
+            competencyId = await hr.DictionaryItemId("Competency", "İletişim"),
+            type = "Behavioral", difficulty = 1, weight = 1, text = "Şirket kültürüne uyumunuz?",
+        });
+        await hr.Create("/api/v1/interview-templates", new
+        {
+            name = $"İK şablonu {Guid.NewGuid():N}",
+            departmentId,
+            interviewTypeId = await hr.DictionaryItemId("InterviewType", "Teknik"),
+            questionIds = new[] { hrQuestion },
+            targetRole = "Hr",
+        });
+        var setup = await Interview(hr, lead, [lead, hr]);
+
+        var detail = await hr.GetJson($"/api/v1/interviews/{setup.InterviewId}");
+        var roles = detail.GetProperty("interview").GetProperty("interviewers").EnumerateArray()
+            .ToDictionary(i => i.GetProperty("userId").GetGuid(), i => i.GetProperty("role").GetString());
+        roles[hr.Id].ShouldBe("Hr");
+        roles[lead.Id].ShouldBe("Technical");
+        detail.GetProperty("template").GetProperty("questions")[0].GetProperty("text").GetString()
+            .ShouldBe("Şirket kültürüne uyumunuz?");
+
+        var hrScorecard = await hr.GetJson($"/api/v1/scorecards/{await Start(hr, setup.InterviewId)}");
+        hrScorecard.GetProperty("items").EnumerateArray().Select(i => i.GetProperty("text").GetString())
+            .ShouldBe(["Şirket kültürüne uyumunuz?"]);
+        var leadScorecard = await lead.GetJson($"/api/v1/scorecards/{await Start(lead, setup.InterviewId)}");
+        leadScorecard.GetProperty("items").EnumerateArray().Select(i => i.GetProperty("text").GetString())
+            .ShouldBe(["REST sürümleme?", "Zor bir ekip anı?"]);
+
+        // İK da teknik mülakatta kendi değerlendirmesini ve yorumunu girip gönderebilir.
+        await Score(hr, hrScorecard.GetProperty("id").GetGuid(), "Hire", 4);
+        (await hr.GetJson($"/api/v1/scorecards/{hrScorecard.GetProperty("id").GetGuid()}"))
+            .GetProperty("status").GetString().ShouldBe("Submitted");
+    }
+
+    [Fact]
+    public async Task ExplicitInterviewerRoles_OverrideTheDefaultFromSystemRoles()
+    {
+        var hr = await Hr();
+        var lead = await Lead();
+
+        var setup = await Interview(hr, lead, [lead, hr], roles: new() { [hr.Id] = "Technical", [lead.Id] = "Hr" });
+
+        var detail = await hr.GetJson($"/api/v1/interviews/{setup.InterviewId}");
+        var roles = detail.GetProperty("interview").GetProperty("interviewers").EnumerateArray()
+            .ToDictionary(i => i.GetProperty("userId").GetGuid(), i => i.GetProperty("role").GetString());
+        roles[hr.Id].ShouldBe("Technical");
+        roles[lead.Id].ShouldBe("Hr");
     }
 
     [Fact]

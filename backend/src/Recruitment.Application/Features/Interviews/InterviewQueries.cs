@@ -66,11 +66,20 @@ internal static class InterviewQueries
             interview.RoomId is { } roomId ? names.Dictionary.GetValueOrDefault(roomId) : null,
             interview.MeetingUrl,
             interview.Status,
-            [.. interview.InterviewerUserIds.Select(id => new InterviewerDto(id, names.Users.GetValueOrDefault(id, string.Empty)))],
+            [.. interview.InterviewerUserIds.Select(id => new InterviewerDto(id, names.Users.GetValueOrDefault(id, string.Empty), interview.RoleOf(id) ?? InterviewerRole.Technical))],
             interview.IsAssignedTo(currentUserId),
             interview.Status == InterviewStatus.Scheduled && interview.StartsAt <= now,
             interview.TemplateId,
             interview.NotifyCandidate);
+
+    /// <summary>
+    /// Kullanıcının bu mülakatta göreceği soru şablonu: İK mülakatçısı için İK değerlendirme şablonu,
+    /// diğerleri için mülakata bağlı (teknik) şablon.
+    /// </summary>
+    public static async Task<Guid?> TemplateFor(this Interview interview, IAppDbContext db, Guid userId, CancellationToken ct) =>
+        interview.RoleOf(userId) == InterviewerRole.Hr
+            ? await db.SuggestTemplate(interview.PositionId, interview.TypeId, ct, InterviewerRole.Hr)
+            : interview.TemplateId;
 
     public static async Task<List<InterviewListItemDto>> ToListItems(
         this IAppDbContext db, IReadOnlyCollection<Interview> interviews, Guid currentUserId, DateTimeOffset now, CancellationToken ct)

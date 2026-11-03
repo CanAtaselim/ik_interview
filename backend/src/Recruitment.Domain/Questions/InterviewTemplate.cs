@@ -1,4 +1,5 @@
 using Recruitment.Domain.Common;
+using Recruitment.Domain.Interviews;
 
 namespace Recruitment.Domain.Questions;
 
@@ -36,20 +37,25 @@ public sealed class InterviewTemplate : AggregateRoot
     public Guid? InterviewTypeId { get; private set; }
     public bool IsActive { get; private set; }
 
+    /// <summary>Şablonu hangi roldeki mülakatçı kullanır (teknik sorular mı, İK değerlendirme soruları mı).</summary>
+    public InterviewerRole TargetRole { get; private set; }
+
     public IReadOnlyCollection<InterviewTemplateQuestion> Questions => _questions;
 
     public IReadOnlyList<Guid> OrderedQuestionIds => [.. _questions.OrderBy(q => q.Order).Select(q => q.QuestionId)];
 
     public static InterviewTemplate Create(
-        string name, Guid departmentId, Guid? levelId, Guid? interviewTypeId, IReadOnlyCollection<Guid> questionIds)
+        string name, Guid departmentId, Guid? levelId, Guid? interviewTypeId, IReadOnlyCollection<Guid> questionIds,
+        InterviewerRole targetRole = InterviewerRole.Technical)
     {
         var template = new InterviewTemplate { IsActive = true };
-        template.Update(name, departmentId, levelId, interviewTypeId, questionIds);
+        template.Update(name, departmentId, levelId, interviewTypeId, questionIds, targetRole);
         return template;
     }
 
     public void Update(
-        string name, Guid departmentId, Guid? levelId, Guid? interviewTypeId, IReadOnlyCollection<Guid> questionIds)
+        string name, Guid departmentId, Guid? levelId, Guid? interviewTypeId, IReadOnlyCollection<Guid> questionIds,
+        InterviewerRole targetRole = InterviewerRole.Technical)
     {
         if (string.IsNullOrWhiteSpace(name))
             throw new DomainException("Şablonun adını yazmalısınız.");
@@ -66,6 +72,7 @@ public sealed class InterviewTemplate : AggregateRoot
         DepartmentId = departmentId;
         LevelId = levelId;
         InterviewTypeId = interviewTypeId;
+        TargetRole = targetRole;
 
         _questions.Clear();
         _questions.AddRange(ids.Select((id, index) => new InterviewTemplateQuestion(id, index + 1)));

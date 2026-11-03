@@ -12,9 +12,10 @@ import { http } from './http';
  * @typedef {{ id: string, name: string, departmentId: string, departmentName: string,
  *   levelId: string | null, levelName: string | null, interviewTypeId: string | null,
  *   interviewTypeName: string | null, isActive: boolean, questionCount: number,
- *   canManage: boolean }} InterviewTemplate
+ *   targetRole: 'Technical' | 'Hr', canManage: boolean }} InterviewTemplate
  * @typedef {{ name: string, departmentId: string, levelId?: string | null,
- *   interviewTypeId?: string | null, questionIds: string[] }} InterviewTemplateInput
+ *   interviewTypeId?: string | null, targetRole?: 'Technical' | 'Hr',
+ *   questionIds: string[] }} InterviewTemplateInput
  */
 
 /** İK tüm birimleri, takım lideri kendi birimini görür. */

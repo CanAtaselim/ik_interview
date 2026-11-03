@@ -293,3 +293,9 @@ export function toOptions(map) {
     label: typeof entry === 'string' ? entry : entry.label,
   }));
 }
+
+/** Mülakatçının mülakattaki rolü; hangi değerlendirme sorularını göreceğini belirler. */
+export const INTERVIEWER_ROLE_LABELS = Object.freeze({
+  Technical: 'Teknik',
+  Hr: 'İK',
+});

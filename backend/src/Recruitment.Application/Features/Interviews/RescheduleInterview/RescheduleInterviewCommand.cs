@@ -18,7 +18,8 @@ public sealed record RescheduleInterviewCommand(
     IReadOnlyCollection<Guid> InterviewerUserIds,
     bool ConfirmConflicts = false,
     Guid? TemplateId = null,
-    bool NotifyCandidate = false) : ICommand<Unit>, IInterviewPlanFields;
+    bool NotifyCandidate = false,
+    IReadOnlyDictionary<Guid, InterviewerRole>? InterviewerRoles = null) : ICommand<Unit>, IInterviewPlanFields;
 
 internal sealed class RescheduleInterviewCommandValidator : InterviewPlanValidator<RescheduleInterviewCommand>;
 
@@ -34,7 +35,7 @@ internal sealed class RescheduleInterviewCommandHandler(IAppDbContext db, ICurre
         if (await db.FindInvalidPlan(command, ct) is { } invalid)
             return invalid;
 
-        var plan = command.ToPlan();
+        var plan = await db.WithInterviewerRoles(command.ToPlan(), ct);
         var conflicts = await db.FindConflicts(plan, interview.Id, ct);
         if (conflicts.Count > 0 && !command.ConfirmConflicts)
             return InterviewErrors.Conflicts(conflicts);

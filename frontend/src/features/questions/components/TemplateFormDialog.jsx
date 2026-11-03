@@ -3,13 +3,19 @@ import { Dialog } from 'primereact/dialog';
 import { IconField } from 'primereact/iconfield';
 import { InputIcon } from 'primereact/inputicon';
 import { InputText } from 'primereact/inputtext';
+import { SelectButton } from 'primereact/selectbutton';
 import { useState } from 'react';
 import { HR_ROLES } from '@/shared/auth/roles';
 import { useAuth } from '@/shared/auth/useAuth';
 import DictionarySelect from '@/shared/components/DictionarySelect';
 import FormField from '@/shared/components/FormField';
 import { useToast } from '@/shared/components/toast';
-import { DIFFICULTY_LABELS, QUESTION_TYPE_LABELS } from '@/shared/constants/labels';
+import {
+  DIFFICULTY_LABELS,
+  INTERVIEWER_ROLE_LABELS,
+  QUESTION_TYPE_LABELS,
+  toOptions,
+} from '@/shared/constants/labels';
 import { useDebounce } from '@/shared/hooks/useDebounce';
 import { getErrorMessage } from '@/shared/utils/errors';
 import {
@@ -52,6 +58,7 @@ export default function TemplateFormDialog({ templateId = null, onClose }) {
           departmentId: isHr ? null : user.departmentId,
           levelId: null,
           interviewTypeId: null,
+          targetRole: 'Technical',
           questions: [],
         },
   );
@@ -65,6 +72,7 @@ export default function TemplateFormDialog({ templateId = null, onClose }) {
       departmentId: detail.template.departmentId,
       levelId: detail.template.levelId,
       interviewTypeId: detail.template.interviewTypeId,
+      targetRole: detail.template.targetRole ?? 'Technical',
       questions: detail.questions,
     });
   }
@@ -108,6 +116,7 @@ export default function TemplateFormDialog({ templateId = null, onClose }) {
       departmentId: form.departmentId,
       levelId: form.levelId,
       interviewTypeId: form.interviewTypeId,
+      targetRole: form.targetRole,
       questionIds: form.questions.map((question) => question.id),
     };
     const options = {
@@ -215,6 +224,21 @@ export default function TemplateFormDialog({ templateId = null, onClose }) {
               />
             </FormField>
           )}
+
+          <FormField
+            label="Kimler için"
+            htmlFor="template-target-role"
+            hint="Teknik: birime göre teknik sorular. İK: İK değerlendirme soruları ve yorum alanı."
+          >
+            <SelectButton
+              id="template-target-role"
+              value={form.targetRole}
+              options={toOptions(INTERVIEWER_ROLE_LABELS)}
+              onChange={(event) => event.value && set('targetRole')(event.value)}
+              allowEmpty={false}
+              disabled={readOnly}
+            />
+          </FormField>
 
           <FormField label="Mülakat tipi (isteğe bağlı)" htmlFor="template-type">
             <DictionarySelect

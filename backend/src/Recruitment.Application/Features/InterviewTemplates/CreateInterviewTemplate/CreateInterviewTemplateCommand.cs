@@ -1,11 +1,13 @@
 using Recruitment.Application.Abstractions;
 using Recruitment.Application.Common;
+using Recruitment.Domain.Interviews;
 using Recruitment.Domain.Questions;
 
 namespace Recruitment.Application.Features.InterviewTemplates.CreateInterviewTemplate;
 
 public sealed record CreateInterviewTemplateCommand(
-    string Name, Guid DepartmentId, Guid? LevelId, Guid? InterviewTypeId, IReadOnlyList<Guid> QuestionIds)
+    string Name, Guid DepartmentId, Guid? LevelId, Guid? InterviewTypeId, IReadOnlyList<Guid> QuestionIds,
+    InterviewerRole TargetRole = InterviewerRole.Technical)
     : ICommand<Guid>, IInterviewTemplateFields;
 
 internal sealed class CreateInterviewTemplateCommandValidator : InterviewTemplateFieldsValidator<CreateInterviewTemplateCommand>;
@@ -19,7 +21,7 @@ internal sealed class CreateInterviewTemplateCommandHandler(IAppDbContext db, IC
             return invalid;
 
         var template = InterviewTemplate.Create(
-            command.Name, command.DepartmentId, command.LevelId, command.InterviewTypeId, command.QuestionIds);
+            command.Name, command.DepartmentId, command.LevelId, command.InterviewTypeId, command.QuestionIds, command.TargetRole);
         db.InterviewTemplates.Add(template);
         await db.SaveChangesAsync(ct);
         return template.Id;

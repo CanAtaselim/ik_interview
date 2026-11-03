@@ -15,6 +15,7 @@ import { useToast } from '@/shared/components/toast';
 import {
   DIFFICULTY_LABELS,
   INTERVIEW_MODE_LABELS,
+  INTERVIEWER_ROLE_LABELS,
   INTERVIEW_STATUS,
   QUESTION_TYPE_LABELS,
 } from '@/shared/constants/labels';
@@ -169,7 +170,12 @@ export default function InterviewDetailPage() {
                   { label: 'Yer', value: location },
                   {
                     label: 'Mülakatçılar',
-                    value: interview.interviewers.map((item) => item.displayName).join(', '),
+                    value: interview.interviewers
+                      .map(
+                        (item) =>
+                          `${item.displayName} (${INTERVIEWER_ROLE_LABELS[item.role] ?? 'Teknik'})`,
+                      )
+                      .join(', '),
                   },
                   { label: 'Planlayan', value: data.scheduledByName },
                 ]}

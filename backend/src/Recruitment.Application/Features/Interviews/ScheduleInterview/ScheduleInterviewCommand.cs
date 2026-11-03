@@ -23,7 +23,8 @@ public sealed record ScheduleInterviewCommand(
     bool ConfirmConflicts = false,
     bool ConfirmBlacklist = false,
     Guid? TemplateId = null,
-    bool NotifyCandidate = false) : ICommand<Guid>, IInterviewPlanFields;
+    bool NotifyCandidate = false,
+    IReadOnlyDictionary<Guid, InterviewerRole>? InterviewerRoles = null) : ICommand<Guid>, IInterviewPlanFields;
 
 internal sealed class ScheduleInterviewCommandValidator : InterviewPlanValidator<ScheduleInterviewCommand>;
 
@@ -49,7 +50,7 @@ internal sealed class ScheduleInterviewCommandHandler(
         if (matches.Count > 0 && !command.ConfirmBlacklist)
             return InterviewErrors.BlacklistMatch(matches);
 
-        var plan = command.ToPlan();
+        var plan = await db.WithInterviewerRoles(command.ToPlan(), ct);
         if (plan.TemplateId is null)
             plan = plan with { TemplateId = await db.SuggestTemplate(application.PositionId, plan.TypeId, ct) };
         var conflicts = await db.FindConflicts(plan, excludeInterviewId: null, ct);

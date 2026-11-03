@@ -1,4 +1,5 @@
 using Recruitment.Application.Features.Questions;
+using Recruitment.Domain.Interviews;
 
 namespace Recruitment.Application.Features.InterviewTemplates;
 
@@ -13,6 +14,7 @@ public sealed record InterviewTemplateListItemDto(
     string? InterviewTypeName,
     bool IsActive,
     int QuestionCount,
+    InterviewerRole TargetRole,
     bool CanManage);
 
 /// <param name="Questions">Şablondaki sorular, sırasıyla.</param>
