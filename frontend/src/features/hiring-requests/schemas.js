@@ -11,7 +11,7 @@ export const hiringRequestSchema = z
       .min(1, 'Pozisyon adını seçmelisiniz.')
       .max(200, 'Pozisyon adı en fazla 200 karakter olabilir.'),
     departmentId: z.string().min(1, 'Birim seçmelisiniz.'),
-    levelId: z.string().min(1, 'Seviye seçmelisiniz.'),
+    levelId: z.string(),
     headcount: z
       .number({ error: 'Kişi sayısını yazmalısınız.' })
       .int('Kişi sayısı tam sayı olmalı.')
@@ -57,7 +57,7 @@ export function toHiringRequestForm(request) {
   return {
     title: request.title,
     departmentId: request.departmentId,
-    levelId: request.levelId,
+    levelId: request.levelId ?? '',
     headcount: request.headcount,
     reason: request.reason,
     replacedEmployeeName: request.replacedEmployeeName ?? '',
@@ -72,6 +72,7 @@ export function toHiringRequestForm(request) {
 export function toHiringRequestInput(values) {
   return {
     ...values,
+    levelId: values.levelId || null,
     replacedEmployeeName: values.reason === 'Replacement' ? values.replacedEmployeeName : null,
     expectedStartDate: toDateOnly(values.expectedStartDate),
     description: values.description || null,

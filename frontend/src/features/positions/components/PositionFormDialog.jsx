@@ -2,7 +2,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Button } from 'primereact/button';
 import { Dialog } from 'primereact/dialog';
 import { InputNumber } from 'primereact/inputnumber';
-import { InputText } from 'primereact/inputtext';
 import { InputTextarea } from 'primereact/inputtextarea';
 import { Controller, useForm } from 'react-hook-form';
 import { HR_ROLES } from '@/shared/auth/roles';
@@ -43,7 +42,11 @@ export default function PositionFormDialog({ position = null, onClose, onSaved }
   });
 
   const save = async (values) => {
-    const input = { ...values, jobDescription: values.jobDescription || null };
+    const input = {
+      ...values,
+      levelId: values.levelId || null,
+      jobDescription: values.jobDescription || null,
+    };
     try {
       if (isEdit) {
         await updatePosition.mutateAsync({ id: position.id, input });
@@ -83,7 +86,20 @@ export default function PositionFormDialog({ position = null, onClose, onSaved }
       <form className="form-grid" onSubmit={(event) => event.preventDefault()} noValidate>
         <div className="form-grid__wide">
           <FormField label="Pozisyon adı" htmlFor="position-title" error={errors.title?.message}>
-            <InputText id="position-title" invalid={Boolean(errors.title)} {...register('title')} />
+            <Controller
+              name="title"
+              control={control}
+              render={({ field }) => (
+                <DictionarySelect
+                  type="PositionTitle"
+                  valueBy="name"
+                  inputId="position-title"
+                  value={field.value}
+                  onChange={(name) => field.onChange(name ?? '')}
+                  invalid={Boolean(errors.title)}
+                />
+              )}
+            />
           </FormField>
         </div>
 

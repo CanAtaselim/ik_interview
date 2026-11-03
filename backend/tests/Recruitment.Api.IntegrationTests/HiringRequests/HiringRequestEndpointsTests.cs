@@ -40,6 +40,29 @@ public sealed class HiringRequestEndpointsTests(ApiFactory factory) : IClassFixt
     }
 
     [Fact]
+    public async Task Create_WithoutLevel_IsAllowed()
+    {
+        var teamLead = await factory.LoginAs(Engineering, Role.TeamLead);
+
+        var id = await teamLead.Create(Url, new
+        {
+            title = await factory.PositionTitle("Backend Geliştirici"),
+            departmentId = await teamLead.DictionaryItemId("Department", Engineering),
+            levelId = (Guid?)null,
+            headcount = 1,
+            reason = "NewHeadcount",
+            urgency = "Normal",
+            expectedStartDate = "2026-12-01",
+            competencies = new[] { "C#" },
+            description = "Seviye belirtilmedi.",
+        });
+
+        var detail = await teamLead.GetJson($"{Url}/{id}");
+        detail.GetProperty("levelId").ValueKind.ShouldBe(JsonValueKind.Null);
+        detail.GetProperty("levelName").GetString().ShouldBeEmpty();
+    }
+
+    [Fact]
     public async Task Flow_WhenAllStepsApprove_ApprovesRequestAndOpensPosition()
     {
         var teamLead = await factory.LoginAs(Engineering, Role.TeamLead);

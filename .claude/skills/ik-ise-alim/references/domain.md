@@ -63,6 +63,8 @@ Roller (`Role` enum + AD grup eşlemesi `RoleGroupMapping` tablosunda):
 
 ## 3. Kadro talebi (HiringRequest)
 
+`LevelId` zorunlu değildir (nullable; CR-06).
+
 Alanlar: `Title` (pozisyon adı), `DepartmentId`, `LevelId` (L1/L2/L3/L4 sözlüğü; kıdem pozisyon adında, ör. "Kıdemli Yazılım Geliştirme Uzmanı" + L2), `Headcount` (≥1), `Reason` (`NewHeadcount` | `Replacement`), `ReplacedEmployeeName` (Replacement ise zorunlu), `Urgency` (`Low` | `Normal` | `High`), `ExpectedStartDate`, `Competencies` (etiketler), `Description`, `RequestedBy`.
 
 Durumlar: `Draft → PendingApproval → Approved | Rejected`, her durumdan `Cancelled`.
@@ -75,6 +77,8 @@ Kurallar:
 
 ## 4. Pozisyon (Position)
 
+`LevelId` zorunlu değildir (CR-06). `Title` serbest metin değil, `PositionTitle` sözlüğünden seçilir (kadro talebi ve doğrudan pozisyon açma; CR-07).
+
 Alanlar: `HiringRequestId` (opsiyonel; IK talepsiz pozisyon açabilir), `Title`, `DepartmentId`, `LevelId`, `Headcount`, `FilledCount`, `ResponsibleHrUserId`, `InterviewPanel` (kullanıcılar), `PipelineTemplateId`, `InterviewTemplateIds`, `JobDescription`.
 
 Durumlar: `Open`, `OnHold`, `Closed`, `Cancelled`.
@@ -84,6 +88,15 @@ Kurallar:
 - Kapalı pozisyona aday bağlanamaz.
 
 ## 5. Aday (Candidate) ve IK ön görüşme formu (Screening)
+
+> **Bekleyen değişiklikler:**
+> - Telefon tam 10 haneli olmalı; baştaki 0/+90 sayılmaz (`ContactNormalizer.IsValidPhone`, CR-01 ✅).
+> - Kara listedeki adaylar Aday listesinde rozet/filtreyle görünür; işe alınanların satırı yeşildir (CR-05, CR-08 ✅).
+> - CR-08: süreci olumlu sonuçlanan (`Hired`) adaylar listede yeşil (ikon/etiketle birlikte).
+> - `InterviewedAt` kayıt açılırken şimdiye ayarlanır; İK geçmiş tarihe çevirebilir (CR-09 ✅).
+> - İşlem yapanların adı "Ad Soyad (Unvan)" biçiminde gösterilir (`UserLabel.Format`; aday kartı, zaman çizelgesi, raporlar; CR-10 ✅).
+> - Yabancı dil `Language` sözlüğünden seçilir (ad olarak saklanır; seed: İngilizce, Almanca, Fransızca; yenisi yönetim panelinden; CR-03/CR-11 ✅).
+> - CR-12: `HasDisability` (Var/Yok) + `DisabilityDescription` (Var ise zorunlu). Özel nitelikli veri: yalnızca `HrOnly`, `TeamLead`/`Executive`'den gizli, aramaya girmez, erişim audit'e yazılır (KVKK).
 
 **Candidate** — kişinin kendisi, tek kayıt:
 - Zorunlu olan **yalnızca** `FirstName`, `LastName` ve en az bir iletişim (`Email` veya `Phone`). Geri kalan her şey opsiyonel.
@@ -129,6 +142,8 @@ Görüşme sonrası IK'nın tek buton aksiyonları (aday kartında):
 
 ## 6. Kara liste (BlacklistEntry)
 
+> Ayrı "Kara Liste" menüsü/ekranı yoktur (CR-05 ✅). Aşağıdaki iş kuralları aynen geçerlidir; talep, onay, çıkarma ve kayıt görüntüleme aday kartından yapılır.
+
 Alanlar: `CandidateId`, `ReasonId` (sözlük, zorunlu), `Description` (zorunlu), `ExpiresAt` (null = kalıcı), `Status` (`PendingApproval` / `Active` / `Expired` / `Removed`), `RequestedBy`, `ApprovedBy`, `RemovedBy`, `RemovalReason`.
 
 Varsayılan nedenler (sözlük seed): mülakata haber vermeden gelmedi, teklifi kabul edip işe başlamadı, yanlış/yanıltıcı bilgi verdi, etik olmayan davranış, disiplin nedeniyle ayrılmış eski çalışan, diğer.
@@ -172,6 +187,8 @@ Kurallar:
 
 ## 9. Mülakat planlama (Interview)
 
+> **Bekleyen değişiklik (CR-13):** Planlamada birden çok mülakatçı seçilebilir (ör. 1 İK + 1 Takım Lideri); her mülakatçının mülakattaki rolü (`InterviewerRole`: İK / Teknik) tutulur.
+
 Alanlar: `ApplicationId`, `TypeId` (sözlük: Telefon, Teknik, Case sunumu, Yönetici, Kültür uyumu), `Mode` (`InPerson` / `Online`), `StartsAt`, `DurationMinutes`, `RoomId` (yüz yüze), `MeetingUrl` (online), `Interviewers` (çoka-çok, en az 1), `InterviewTemplateId`, `Status` (`Scheduled` / `Completed` / `Cancelled` / `NoShow`), `CalendarEventId` (Faz 2).
 
 Kurallar:
@@ -183,6 +200,8 @@ Kurallar:
 
 ## 10. Soru bankası (Question, InterviewTemplate)
 
+> **Bekleyen değişiklik (CR-14):** Soru/şablon için hedef rol (Teknik / İK) eklenecek; İK değerlendirme soruları kümesi ve İK yorum alanı.
+
 `Question`: `DepartmentId`, `PositionTitle` (ops.), `LevelId` (ops.), `CompetencyId` (sözlük), `Type` (`Technical` / `Behavioral` / `Case`), `Difficulty` (1–3), `Weight` (varsayılan 1), `Text`, `Guidance` (beklenen cevap/ipuçları), `IsActive`, `Version`.
 
 Kurallar:
@@ -193,6 +212,8 @@ Kurallar:
 `InterviewTemplate`: ad, pozisyon/seviye/mülakat tipi, sıralı soru listesi. Mülakatçı mülakat sırasında şablona soru ekleyip çıkarabilir (yalnızca o scorecard'ı etkiler).
 
 ## 11. Değerlendirme ve puanlama (Scorecard)
+
+> **Bekleyen değişiklik (CR-14, CR-15):** Scorecard, mülakatçının rolüne uyan şablon ve sorularla oluşturulur (Teknik/Takım Lideri → birime göre teknik sorular; İK → İK soruları + yorum). İK, teknik mülakatta kendi scorecard'ını girebilir. Bağımsız değerlendirme kuralı İK için de geçerli.
 
 `Scorecard`: `InterviewId`, `InterviewerUserId`, `Items` (`ScorecardItem`: soru snapshot, ağırlık, `Score` 1–5 ops., `Note`), `GeneralNote`, `Recommendation` (`StrongHire` / `Hire` / `Undecided` / `NoHire` / `StrongNoHire`), `Status` (`Draft` / `Submitted`), `SubmittedAt`.
 
@@ -253,8 +274,14 @@ Kurallar: pozisyon bazında zorunlu/opsiyonel; mevcut işveren onay olmadan aran
 
 ## 17. Bildirimler, sözlükler, audit
 
+> **Bekleyen değişiklikler:**
+> - CR-16/17/18: yeni e-posta şablonları `Rejection` (Olumsuz) ve `OnHold` (Beklemede / süreç devam ediyor). Olumsuz mail aday olumsuz işaretlenince otomatik gider (aday+süreç başına tek); Beklemede maili İK'nın butonuyla manuel gider.
+> - İş günü hesabı yalnızca hafta sonlarını sayar; Resmi Tatiller ekranı yoktur (CR-04 ✅). Sözlükler arasında `Language` (yabancı diller) vardır.
+> - CR-19/20: raporlara filtre; her ekranda o ekrana ait rapor butonu.
+> - "Bekleyen işlerim" listeleri en yeni üstte sıralanır (istemci tarafında; CR-21 ✅).
+
 - **Bildirim:** `Notification` (alıcı, tip, başlık, link, okundu). Domain event handler'ları oluşturur, SignalR ile anlık iter. Kullanıcı tercihleri: hangi tipler e-postayla da gelsin.
 - **E-posta şablonları:** `EmailTemplate` (kod, konu, gövde HTML, değişkenler `{AdayAdi}`, `{Pozisyon}`, `{MulakatTarihi}`…). Gönderim outbox üzerinden; adaya giden her e-posta zaman çizelgesine yazılır.
-- **Sözlükler:** Department, Level, Competency, RejectionReason, BlacklistReason, CandidateSource, InterviewType, LanguageLevel, Unit (onboarding birimleri + e-posta), Room.
+- **Sözlükler:** Department, PositionTitle, Level, EducationLevel, DocumentType, Language, Competency, RejectionReason, BlacklistReason, CandidateSource, InterviewType, LanguageLevel, Unit (onboarding birimleri + e-posta), Room.
 - **Audit:** `AuditLog` (kullanıcı, zaman, entity tipi, id, işlem, eski değer JSON, yeni değer JSON). EF interceptor otomatik yazar. Ayrıca `AccessLog`: CV görüntüleme/indirme ve kara liste görüntüleme.
 - **Dosyalar:** yalnızca yetkili kullanıcıya, kısa süreli (5 dk) imzalı indirme linkiyle.

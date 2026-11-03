@@ -11,6 +11,7 @@ import { useToast } from '@/shared/components/toast';
 import { ROUTES } from '@/shared/constants/routes';
 import NotFoundPage from '@/shared/pages/NotFoundPage';
 import AddToPositionDialog from '@/shared/recruitment/AddToPositionDialog';
+import BlacklistEntryDialog from '@/shared/recruitment/BlacklistEntryDialog';
 import BlacklistRequestDialog from '@/shared/recruitment/BlacklistRequestDialog';
 import CloseApplicationDialog from '@/shared/recruitment/CloseApplicationDialog';
 import {
@@ -30,6 +31,8 @@ import DuplicateWarning from '../components/DuplicateWarning';
 import InterviewsTab from '../components/InterviewsTab';
 import ScreeningsTab from '../components/ScreeningsTab';
 import TimelineTab from '../components/TimelineTab';
+import { downloadCandidateDossier } from '@/features/reports/api';
+import { useDownload } from '@/features/reports/useDownload';
 import { useCandidate, useSetTalentPool } from '../queries';
 import '../candidates.css';
 
@@ -62,14 +65,18 @@ export default function CandidateDetailPage() {
   const { id } = useParams();
   const toast = useToast();
   const moreMenu = useRef(null);
+  const reportMenu = useRef(null);
+  const report = useDownload();
   const [params, setParams] = useSearchParams();
   const { data: candidate, isLoading, isError, error } = useCandidate(id);
   const { data: applications = [] } = useCandidateApplications(id);
   const { data: reviewPage } = useCvReviews({ candidateId: id, pageSize: MAX_REVIEWS });
   const { data: interviews = [] } = useInterviews({ candidateId: id });
   const setTalentPool = useSetTalentPool();
-  // Açık pencere: null | 'edit' | 'add-position' | 'suggest' | 'interview' | 'blacklist' | { close: application }
-  const [dialog, setDialog] = useState(null);
+  // Açık pencere: null | 'edit' | 'add-position' | 'suggest' | 'interview' | 'blacklist' | 'blacklist-entry' | { close: application }
+  const [dialog, setDialog] = useState(() =>
+    params.get('blacklistEntry') ? 'blacklist-entry' : null,
+  );
 
   if (isLoading) return <TableSkeleton rows={6} />;
   if (isError) {
@@ -103,6 +110,19 @@ export default function CandidateDetailPage() {
     activeApplications.length === 1
       ? setDialog({ close: activeApplications[0] })
       : openTab(APPLICATIONS_TAB);
+
+  const reportItems = [
+    {
+      label: 'Aday dosyası (PDF)',
+      icon: 'pi pi-file-pdf',
+      command: () => report.run(() => downloadCandidateDossier(candidate.id, 'pdf')),
+    },
+    {
+      label: 'Aday dosyası (Excel)',
+      icon: 'pi pi-file-excel',
+      command: () => report.run(() => downloadCandidateDossier(candidate.id, 'xlsx')),
+    },
+  ];
 
   const moreItems = [
     {
@@ -161,6 +181,15 @@ export default function CandidateDetailPage() {
                 onClick={() => setDialog('interview')}
               />
             )}
+            <Button
+              label="Rapor"
+              icon="pi pi-download"
+              outlined
+              loading={report.pending}
+              aria-haspopup="menu"
+              onClick={(event) => reportMenu.current.toggle(event)}
+            />
+            <Menu ref={reportMenu} model={reportItems} popup popupAlignment="right" />
             <Button label="Düzenle" icon="pi pi-pencil" onClick={() => setDialog('edit')} />
             <Button
               icon="pi pi-ellipsis-v"
@@ -191,7 +220,13 @@ export default function CandidateDetailPage() {
               {candidate.blacklist.status === 'Active'
                 ? 'Bu aday kara listede. '
                 : 'Bu aday için onay bekleyen bir kara liste talebi var. '}
-              <Link to={ROUTES.blacklistEntry(candidate.blacklist.entryId)}>Kaydı görüntüle</Link>
+              <button
+                type="button"
+                className="table-link"
+                onClick={() => setDialog('blacklist-entry')}
+              >
+                Kaydı görüntüle
+              </button>
             </div>
           </div>
         )}
@@ -279,6 +314,12 @@ export default function CandidateDetailPage() {
         <ScheduleInterviewDialog
           applications={activeApplications}
           candidateName={fullName}
+          onClose={() => setDialog(null)}
+        />
+      )}
+      {dialog === 'blacklist-entry' && candidate.blacklist && (
+        <BlacklistEntryDialog
+          entryId={candidate.blacklist.entryId}
           onClose={() => setDialog(null)}
         />
       )}

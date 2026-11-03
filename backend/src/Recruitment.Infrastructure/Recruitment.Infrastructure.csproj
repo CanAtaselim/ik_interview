@@ -13,6 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="ClosedXML" Version="0.105.1" />
     <PackageReference Include="EFCore.NamingConventions" Version="10.0.1" />
     <PackageReference Include="Hangfire.AspNetCore" Version="1.8.25" />
     <PackageReference Include="Hangfire.PostgreSql" Version="1.21.1" />
@@ -22,9 +23,16 @@
     <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.3" />
     <PackageReference Include="PdfPig" Version="0.1.16" />
+    <!-- PDFsharp 6.2.x MIT lisanslıdır; 6.5 ve üstü AGPL-3.0 + lisans anahtarı ister, bu yüzden sürüm sabit tutulur. -->
+    <PackageReference Include="PDFsharp-MigraDoc" Version="6.2.4" />
     <PackageReference Include="System.DirectoryServices.Protocols" Version="10.0.12" />
     <!-- MailKit/MimeKit dolaylı olarak getiriyor; 10.0.12 ve öncesinde bilinen güvenlik açığı var. -->
     <PackageReference Include="System.Security.Cryptography.Pkcs" Version="10.0.13" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- PDF'te Türkçe karakterler için yazı tipi dosyaya gömülür (sunucuda yazı tipi kurulu olmayabilir). Lisans: SIL OFL. -->
+    <EmbeddedResource Include="Reports\Fonts\*.ttf" />
   </ItemGroup>
 
 </Project>

@@ -340,10 +340,19 @@ export default function ScreeningForm({ candidateId, screening }) {
         <h3 className="section-title">Yabancı dil</h3>
         {languages.fields.map((field, index) => (
           <div key={field.id} className="row-fields row-fields--language">
-            <InputText
-              placeholder="Dil"
-              aria-label="Dil"
-              {...register(`languages.${index}.language`)}
+            <Controller
+              name={`languages.${index}.language`}
+              control={control}
+              render={({ field: language }) => (
+                <DictionarySelect
+                  type="Language"
+                  valueBy="name"
+                  placeholder="Dil"
+                  value={language.value}
+                  onChange={(name) => language.onChange(name ?? '')}
+                  showClear
+                />
+              )}
             />
             <Controller
               name={`languages.${index}.level`}

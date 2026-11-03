@@ -102,7 +102,7 @@ public sealed class Candidate : AggregateRoot
 
     public Screening StartScreening(Guid interviewerUserId, TimeProvider clock)
     {
-        var screening = new Screening(interviewerUserId);
+        var screening = new Screening(interviewerUserId, clock.GetUtcNow());
         _screenings.Add(screening);
         Raise(new ScreeningStarted(Id, screening.Id, interviewerUserId, clock.GetUtcNow()));
         return screening;

@@ -7,7 +7,7 @@ namespace Recruitment.Application.Features.HiringRequests.CreateHiringRequest;
 public sealed record CreateHiringRequestCommand(
     string Title,
     Guid DepartmentId,
-    Guid LevelId,
+    Guid? LevelId,
     int Headcount,
     HiringReason Reason,
     string? ReplacedEmployeeName,

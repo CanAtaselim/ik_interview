@@ -147,7 +147,7 @@ export default function HiringRequestDetailDialog({ requestId, onClose, onEdit }
           <DetailList
             items={[
               { label: 'Birim', value: request.departmentName },
-              { label: 'Seviye', value: request.levelName },
+              { label: 'Seviye', value: request.levelName || '—' },
               { label: 'Kişi sayısı', value: request.headcount },
               { label: 'Aciliyet', value: <StatusTag value={request.urgency} map={URGENCY} /> },
               { label: 'Talep nedeni', value: HIRING_REASON_LABELS[request.reason] },

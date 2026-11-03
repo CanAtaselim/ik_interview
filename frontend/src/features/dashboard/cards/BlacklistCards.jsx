@@ -19,14 +19,14 @@ export default function BlacklistCards({ filters }) {
           label="Aktif kayıt"
           value={data?.active}
           isPending={query.isPending}
-          to={ROUTES.blacklist}
+          to={`${ROUTES.candidates}?blacklist=yes`}
         />
         <KpiCard
           label="Onay bekleyen"
           value={data?.pendingApproval}
           tone={data?.pendingApproval ? 'danger' : 'default'}
           isPending={query.isPending}
-          to={ROUTES.blacklist}
+          to={`${ROUTES.candidates}?blacklist=yes`}
         />
         <KpiCard
           label="Dönemde açılan"
@@ -48,7 +48,7 @@ export default function BlacklistCards({ filters }) {
             columns: ['Neden', 'Kayıt'],
             rows: reasons.map((item) => [item.label, item.count]),
           }}
-          to={ROUTES.blacklist}
+          to={`${ROUTES.candidates}?blacklist=yes`}
         >
           <BarChart items={reasons} unit="kayıt" color="--color-danger" />
         </ChartCard>

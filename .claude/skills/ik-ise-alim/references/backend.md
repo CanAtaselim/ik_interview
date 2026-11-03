@@ -31,8 +31,8 @@
 | LDAP | `System.DirectoryServices.Protocols` | Infrastructure |
 | JWT | `Microsoft.AspNetCore.Authentication.JwtBearer` | Api |
 | E-posta | `MailKit` | Infrastructure |
-| PDF (Faz 2, teklif mektubu) | `QuestPDF` (Community lisansı koşullarını kontrol et) | Infrastructure |
-| Excel export | `ClosedXML` | Infrastructure |
+| PDF çıktısı (aday dosyası, ileride teklif mektubu) | `PDFsharp-MigraDoc` **6.2.x (MIT) — sürümü sabit tut**: 6.5 ve üstü AGPL-3.0 + lisans anahtarı ister, çalışma anında hata verir. QuestPDF kullanma (ciro eşiği aşılırsa ücretli). Yazı tipi: gömülü Noto Sans (OFL) | Infrastructure |
+| Excel çıktısı | `ClosedXML` (MIT; bağımlılıkları MIT/Apache-2.0) | Infrastructure |
 | Test | `xunit`, `NSubstitute`, `Shouldly`, `Testcontainers.PostgreSql`, `Microsoft.AspNetCore.Mvc.Testing` | tests |
 
 **Kullanma:** MediatR, AutoMapper, FluentAssertions v8+ (ticari lisans), Moq. Yeni paket eklemeden önce lisansını kontrol et.
@@ -203,6 +203,7 @@ Hepsi Application'da arayüz, Infrastructure'da uygulama. Uygulamayı değiştir
 - `IIcsGenerator` → mülakat davetleri için `.ics`.
 - `IFileStorage.Save/Open/Delete/GetSignedUrl` → `LocalFileStorage` (kök yol `FileStorage:RootPath`); ileride MinIO/S3.
 - `ITextExtractor` → PDF/DOCX'ten arama metni çıkarma.
+- `IReportRenderer.Render(ReportDocument, format, fileName)` → `ReportRenderer` (PDF: MigraDoc, Excel: ClosedXML). Rapor, çıktı biçiminden bağımsız `ReportDocument` (bölümler: alan listesi ve/veya tablo) olarak Application'da (`Features/Reports/`) kurulur; PDF ve Excel aynı belgeyi çizer. Yeni rapor = yeni query + belge; renderer'a dokunma. Her dışa aktarma `AccessLog` (`ReportExported`) kaydına yazılır. PDF yazı tipinde olmayan işaretleri (→ vb.) `PdfReportWriter.Printable` değiştirir.
 - `IAiService` → Faz 3; şimdi yalnızca arayüz bile yazma, ihtiyaç olunca eklenir.
 
 ## 11. API katmanı

@@ -5,8 +5,6 @@ export const settingsKeys = {
   emailTemplates: ['settings', 'email-templates'],
   approvalFlow: ['settings', 'approval-flow'],
   pipelineStages: ['settings', 'pipeline-stages'],
-  holidays: (year) => ['settings', 'holidays', year],
-  holidaysAll: ['settings', 'holidays'],
   roleMappings: ['settings', 'role-mappings'],
 };
 
@@ -18,10 +16,6 @@ export const useApprovalFlow = () =>
 
 export const usePipelineStages = () =>
   useQuery({ queryKey: settingsKeys.pipelineStages, queryFn: api.getPipelineStages });
-
-/** @param {number} year */
-export const useHolidays = (year) =>
-  useQuery({ queryKey: settingsKeys.holidays(year), queryFn: () => api.getHolidays(year) });
 
 export const useRoleMappings = () =>
   useQuery({ queryKey: settingsKeys.roleMappings, queryFn: api.getRoleMappings });
@@ -40,10 +34,6 @@ export const useUpdateApprovalFlow = () =>
   useSettingsMutation(api.updateApprovalFlow, settingsKeys.approvalFlow);
 export const useUpdatePipelineStages = () =>
   useSettingsMutation(api.updatePipelineStages, ['settings', 'pipeline-stages']);
-export const useCreateHoliday = () =>
-  useSettingsMutation(api.createHoliday, settingsKeys.holidaysAll);
-export const useDeleteHoliday = () =>
-  useSettingsMutation(api.deleteHoliday, settingsKeys.holidaysAll);
 export const useCreateRoleMapping = () =>
   useSettingsMutation(api.createRoleMapping, settingsKeys.roleMappings);
 export const useDeleteRoleMapping = () =>

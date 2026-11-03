@@ -1,4 +1,6 @@
 import { Button } from 'primereact/button';
+import { downloadDashboardReport } from '@/features/reports/api';
+import { useDownload } from '@/features/reports/useDownload';
 import { useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router';
 import PageHeader from '@/shared/components/PageHeader';
@@ -22,6 +24,7 @@ import '../charts/charts.css';
  */
 export default function DashboardPage() {
   const [editing, setEditing] = useState(false);
+  const exportReport = useDownload();
   const { layout, save, reset } = useDashboardLayout();
   const layoutContext = useMemo(
     () => ({
@@ -82,6 +85,17 @@ export default function DashboardPage() {
                 severity="secondary"
                 disabled={!layout}
                 onClick={() => reset()}
+              />
+            )}
+            {!editing && (
+              <Button
+                type="button"
+                label="Excel'e aktar"
+                icon="pi pi-file-excel"
+                outlined
+                severity="secondary"
+                loading={exportReport.pending}
+                onClick={() => exportReport.run(() => downloadDashboardReport(filters))}
               />
             )}
             <Button

@@ -11,6 +11,14 @@ internal static class DictionaryQueries
         this IAppDbContext db, Guid id, DictionaryType type, CancellationToken ct) =>
         db.DictionaryItems.AnyAsync(d => d.Id == id && d.Type == type && d.IsActive, ct);
 
+    /// <summary>Pozisyon adı serbest metin değil, "Pozisyon adları" listesindeki aktif bir öğe olmalı.</summary>
+    public static Task<bool> IsSelectablePositionTitle(this IAppDbContext db, string title, CancellationToken ct)
+    {
+        var name = title.Trim();
+        return db.DictionaryItems.AnyAsync(
+            d => d.Type == DictionaryType.PositionTitle && d.IsActive && d.Name == name, ct);
+    }
+
     /// <summary>Verilen kimliklerin adları; pasif öğeler de dahildir (eski kayıtlar adını göstersin).</summary>
     public static Task<Dictionary<Guid, string>> ItemNames(
         this IAppDbContext db, IEnumerable<Guid> ids, CancellationToken ct) =>

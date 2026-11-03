@@ -18,6 +18,8 @@ internal sealed class DatabaseSeeder(AppDbContext db)
         // aynı unvan içindeki basamak ise Seviye listesinde (L1, L2…) tutulur.
         [DictionaryType.PositionTitle] = ["Yazılım Geliştirme Uzmanı", "Kıdemli Yazılım Geliştirme Uzmanı"],
         [DictionaryType.Level] = ["L1", "L2", "L3", "L4"],
+        // Ön görüşme formunda yabancı dil bu listeden seçilir; diğer diller yönetim ekranından eklenir.
+        [DictionaryType.Language] = ["İngilizce", "Almanca", "Fransızca"],
         // Ön görüşme formunda eğitim seviyesi bu listeden seçilir; yönetim ekranından düzenlenir.
         [DictionaryType.EducationLevel] = ["Ön Lisans", "Lisans", "Yüksek Lisans", "Doktora"],
         // "CV" adı özeldir: aday listesindeki CV simgesi bu türdeki (ve türü olmayan eski) dosyayı açar.
@@ -57,19 +59,6 @@ internal sealed class DatabaseSeeder(AppDbContext db)
         ],
     };
 
-    // Her yıl aynı güne denk gelen resmi tatiller. Tarihi yıldan yıla değişen dini bayramlar
-    // burada yoktur; o günler yıl belirtilerek tabloya eklenir.
-    private static readonly (string Name, int Month, int Day)[] FixedHolidays =
-    [
-        ("Yılbaşı", 1, 1),
-        ("Ulusal Egemenlik ve Çocuk Bayramı", 4, 23),
-        ("Emek ve Dayanışma Günü", 5, 1),
-        ("Atatürk'ü Anma, Gençlik ve Spor Bayramı", 5, 19),
-        ("Demokrasi ve Millî Birlik Günü", 7, 15),
-        ("Zafer Bayramı", 8, 30),
-        ("Cumhuriyet Bayramı", 10, 29),
-    ];
-
     // Varsayılan kadro talebi onay akışı: önce birimin yöneticisi, sonra İK yöneticisi.
     private static readonly Role[] DefaultHiringRequestApprovers = [Role.DepartmentManager, Role.HrManager];
 
@@ -79,7 +68,6 @@ internal sealed class DatabaseSeeder(AppDbContext db)
         await SeedDictionaries(ct);
         await SeedApprovalFlows(ct);
         await SeedPipelineTemplate(ct);
-        await SeedHolidays(ct);
         await SeedEmailTemplates(ct);
         await db.SaveChangesAsync(ct);
     }
@@ -128,14 +116,6 @@ internal sealed class DatabaseSeeder(AppDbContext db)
             return;
 
         db.PipelineTemplates.Add(PipelineTemplate.CreateDefault());
-    }
-
-    private async Task SeedHolidays(CancellationToken ct)
-    {
-        if (await db.Holidays.IgnoreQueryFilters().AnyAsync(ct))
-            return;
-
-        db.Holidays.AddRange(FixedHolidays.Select(h => Holiday.Create(h.Name, h.Month, h.Day)));
     }
 
     // Yeni eklenen şablon kodları her açılışta eklenir; düzenlenmiş şablonlara dokunulmaz.

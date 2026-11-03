@@ -4,7 +4,6 @@ using Recruitment.Api.Auth;
 using Recruitment.Application.Abstractions;
 using Recruitment.Application.Features.Settings.ApprovalFlow;
 using Recruitment.Application.Features.Settings.EmailTemplates;
-using Recruitment.Application.Features.Settings.Holidays;
 using Recruitment.Application.Features.Settings.PipelineStages;
 using Recruitment.Application.Features.Settings.RoleMappings;
 using Recruitment.Domain.Users;
@@ -27,8 +26,6 @@ public sealed class SettingsController(IDispatcher dispatcher) : ControllerBase
     public sealed record PipelineStagesRequest(IReadOnlyList<StageEditInput> Stages);
 
     public sealed record RoleMappingRequest(string GroupName, Role Role);
-
-    public sealed record HolidayRequest(string Name, DateOnly Date, bool Recurring);
 
     [HttpGet("email-templates")]
     public async Task<IActionResult> GetEmailTemplates(CancellationToken ct) =>
@@ -61,18 +58,6 @@ public sealed class SettingsController(IDispatcher dispatcher) : ControllerBase
     [HttpPut("pipeline-stages")]
     public async Task<IActionResult> UpdatePipelineStages(PipelineStagesRequest request, CancellationToken ct) =>
         (await dispatcher.Send(new UpdatePipelineStagesCommand(request.Stages), ct)).ToActionResult(this);
-
-    [HttpGet("holidays")]
-    public async Task<IActionResult> GetHolidays([FromQuery] int? year, CancellationToken ct) =>
-        (await dispatcher.Query(new GetHolidaysQuery(year ?? DateTime.UtcNow.Year), ct)).ToActionResult(this);
-
-    [HttpPost("holidays")]
-    public async Task<IActionResult> CreateHoliday(HolidayRequest request, CancellationToken ct) =>
-        (await dispatcher.Send(new CreateHolidayCommand(request.Name, request.Date, request.Recurring), ct)).ToCreatedResult(this);
-
-    [HttpDelete("holidays/{id:guid}")]
-    public async Task<IActionResult> DeleteHoliday(Guid id, CancellationToken ct) =>
-        (await dispatcher.Send(new DeleteHolidayCommand(id), ct)).ToActionResult(this);
 
     [HttpGet("role-mappings")]
     [Authorize(Policy = Policies.SystemAdmin)]

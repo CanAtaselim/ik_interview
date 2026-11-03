@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Recruitment.Application.Abstractions;
+using Recruitment.Application.Features.Reports;
 using Recruitment.Infrastructure.Blacklist;
 using Recruitment.Infrastructure.Calendar;
 using Recruitment.Infrastructure.Email;
@@ -70,6 +71,7 @@ public static class DependencyInjection
         services.AddSingleton<IFileStorage, LocalFileStorage>();
         services.AddSingleton<IDownloadTokenService, DownloadTokenService>();
         services.AddSingleton<ITextExtractor, TextExtractor>();
+        services.AddSingleton<IReportRenderer, Reports.ReportRenderer>();
     }
 
     // SMTP boş bırakılabilir: o durumda e-postalar gönderilmez, kayda geçer ve uygulama açılır.

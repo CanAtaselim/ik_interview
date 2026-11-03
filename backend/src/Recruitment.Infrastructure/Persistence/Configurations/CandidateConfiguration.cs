@@ -117,6 +117,7 @@ internal sealed class AccessLogConfiguration : IEntityTypeConfiguration<AccessLo
     public void Configure(EntityTypeBuilder<AccessLog> builder)
     {
         builder.Property(a => a.Action).HasConversion<string>().HasMaxLength(50);
+        builder.Property(a => a.Detail).HasMaxLength(AccessLog.DetailMaxLength);
 
         builder.HasIndex(a => new { a.CandidateId, a.OccurredAt });
         builder.HasIndex(a => a.UserId);

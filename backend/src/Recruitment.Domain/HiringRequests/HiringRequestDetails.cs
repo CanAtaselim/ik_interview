@@ -4,7 +4,7 @@ namespace Recruitment.Domain.HiringRequests;
 public sealed record HiringRequestDetails(
     string Title,
     Guid DepartmentId,
-    Guid LevelId,
+    Guid? LevelId,
     int Headcount,
     HiringReason Reason,
     string? ReplacedEmployeeName,

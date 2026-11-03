@@ -3,6 +3,7 @@ export const ROUTES = Object.freeze({
   home: '/',
   login: '/login',
   dashboard: '/dashboard',
+  reports: '/reports',
   hiringRequests: '/hiring-requests',
   /** @param {string} id Listeyi, verilen talebin detayı açık halde gösterir. */
   hiringRequest: (id) => `/hiring-requests?selected=${id}`,
@@ -28,14 +29,10 @@ export const ROUTES = Object.freeze({
   interviewTemplates: '/interview-templates',
   /** @param {string} id Pozisyonun süreç hattı (kanban). */
   pipeline: (id) => `/positions/${id}/pipeline`,
-  blacklist: '/blacklist',
-  /** @param {string} id Listeyi, verilen kaydın ayrıntısı açık halde gösterir. */
-  blacklistEntry: (id) => `/blacklist?selected=${id}`,
   admin: '/admin',
   dictionaries: '/admin/dictionaries',
   approvalFlow: '/admin/approval-flow',
   pipelineStages: '/admin/pipeline-stages',
   emailTemplates: '/admin/email-templates',
-  holidays: '/admin/holidays',
   roleMappings: '/admin/role-mappings',
 });

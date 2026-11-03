@@ -16,7 +16,6 @@ export const pipelineKeys = {
 
 export const blacklistKeys = {
   all: ['blacklist'],
-  list: (filters) => ['blacklist', 'list', filters],
   detail: (id) => ['blacklist', 'detail', id],
 };
 
@@ -128,15 +127,6 @@ export function useMoveApplication(positionId) {
     },
     onError: (_error, _variables, context) => queryClient.setQueryData(queryKey, context.previous),
     onSettled: invalidate,
-  });
-}
-
-/** @param {object} filters */
-export function useBlacklistEntries(filters) {
-  return useQuery({
-    queryKey: blacklistKeys.list(filters),
-    queryFn: () => blacklist.getBlacklistEntries(filters),
-    placeholderData: keepPreviousData,
   });
 }
 

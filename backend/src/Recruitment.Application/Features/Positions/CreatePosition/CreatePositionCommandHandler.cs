@@ -11,9 +11,12 @@ internal sealed class CreatePositionCommandHandler(IAppDbContext db) : ICommandH
     public async Task<Result<Guid>> Handle(CreatePositionCommand command, CancellationToken ct)
     {
         var errors = new Dictionary<string, string[]>();
+        // Pozisyon adı serbest metin değil, yönetim ekranındaki "Pozisyon adları" listesinden seçilir.
+        if (!await db.IsSelectablePositionTitle(command.Title, ct))
+            errors["title"] = ["Listeden geçerli bir pozisyon adı seçmelisiniz."];
         if (!await db.IsSelectable(command.DepartmentId, DictionaryType.Department, ct))
             errors["departmentId"] = ["Geçerli bir birim seçmelisiniz."];
-        if (!await db.IsSelectable(command.LevelId, DictionaryType.Level, ct))
+        if (command.LevelId is { } levelId && !await db.IsSelectable(levelId, DictionaryType.Level, ct))
             errors["levelId"] = ["Geçerli bir seviye seçmelisiniz."];
         if (errors.Count > 0)
             return Error.Validation(errors);

@@ -27,12 +27,24 @@
 }
 
 /* Her aşama kendi pastel tonunu taşır; sırayla döner. */
-.kanban-column:nth-child(6n + 1) { --column-tint: var(--pastel-lavender); }
-.kanban-column:nth-child(6n + 2) { --column-tint: var(--pastel-sky); }
-.kanban-column:nth-child(6n + 3) { --column-tint: var(--pastel-mint); }
-.kanban-column:nth-child(6n + 4) { --column-tint: var(--pastel-peach); }
-.kanban-column:nth-child(6n + 5) { --column-tint: var(--pastel-rose); }
-.kanban-column:nth-child(6n) { --column-tint: var(--pastel-lemon); }
+.kanban-column:nth-child(6n + 1) {
+  --column-tint: var(--pastel-lavender);
+}
+.kanban-column:nth-child(6n + 2) {
+  --column-tint: var(--pastel-sky);
+}
+.kanban-column:nth-child(6n + 3) {
+  --column-tint: var(--pastel-mint);
+}
+.kanban-column:nth-child(6n + 4) {
+  --column-tint: var(--pastel-peach);
+}
+.kanban-column:nth-child(6n + 5) {
+  --column-tint: var(--pastel-rose);
+}
+.kanban-column:nth-child(6n) {
+  --column-tint: var(--pastel-lemon);
+}
 
 .kanban-column[data-over='true'] {
   border-color: var(--color-primary);

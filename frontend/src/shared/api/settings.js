@@ -5,7 +5,6 @@ import { http } from './http';
  *   variables: string, isModified: boolean }} EmailTemplate
  * @typedef {{ id: string, name: string, kind: string, order: number, isOptional: boolean,
  *   canBeOptional: boolean, activeCount: number }} StageSetting
- * @typedef {{ id: string, name: string, date: string, isRecurring: boolean }} Holiday
  * @typedef {{ id: string, groupName: string, role: string }} RoleMapping
  */
 
@@ -59,23 +58,6 @@ export async function getPipelineStages() {
 /** @param {{ id: string, name: string, isOptional: boolean }[]} stages */
 export async function updatePipelineStages(stages) {
   await http.put('/settings/pipeline-stages', { stages });
-}
-
-/** @param {number} year @returns {Promise<Holiday[]>} */
-export async function getHolidays(year) {
-  const { data } = await http.get('/settings/holidays', { params: { year } });
-  return data;
-}
-
-/** @param {{ name: string, date: string, recurring: boolean }} input */
-export async function createHoliday(input) {
-  const { data } = await http.post('/settings/holidays', input);
-  return data.id;
-}
-
-/** @param {string} id */
-export async function deleteHoliday(id) {
-  await http.delete(`/settings/holidays/${id}`);
 }
 
 /** @returns {Promise<RoleMapping[]>} */

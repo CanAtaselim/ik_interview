@@ -11,7 +11,7 @@ import { InputNumber } from 'primereact/inputnumber';
 import { InputText } from 'primereact/inputtext';
 import { Message } from 'primereact/message';
 import { Tag } from 'primereact/tag';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import {
   createDictionaryItem,
   deleteDictionaryItem,
@@ -55,6 +55,8 @@ export default function DictionariesPage() {
   const queryClient = useQueryClient();
   const { params, search, searchText, setSearchText, page, updateParams } = useUrlFilters();
   const [newName, setNewName] = useState('');
+  const [newNameError, setNewNameError] = useState(false);
+  const newNameInput = useRef(null);
   const [editing, setEditing] = useState(null);
   const [blocked, setBlocked] = useState(null);
 
@@ -100,9 +102,16 @@ export default function DictionariesPage() {
     onError,
   });
 
+  // Buton hiç pasif olmaz: ad boşsa nedenini söyler ve kutuya odaklanır.
   const addItem = (event) => {
     event.preventDefault();
-    if (newName.trim()) createItem.mutate(newName.trim());
+    if (newName.trim()) {
+      setNewNameError(false);
+      createItem.mutate(newName.trim());
+      return;
+    }
+    setNewNameError(true);
+    newNameInput.current?.focus();
   };
 
   const toggleActive = (item) =>
@@ -205,19 +214,19 @@ export default function DictionariesPage() {
               {type.label}
             </h2>
             <InputText
+              ref={newNameInput}
               value={newName}
-              onChange={(event) => setNewName(event.target.value)}
-              placeholder="Yeni öğe adı"
+              onChange={(event) => {
+                setNewName(event.target.value);
+                setNewNameError(false);
+              }}
+              placeholder={newNameError ? 'Önce öğe adını yazın' : 'Yeni öğe adı'}
               aria-label="Yeni öğe adı"
+              aria-invalid={newNameError || undefined}
+              className={newNameError ? 'p-invalid' : undefined}
               maxLength={200}
             />
-            <Button
-              type="submit"
-              label="Ekle"
-              icon="pi pi-plus"
-              disabled={!newName.trim()}
-              loading={createItem.isPending}
-            />
+            <Button type="submit" label="Ekle" icon="pi pi-plus" loading={createItem.isPending} />
           </form>
 
           <div className="toolbar">

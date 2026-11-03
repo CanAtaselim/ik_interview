@@ -319,6 +319,18 @@
   box-shadow: inset 4px 0 0 var(--color-danger);
 }
 
+.p-datatable .p-datatable-tbody > tr.candidate-row--hired > td {
+  background: var(--color-success-soft);
+}
+
+.p-datatable .p-datatable-tbody > tr.candidate-row--hired > td:first-child {
+  box-shadow: inset 4px 0 0 var(--color-success);
+}
+
+.p-datatable .p-datatable-tbody > tr.candidate-row--hired:hover > td {
+  background: color-mix(in srgb, var(--color-success-soft) 70%, var(--color-success) 14%);
+}
+
 .p-datatable .p-datatable-tbody > tr.candidate-row--in-process > td {
   background: var(--color-warning-soft);
 }

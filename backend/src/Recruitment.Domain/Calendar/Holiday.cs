@@ -3,7 +3,8 @@ using Recruitment.Domain.Common;
 namespace Recruitment.Domain.Calendar;
 
 /// <summary>
-/// Resmi tatil. <see cref="Year"/> boşsa her yıl aynı gün tekrarlanır (ör. 29 Ekim); doluysa
+/// Resmi tatil (artık kullanılmıyor: ekran kaldırıldı, iş günü hesabı yalnızca hafta sonlarını sayar; CR-04.
+/// Tablo geriye dönük veri kaybı olmasın diye korunuyor). <see cref="Year"/> boşsa her yıl aynı gün tekrarlanır (ör. 29 Ekim); doluysa
 /// yalnızca o yıl geçerlidir (ör. tarihi her yıl değişen dini bayramlar).
 /// </summary>
 public sealed class Holiday : Entity

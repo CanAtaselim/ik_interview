@@ -90,7 +90,7 @@ public sealed class CandidateEndpointsTests(ApiFactory factory) : IClassFixture<
         response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
         var errors = (await response.Json()).GetProperty("errors");
         errors.GetProperty("email")[0].GetString().ShouldBe("Geçerli bir e-posta adresi yazın.");
-        errors.GetProperty("phone")[0].GetString().ShouldBe("Geçerli bir telefon numarası yazın.");
+        errors.GetProperty("phone")[0].GetString().ShouldBe("Telefon numarası 10 haneli olmalı (örn. 0532 123 45 67).");
         errors.TryGetProperty("linkedInUrl", out _).ShouldBeTrue();
         errors.TryGetProperty("gitHubUrl", out _).ShouldBeTrue();
     }
@@ -237,7 +237,7 @@ public sealed class CandidateEndpointsTests(ApiFactory factory) : IClassFixture<
         var timeline = (await hr.GetJson($"{Url}/{id}/timeline")).GetProperty("items").EnumerateArray().ToList();
         timeline.Select(t => t.GetProperty("summary").GetString())
             .ShouldBe(["Yetenek havuzuna alındı.", "Yetenek havuzundan çıkarıldı.", "Aday eklendi."]);
-        timeline.ShouldAllBe(t => t.GetProperty("actorName").GetString() == "Test Kullanıcısı");
+        timeline.ShouldAllBe(t => t.GetProperty("actorName").GetString() == "Test Kullanıcısı (Test Unvanı)");
     }
 
     [Fact]
@@ -256,7 +256,7 @@ public sealed class CandidateEndpointsTests(ApiFactory factory) : IClassFixture<
         document.GetProperty("fileName").GetString().ShouldBe("Özgeçmiş.docx");
         document.GetProperty("contentType").GetString()
             .ShouldBe("application/vnd.openxmlformats-officedocument.wordprocessingml.document");
-        document.GetProperty("uploadedByName").GetString().ShouldBe("Test Kullanıcısı");
+        document.GetProperty("uploadedByName").GetString().ShouldBe("Test Kullanıcısı (Test Unvanı)");
 
         (await hr.GetJson(Search("mikroservis", marker))).Ids().ShouldBeEmpty();
         await factory.ProcessOutbox();
@@ -407,7 +407,8 @@ public sealed class CandidateEndpointsTests(ApiFactory factory) : IClassFixture<
 
         var screeningId = await hr.Create($"{Url}/{id}/screenings", new { });
         var empty = (await hr.GetJson($"{Url}/{id}")).GetProperty("screenings").EnumerateArray().Single();
-        empty.GetProperty("interviewerName").GetString().ShouldBe("Test Kullanıcısı");
+        empty.GetProperty("interviewerName").GetString().ShouldBe("Test Kullanıcısı (Test Unvanı)");
+        empty.GetProperty("interviewedAt").ValueKind.ShouldNotBe(JsonValueKind.Null);
         empty.GetProperty("overallRating").ValueKind.ShouldBe(JsonValueKind.Null);
 
         var saved = await hr.Put($"{Url}/{id}/screenings/{screeningId}", new

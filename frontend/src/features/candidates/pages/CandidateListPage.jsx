@@ -51,6 +51,10 @@ const CLOSED_PROCESS = {
 
 const rowClassName = (candidate) => {
   if (candidate.blacklist === 'Active') return 'candidate-row candidate-row--blacklisted';
+  // Süreci olumlu sonuçlanan (işe alınan) aday yeşil görünür; renk tek başına değil, rozetle de belirtilir.
+  if (candidate.processes.some((process) => process.status === 'Hired')) {
+    return 'candidate-row candidate-row--hired';
+  }
   if (candidate.processes.some((process) => process.status === 'Active')) {
     return 'candidate-row candidate-row--in-process';
   }

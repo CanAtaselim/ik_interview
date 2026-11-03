@@ -10,7 +10,6 @@ export const ADMIN_PAGES = Object.freeze([
   { path: ROUTES.approvalFlow, label: 'Onay akışı', roles: SETTINGS_ROLES },
   { path: ROUTES.pipelineStages, label: 'Süreç aşamaları', roles: SETTINGS_ROLES },
   { path: ROUTES.emailTemplates, label: 'E-posta şablonları', roles: SETTINGS_ROLES },
-  { path: ROUTES.holidays, label: 'Resmi tatiller', roles: SETTINGS_ROLES },
   { path: ROUTES.roleMappings, label: 'Rol eşlemesi', roles: [Role.SystemAdmin] },
 ]);
 

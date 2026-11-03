@@ -32,7 +32,6 @@ internal abstract class CandidateFieldsValidator<T> : AbstractValidator<T>
     where T : ICandidateFields
 {
     private const int MaxTags = 20;
-    private const int MinPhoneDigits = 7;
 
     protected CandidateFieldsValidator()
     {
@@ -51,8 +50,8 @@ internal abstract class CandidateFieldsValidator<T> : AbstractValidator<T>
             .MaximumLength(320).WithMessage("E-posta en fazla 320 karakter olabilir.")
             .When(c => !string.IsNullOrWhiteSpace(c.Email));
         RuleFor(c => c.Phone)
-            .Must(phone => phone!.Count(char.IsAsciiDigit) >= MinPhoneDigits)
-            .WithMessage("Geçerli bir telefon numarası yazın.")
+            .Must(ContactNormalizer.IsValidPhone)
+            .WithMessage("Telefon numarası 10 haneli olmalı (örn. 0532 123 45 67).")
             .MaximumLength(30).WithMessage("Telefon en fazla 30 karakter olabilir.")
             .When(c => !string.IsNullOrWhiteSpace(c.Phone));
 

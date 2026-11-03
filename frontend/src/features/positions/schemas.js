@@ -4,7 +4,7 @@ const detailFields = {
   title: z
     .string()
     .trim()
-    .min(1, 'Pozisyon adını yazmalısınız.')
+    .min(1, 'Pozisyon adını seçmelisiniz.')
     .max(200, 'Pozisyon adı en fazla 200 karakter olabilir.'),
   headcount: z
     .number({ error: 'Kişi sayısını yazmalısınız.' })
@@ -21,5 +21,5 @@ export const updatePositionSchema = z.object(detailFields);
 export const createPositionSchema = z.object({
   ...detailFields,
   departmentId: z.string().min(1, 'Birim seçmelisiniz.'),
-  levelId: z.string().min(1, 'Seviye seçmelisiniz.'),
+  levelId: z.string(),
 });

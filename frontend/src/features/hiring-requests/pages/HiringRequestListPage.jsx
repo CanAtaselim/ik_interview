@@ -61,7 +61,7 @@ export default function HiringRequestListPage() {
         {request.title}
       </button>
       <div className="cell-sub">
-        {request.departmentName} · {request.levelName}
+        {[request.departmentName, request.levelName].filter(Boolean).join(' · ')}
       </div>
     </div>
   );

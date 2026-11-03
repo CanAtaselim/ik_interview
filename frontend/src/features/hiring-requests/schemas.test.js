@@ -26,7 +26,6 @@ describe('hiringRequestSchema', () => {
     expect(messages(emptyHiringRequestForm())).toMatchObject({
       title: 'Pozisyon adını seçmelisiniz.',
       departmentId: 'Birim seçmelisiniz.',
-      levelId: 'Seviye seçmelisiniz.',
       expectedStartDate: 'Beklenen başlangıç tarihini seçmelisiniz.',
       competencies: 'En az bir yetkinlik eklemelisiniz.',
       description: 'Açıklamayı yazmalısınız.',

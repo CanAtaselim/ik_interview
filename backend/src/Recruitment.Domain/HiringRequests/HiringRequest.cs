@@ -21,7 +21,7 @@ public sealed class HiringRequest : AggregateRoot
 
     public string Title { get; private set; } = default!;
     public Guid DepartmentId { get; private set; }
-    public Guid LevelId { get; private set; }
+    public Guid? LevelId { get; private set; }
     public int Headcount { get; private set; }
     public HiringReason Reason { get; private set; }
     public string? ReplacedEmployeeName { get; private set; }

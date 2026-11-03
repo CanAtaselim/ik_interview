@@ -17,7 +17,12 @@ public sealed class Screening : Entity
 
     private Screening() { }
 
-    internal Screening(Guid interviewerUserId) => InterviewerUserId = interviewerUserId;
+    /// <summary>Görüşme tarihi kayıt açılırken şimdiye ayarlanır; İK isterse geçmiş bir tarihe çevirir.</summary>
+    internal Screening(Guid interviewerUserId, DateTimeOffset startedAt)
+    {
+        InterviewerUserId = interviewerUserId;
+        InterviewedAt = startedAt;
+    }
 
     public Guid InterviewerUserId { get; private set; }
     public ScreeningChannel? Channel { get; private set; }

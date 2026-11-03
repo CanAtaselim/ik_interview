@@ -20,11 +20,23 @@ export default function MyTasksPage() {
   const firstName = user.displayName.split(' ')[0];
   const { cvReviews, overdueReviews, upcoming, awaitingOutcome, toScore, approvals } = useMyTasks();
 
+  // Tüm listeler yeniden eskiye (en yeni üstte) sıralanır.
+  const newestFirst = (items, dateOf) =>
+    items && [...items].sort((a, b) => new Date(dateOf(b)) - new Date(dateOf(a)));
+  const sortedPage = (page, dateOf) => page && { ...page, items: newestFirst(page.items, dateOf) };
+
   // Mülakat listeleri sayfalanmaz; diğer bölümlerle aynı biçime getirilir.
-  const asPage = (items) => items && { items: items.slice(0, MAX_ITEMS), totalCount: items.length };
+  const asPage = (items) =>
+    items && {
+      items: newestFirst(items, (item) => item.startsAt).slice(0, MAX_ITEMS),
+      totalCount: items.length,
+    };
   const upcomingPage = asPage(upcoming.data?.filter((item) => !item.awaitingOutcome));
   const awaitingPage = asPage(awaitingOutcome.data);
   const toScorePage = asPage(toScore.data);
+  const cvReviewsPage = sortedPage(cvReviews.data, (review) => review.suggestedAt);
+  const overduePage = sortedPage(overdueReviews.data, (review) => review.suggestedAt);
+  const approvalsPage = sortedPage(approvals.data, (request) => request.createdAt);
 
   const sections = [cvReviews, overdueReviews, toScore, upcoming, awaitingOutcome, approvals];
   const isLoading = sections.some((section) => section.isLoading);
@@ -92,7 +104,7 @@ export default function MyTasksPage() {
           id="cv-reviews"
           title="İncelemenizi bekleyen CV'ler"
           unit="CV"
-          page={cvReviews.data}
+          page={cvReviewsPage}
           moreLink={ROUTES.cvReviews}
           renderItem={(review) => (
             <ReviewItem
@@ -106,7 +118,7 @@ export default function MyTasksPage() {
           title="Geciken CV değerlendirmeleri"
           unit="değerlendirme"
           severity="danger"
-          page={overdueReviews.data}
+          page={overduePage}
           moreLink={`${ROUTES.cvReviews}?status=Overdue`}
           renderItem={(review) => (
             <ReviewItem
@@ -119,15 +131,16 @@ export default function MyTasksPage() {
           id="approvals"
           title="Onayınızı bekleyen kadro talepleri"
           unit="talep"
-          page={approvals.data}
+          page={approvalsPage}
           moreLink={`${ROUTES.hiringRequests}?awaiting=1`}
           renderItem={(request) => (
             <Link to={ROUTES.hiringRequest(request.id)} className="task-list__item">
               <span className="task-list__main">
                 <span className="task-list__title">{request.title}</span>
                 <span className="cell-sub">
-                  {request.departmentName} · {request.levelName} · {request.headcount} kişi ·{' '}
-                  {request.requestedByName} · {formatDate(request.createdAt)}
+                  {[request.departmentName, request.levelName].filter(Boolean).join(' · ')} ·{' '}
+                  {request.headcount} kişi · {request.requestedByName} ·{' '}
+                  {formatDate(request.createdAt)}
                 </span>
               </span>
               <StatusTag value={request.urgency} map={URGENCY} />

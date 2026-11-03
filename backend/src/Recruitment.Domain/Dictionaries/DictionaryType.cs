@@ -14,4 +14,5 @@ public enum DictionaryType
     CandidateSource,
     InterviewType,
     Room,
+    Language,
 }

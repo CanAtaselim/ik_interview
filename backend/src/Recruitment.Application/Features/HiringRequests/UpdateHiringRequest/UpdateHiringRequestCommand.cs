@@ -8,7 +8,7 @@ public sealed record UpdateHiringRequestCommand(
     Guid Id,
     string Title,
     Guid DepartmentId,
-    Guid LevelId,
+    Guid? LevelId,
     int Headcount,
     HiringReason Reason,
     string? ReplacedEmployeeName,

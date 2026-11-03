@@ -23,11 +23,6 @@ public static class SettingsErrors
         "RoleMapping.LastAdminMapping",
         "Sistem Admin rolüne eşlenmiş son grup silinemez; silinirse ayarlara kimse erişemez. Önce başka bir grubu Sistem Admin rolüne eşleyin.");
 
-    public static readonly Error HolidayNotFound = Error.NotFound("Holiday.NotFound", "Resmi tatil bulunamadı.");
-
-    public static readonly Error HolidayDuplicate = Error.Conflict(
-        "Holiday.Duplicate", "Bu tarih zaten resmi tatil olarak tanımlı.");
-
     public static Error Field(string field, string message) =>
         Error.Validation(new Dictionary<string, string[]> { [field] = [message] });
 }

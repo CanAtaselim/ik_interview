@@ -16,6 +16,7 @@ Bu dosya her işte geçerli olan kuralları ve çalışma akışını verir. Ayr
 | `references/auth.md` | Giriş, LDAP, JWT, roller, yetki politikaları, referans çağrısı erişimi |
 | `references/frontend.md` | React tarafında kod yazarken (yapı, PrimeReact tema, state, formlar, UX) |
 | `references/glossary.md` | Türkçe iş terimini koddaki İngilizce isme çevirirken |
+| `docs/DEGISIKLIK-TALEPLERI.md` | İK'dan gelen açık değişiklik taleplerine (CR-01…CR-21) dokunmadan önce; durum, açık soru ve uygulama sırası burada |
 
 ## Değişmez Kurallar
 
@@ -63,11 +64,15 @@ Bir özelliği her zaman uçtan uca, bu sırayla ekle. Her adımda ilgili refera
 7. **Frontend:** `src/features/<modül>/` altında `api.js` → TanStack Query hook'u → bileşen/sayfa → route + menü (rol kontrolüyle).
 8. **Kontrol:** `dotnet build`, `dotnet test`, `npm run lint`, `npm run build` hatasız geçmeli. Arayüzü değiştirdiysen ekranı açıp bak.
 
+## Bekleyen Değişiklik Talepleri
+
+İK'dan gelen 21 talep (`docs/DEGISIKLIK-TALEPLERI.md`) uygulanana kadar `references/domain.md`'deki ilgili bölümlerde **"Bekleyen değişiklik"** notuyla işaretlidir; bu notlar mevcut kuralı geçersiz kılmaz, yalnızca yönü gösterir. Bir talebi uyguladığında: notu kalıcı kurala çevir, talep dosyasındaki durumu ✅ yap, şema değiştiyse `docs/sql/` scriptini ver. Talepteki "açık soru" maddelerini tahmin etme, kullanıcıya sor.
+
 ## Fazlar
 
 Kullanıcı aksini söylemedikçe yalnızca aktif fazın modüllerini geliştir; ileri faz için şimdiden kod yazma, sadece genişlemeye açık arayüz bırak.
 
-- **Faz 1 (MVP):** Roller + LDAP/JWT, kadro talebi + onay akışı, pozisyon, aday havuzu + IK ön görüşme formu + kara liste, süreç hattı (kanban), CV önerme ve değerlendirme, mülakat planlama (sistem içi müsaitlik), soru bankası, değerlendirme ve puanlama, bildirimler (uygulama içi + SMTP), audit log, kullanılabilirlik ilkeleri, IK Yöneticisi dashboard'u (Faz 1 verisiyle; diğer roller sonra açılır).
+- **Faz 1 (MVP):** Roller + LDAP/JWT, kadro talebi + onay akışı, pozisyon, aday havuzu + IK ön görüşme formu + kara liste, süreç hattı (kanban), CV önerme ve değerlendirme, mülakat planlama (sistem içi müsaitlik), soru bankası, değerlendirme ve puanlama, bildirimler (uygulama içi + SMTP), audit log, kullanılabilirlik ilkeleri, IK Yöneticisi dashboard'u (Faz 1 verisiyle; diğer roller sonra açılır), raporlama (aday dosyası PDF/Excel, liste raporları Excel, dashboard Excel; yalnızca İK).
 - **Faz 2:** Teklif yönetimi, onboarding (birimlere e-posta ile görev), Outlook/Exchange takvim entegrasyonu, raporlama ve dashboard.
 - **Faz 3 (en son):** Çalışan referans programı, referans kontrolü, case/ödev, Jira otomatik ticket, AI destekleri (sağlayıcı belli değil; şu an aksiyon yok).
 - **Bekleyen:** Kariyer.net / LinkedIn entegrasyonu (IK kararı bekleniyor).
@@ -79,6 +84,7 @@ Kullanıcı aksini söylemedikçe yalnızca aktif fazın modüllerini geliştir;
 - Exchange Online (Graph API) mı, şirket içi Exchange Server (EWS) mı?
 - Onboarding görevini tamamlayacak, yönetici olmayan IT / İdari İşler personeli hangi AD grubuyla girecek?
 - AI sağlayıcısı (Faz 3).
+- **Rapor (hatırlatma, İK yorumu bekleniyor):** Aday dosyası raporuna CV ve belge dosyalarının kendisi de eklensin mi (PDF eki ya da ZIP)? Şimdilik yalnızca belge kayıtları listelenir; İK karar verince eklenecek.
 
 ## Çalışma Tarzı
 

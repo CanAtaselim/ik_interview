@@ -85,7 +85,7 @@ public sealed class DictionaryUsageRulesTests(ApiFactory factory) : IClassFixtur
         var id = await admin.Create(Items("PositionTitle"), new { name = title });
         await hr.Create("/api/v1/positions", new
         {
-            title = title.ToUpperInvariant(),
+            title,
             departmentId = await hr.DictionaryItemId("Department", "Yazılım"),
             levelId = await hr.DictionaryItemId("Level", "L3"),
             headcount = 1,

@@ -19,7 +19,7 @@ public sealed record PositionDetailDto(
     string Title,
     Guid DepartmentId,
     string DepartmentName,
-    Guid LevelId,
+    Guid? LevelId,
     string LevelName,
     int Headcount,
     int FilledCount,

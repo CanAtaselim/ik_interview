@@ -26,4 +26,19 @@ public sealed class ContactNormalizerTests
     {
         ContactNormalizer.NormalizePhone(input).ShouldBe(expected);
     }
+
+    [Theory]
+    [InlineData("0532 123 45 67", true)]
+    [InlineData("+90 (532) 123 45 67", true)]
+    [InlineData("5321234567", true)]
+    [InlineData("12", false)]
+    [InlineData("532 123 45", false)]
+    [InlineData("0532 123 45 678", false)]
+    [InlineData("444 0 123", false)]
+    [InlineData("", false)]
+    [InlineData(null, false)]
+    public void IsValidPhone_RequiresExactlyTenDigits(string? input, bool expected)
+    {
+        ContactNormalizer.IsValidPhone(input).ShouldBe(expected);
+    }
 }

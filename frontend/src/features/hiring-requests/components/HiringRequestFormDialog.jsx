@@ -206,7 +206,7 @@ function HiringRequestForm({ requestId, initialValues, onClose, onSaved }) {
           />
         </FormField>
 
-        <FormField label="Seviye" htmlFor="levelId" error={errors.levelId?.message} required>
+        <FormField label="Seviye" htmlFor="levelId" error={errors.levelId?.message}>
           <Controller
             name="levelId"
             control={control}

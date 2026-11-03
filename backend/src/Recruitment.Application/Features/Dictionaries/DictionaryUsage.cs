@@ -113,6 +113,13 @@ internal static class DictionaryUsage
                     db.Candidates.SelectMany(c => c.Screenings).SelectMany(s => s.Educations).Select(e => e.Degree)
                 ),
             ],
+            DictionaryType.Language =>
+            [
+                (
+                    "ön görüşme kaydında",
+                    db.Candidates.SelectMany(c => c.Screenings).SelectMany(s => s.Languages).Select(l => l.Language)
+                ),
+            ],
             _ => [],
         };
 

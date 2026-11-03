@@ -1,13 +1,13 @@
 namespace Recruitment.Domain.Common;
 
-/// <summary>İş günü hesabı: hafta sonları ve resmi tatiller sayılmaz.</summary>
+/// <summary>İş günü hesabı: yalnızca hafta sonları (cumartesi, pazar) sayılmaz; resmi tatiller hesaba katılmaz.</summary>
 public static class BusinessDays
 {
     /// <summary>
     /// <paramref name="from"/> anına <paramref name="days"/> iş günü ekler; günün saati korunur.
     /// Örn. cuma 15:00 + 3 iş günü = çarşamba 15:00. Gün sınırları <paramref name="zone"/> saat dilimine göredir.
     /// </summary>
-    public static DateTimeOffset Add(DateTimeOffset from, int days, TimeZoneInfo zone, Func<DateOnly, bool> isHoliday)
+    public static DateTimeOffset Add(DateTimeOffset from, int days, TimeZoneInfo zone)
     {
         ArgumentOutOfRangeException.ThrowIfNegative(days);
 
@@ -17,7 +17,7 @@ public static class BusinessDays
         for (var remaining = days; remaining > 0;)
         {
             date = date.AddDays(1);
-            if (IsBusinessDay(date, isHoliday))
+            if (IsBusinessDay(date))
                 remaining--;
         }
 
@@ -25,6 +25,6 @@ public static class BusinessDays
         return new DateTimeOffset(result, zone.GetUtcOffset(result)).ToUniversalTime();
     }
 
-    public static bool IsBusinessDay(DateOnly date, Func<DateOnly, bool> isHoliday) =>
-        date.DayOfWeek is not (DayOfWeek.Saturday or DayOfWeek.Sunday) && !isHoliday(date);
+    public static bool IsBusinessDay(DateOnly date) =>
+        date.DayOfWeek is not (DayOfWeek.Saturday or DayOfWeek.Sunday);
 }

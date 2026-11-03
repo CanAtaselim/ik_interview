@@ -5,12 +5,6 @@ import { http } from './http';
  *   kind: 'Exact' | 'Possible' }} BlacklistMatch
  */
 
-/** Görüntüleme sunucuda erişim kaydına yazılır. */
-export async function getBlacklistEntries(params) {
-  const { data } = await http.get('/blacklist-entries', { params });
-  return data;
-}
-
 /** Kaydın ayrıntısı (gerekçe dahil); görüntüleme erişim kaydına yazılır. @param {string} id */
 export async function getBlacklistEntry(id) {
   const { data } = await http.get(`/blacklist-entries/${id}`);

@@ -21,6 +21,19 @@ public sealed class DictionaryEndpointsTests(ApiFactory factory) : IClassFixture
     }
 
     [Fact]
+    public async Task Languages_AreSeeded_WithEnglishGermanAndFrench()
+    {
+        var teamLead = await factory.LoginAs(Role.TeamLead);
+
+        var languages = (await teamLead.GetJson(Items("Language"))).EnumerateArray()
+            .Select(l => l.GetProperty("name").GetString()).ToList();
+
+        languages.ShouldContain("İngilizce");
+        languages.ShouldContain("Almanca");
+        languages.ShouldContain("Fransızca");
+    }
+
+    [Fact]
     public async Task Login_WithNewDirectoryDepartment_AddsItToDepartments()
     {
         var department = $"Birim {Guid.NewGuid():N}";

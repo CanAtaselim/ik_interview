@@ -29,7 +29,6 @@ public sealed class SettingsEndpointsTests(ApiFactory factory) : IClassFixture<A
         foreach (var user in new[] { specialist, lead })
         {
             (await user.Client.GetAsync($"{Url}/email-templates")).StatusCode.ShouldBe(HttpStatusCode.Forbidden);
-            (await user.Client.GetAsync($"{Url}/holidays")).StatusCode.ShouldBe(HttpStatusCode.Forbidden);
             (await user.Client.GetAsync($"{Url}/role-mappings")).StatusCode.ShouldBe(HttpStatusCode.Forbidden);
         }
 
@@ -260,35 +259,5 @@ public sealed class SettingsEndpointsTests(ApiFactory factory) : IClassFixture<A
         // İkinci bir Sistem Admin grubu varsa silinebilir.
         var extra = await admin.Create($"{Url}/role-mappings", new { groupName = group, role = "SystemAdmin" });
         (await admin.Client.DeleteAsync($"{Url}/role-mappings/{extra}")).StatusCode.ShouldBe(HttpStatusCode.NoContent);
-    }
-
-    [Fact]
-    public async Task Holidays_AreListedPerYear_WithRecurringAndOneOffDays()
-    {
-        var manager = await Manager();
-
-        var seeded = (await manager.GetJson($"{Url}/holidays?year=2027")).EnumerateArray().ToList();
-        seeded.ShouldContain(h => h.GetProperty("name").GetString() == "Cumhuriyet Bayramı" && h.GetProperty("date").GetString() == "2027-10-29");
-        seeded.ShouldAllBe(h => h.GetProperty("isRecurring").GetBoolean());
-        seeded.Select(h => h.GetProperty("date").GetString()).ShouldBe([.. seeded.Select(h => h.GetProperty("date").GetString()).Order()]);
-
-        var oneOffId = await manager.Create($"{Url}/holidays", new { name = "Ramazan Bayramı 1. gün", date = "2027-03-09", recurring = false });
-        var recurringId = await manager.Create($"{Url}/holidays", new { name = "Şirket yıldönümü", date = "2028-06-15", recurring = true });
-
-        var in2027 = (await manager.GetJson($"{Url}/holidays?year=2027")).EnumerateArray().ToList();
-        in2027.Single(h => h.GetProperty("id").GetGuid() == oneOffId).GetProperty("isRecurring").GetBoolean().ShouldBeFalse();
-        in2027.Single(h => h.GetProperty("id").GetGuid() == recurringId).GetProperty("date").GetString().ShouldBe("2027-06-15");
-        (await manager.GetJson($"{Url}/holidays?year=2028")).EnumerateArray().Select(h => h.GetProperty("id").GetGuid()).ShouldNotContain(oneOffId);
-
-        (await manager.Post($"{Url}/holidays", new { name = "Tekrar", date = "2027-03-09", recurring = false })).StatusCode.ShouldBe(HttpStatusCode.Conflict);
-        (await manager.Post($"{Url}/holidays", new { name = "Tekrar", date = "2030-10-29", recurring = false })).StatusCode.ShouldBe(HttpStatusCode.Conflict);
-        (await manager.Post($"{Url}/holidays", new { name = " ", date = "2027-03-10", recurring = false })).StatusCode.ShouldBe(HttpStatusCode.BadRequest);
-        (await manager.Post($"{Url}/holidays", new { name = "Artık gün", date = "2028-02-29", recurring = true })).StatusCode.ShouldBe(HttpStatusCode.BadRequest);
-        (await manager.Post($"{Url}/holidays", new { name = "Artık gün", date = "2028-02-29", recurring = false })).StatusCode.ShouldBe(HttpStatusCode.Created);
-        (await manager.Client.GetAsync($"{Url}/holidays?year=1990")).StatusCode.ShouldBe(HttpStatusCode.BadRequest);
-
-        (await manager.Client.DeleteAsync($"{Url}/holidays/{oneOffId}")).StatusCode.ShouldBe(HttpStatusCode.NoContent);
-        (await manager.Client.DeleteAsync($"{Url}/holidays/{oneOffId}")).StatusCode.ShouldBe(HttpStatusCode.NotFound);
-        (await manager.GetJson($"{Url}/holidays?year=2027")).EnumerateArray().Select(h => h.GetProperty("id").GetGuid()).ShouldNotContain(oneOffId);
     }
 }

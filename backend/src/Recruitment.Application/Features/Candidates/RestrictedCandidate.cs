@@ -1,3 +1,4 @@
+using Recruitment.Application.Common;
 using Microsoft.EntityFrameworkCore;
 using Recruitment.Application.Abstractions;
 using Recruitment.Application.Features.Dictionaries;
@@ -65,9 +66,11 @@ internal static class RestrictedCandidateQueries
             .Concat(candidate.Screenings.Select(s => s.InterviewerUserId))
             .Distinct()
             .ToList();
-        var userNames = await db.Users.AsNoTracking()
+        var userNames = (await db.Users.AsNoTracking()
             .Where(u => userIds.Contains(u.Id))
-            .ToDictionaryAsync(u => u.Id, u => u.DisplayName, ct);
+            .Select(u => new { u.Id, u.DisplayName, u.Title })
+            .ToListAsync(ct))
+            .ToDictionary(u => u.Id, u => UserLabel.Format(u.DisplayName, u.Title));
 
         var typeNames = await db.ItemNames(candidate.Documents.Select(d => d.TypeId).OfType<Guid>().Distinct(), ct);
 

@@ -16,7 +16,7 @@ internal sealed class GetPositionDetailQueryHandler(IAppDbContext db, ICurrentUs
         if (position is null)
             return PositionErrors.NotFound;
 
-        var dictionaryNames = await db.ItemNames([position.DepartmentId, position.LevelId], ct);
+        var dictionaryNames = await db.ItemNames([position.DepartmentId, ..(position.LevelId is { } level ? new[] { level } : [])], ct);
         var responsibleHrName = position.ResponsibleHrUserId is { } hrUserId
             ? await db.Users.Where(u => u.Id == hrUserId).Select(u => u.DisplayName).FirstOrDefaultAsync(ct)
             : null;
@@ -38,7 +38,7 @@ internal sealed class GetPositionDetailQueryHandler(IAppDbContext db, ICurrentUs
             position.DepartmentId,
             dictionaryNames.GetValueOrDefault(position.DepartmentId, string.Empty),
             position.LevelId,
-            dictionaryNames.GetValueOrDefault(position.LevelId, string.Empty),
+            position.LevelId is { } levelId ? dictionaryNames.GetValueOrDefault(levelId, string.Empty) : string.Empty,
             position.Headcount,
             position.FilledCount,
             position.Status,

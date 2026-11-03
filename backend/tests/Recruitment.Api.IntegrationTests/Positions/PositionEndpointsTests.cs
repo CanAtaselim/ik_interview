@@ -1,3 +1,4 @@
+using System.Text.Json;
 using System.Net;
 using Recruitment.Api.IntegrationTests.Infrastructure;
 using Recruitment.Domain.Users;
@@ -34,6 +35,40 @@ public sealed class PositionEndpointsTests(ApiFactory factory) : IClassFixture<A
         position.GetProperty("responsibleHrName").GetString().ShouldBe("Test Kullanıcısı");
         position.GetProperty("canManage").GetBoolean().ShouldBeTrue();
         (await hr.GetJson(Url)).Ids().ShouldContain(id);
+    }
+
+    [Fact]
+    public async Task Create_WithoutLevel_IsAllowed()
+    {
+        var hr = await factory.LoginAs(Engineering, Role.HrSpecialist);
+
+        var id = await hr.Create(Url, new
+        {
+            title = "Ürün Yöneticisi",
+            departmentId = await hr.DictionaryItemId("Department", Engineering),
+            levelId = (Guid?)null,
+            headcount = 1,
+        });
+
+        var position = await hr.GetJson($"{Url}/{id}");
+        position.GetProperty("levelId").ValueKind.ShouldBe(JsonValueKind.Null);
+        position.GetProperty("levelName").GetString().ShouldBeEmpty();
+    }
+
+    [Fact]
+    public async Task Create_WithTitleOutsideTheList_Returns400_AndRenameNeedsListedTitle()
+    {
+        var hr = await factory.LoginAs(Engineering, Role.HrSpecialist);
+        var departmentId = await hr.DictionaryItemId("Department", Engineering);
+
+        var response = await hr.Post(Url, new { title = "Listede Olmayan Ad", departmentId, headcount = 1 });
+        response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
+        (await response.Json()).GetProperty("errors").GetProperty("title")[0].GetString()
+            .ShouldBe("Listeden geçerli bir pozisyon adı seçmelisiniz.");
+
+        var id = await CreatePosition(hr);
+        (await hr.Put($"{Url}/{id}", new { title = "Başka Serbest Ad", headcount = 1, jobDescription = (string?)null }))
+            .StatusCode.ShouldBe(HttpStatusCode.BadRequest);
     }
 
     [Fact]

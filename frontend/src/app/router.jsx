@@ -2,16 +2,15 @@ import { createBrowserRouter, Navigate } from 'react-router';
 import ApprovalFlowPage from '@/features/admin/pages/ApprovalFlowPage';
 import DictionariesPage from '@/features/admin/pages/DictionariesPage';
 import EmailTemplatesPage from '@/features/admin/pages/EmailTemplatesPage';
-import HolidaysPage from '@/features/admin/pages/HolidaysPage';
 import PipelineStagesPage from '@/features/admin/pages/PipelineStagesPage';
 import RoleMappingsPage from '@/features/admin/pages/RoleMappingsPage';
 import LoginPage from '@/features/auth/pages/LoginPage';
-import BlacklistPage from '@/features/blacklist/pages/BlacklistPage';
 import CandidateDetailPage from '@/features/candidates/pages/CandidateDetailPage';
 import CandidateListPage from '@/features/candidates/pages/CandidateListPage';
 import CvReviewDetailPage from '@/features/cv-reviews/pages/CvReviewDetailPage';
 import CvReviewListPage from '@/features/cv-reviews/pages/CvReviewListPage';
 import DashboardPage from '@/features/dashboard/pages/DashboardPage';
+import ReportsPage from '@/features/reports/pages/ReportsPage';
 import MyTasksPage from '@/features/dashboard/pages/MyTasksPage';
 import NotificationSettingsPage from '@/features/notifications/pages/NotificationSettingsPage';
 import AvailabilityPage from '@/features/interviews/pages/AvailabilityPage';
@@ -64,6 +63,11 @@ const appRoutes = [
     path: ROUTES.dashboard,
     element: <DashboardPage />,
     handle: { roles: [Role.HrManager], menu: { label: 'Dashboard', icon: 'pi pi-chart-bar' } },
+  },
+  {
+    path: ROUTES.reports,
+    element: <ReportsPage />,
+    handle: { roles: HR_ROLES, menu: { label: 'Raporlar', icon: 'pi pi-file-export' } },
   },
   {
     path: ROUTES.candidates,
@@ -150,14 +154,6 @@ const appRoutes = [
     handle: { roles: HR_ROLES },
   },
   {
-    path: ROUTES.blacklist,
-    element: <BlacklistPage />,
-    handle: {
-      roles: [...HR_ROLES, Role.SystemAdmin],
-      menu: { label: 'Kara liste', icon: 'pi pi-ban' },
-    },
-  },
-  {
     path: ROUTES.notificationSettings,
     element: <NotificationSettingsPage />,
     handle: { roles: null },
@@ -184,7 +180,6 @@ const appRoutes = [
     element: <EmailTemplatesPage />,
     handle: { roles: SETTINGS_ROLES },
   },
-  { path: ROUTES.holidays, element: <HolidaysPage />, handle: { roles: SETTINGS_ROLES } },
   {
     path: ROUTES.roleMappings,
     element: <RoleMappingsPage />,

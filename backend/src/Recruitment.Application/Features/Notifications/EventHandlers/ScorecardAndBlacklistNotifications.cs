@@ -56,7 +56,7 @@ internal sealed class ScorecardAndBlacklistNotifications(IAppDbContext db, Notif
             NotificationType.BlacklistApprovalPending,
             $"Onay bekleyen kara liste talebi: {candidate}",
             $"{requester} talep etti.",
-            $"/blacklist?selected={e.EntryId}",
+            $"/candidates/{e.CandidateId}?blacklistEntry={e.EntryId}",
             $"blacklist-requested:{e.EntryId}",
             ct);
     }

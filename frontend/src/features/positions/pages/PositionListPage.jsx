@@ -49,7 +49,7 @@ export default function PositionListPage() {
         {position.title}
       </Link>
       <div className="cell-sub">
-        {position.departmentName} · {position.levelName}
+        {[position.departmentName, position.levelName].filter(Boolean).join(' · ')}
       </div>
     </div>
   );

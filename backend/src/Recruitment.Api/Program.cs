@@ -91,6 +91,8 @@ builder.Services.AddOptions<CorsOptions>()
         .WithOrigins(configuration.GetSection("Cors:AllowedOrigins").Get<string[]>() ?? [])
         .AllowAnyHeader()
         .AllowAnyMethod()
+        // Dosya indirmede önerilen ad (Türkçe karakterli) tarayıcı betiğine açılır.
+        .WithExposedHeaders("Content-Disposition")
         // Refresh token cookie'si için gerekli.
         .AllowCredentials()));
 

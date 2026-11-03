@@ -14,6 +14,24 @@ public static class ContactNormalizer
         string.Join(' ', Common.SearchText.Tokenize($"{firstName} {lastName}"));
 
     /// <summary>
+    /// Telefon tam 10 haneli (alan kodu + numara) olmalı. Başındaki "0" veya "+90" sayılmaz:
+    /// "0532 123 45 67" ve "+90 532 123 45 67" geçerli, "532 123 45" geçersizdir.
+    /// </summary>
+    public static bool IsValidPhone(string? phone)
+    {
+        if (string.IsNullOrWhiteSpace(phone))
+            return false;
+
+        var digits = new string(phone.Where(char.IsAsciiDigit).ToArray());
+        if (digits.Length == 12 && digits.StartsWith("90", StringComparison.Ordinal))
+            digits = digits[2..];
+        else if (digits.Length == 11 && digits[0] == '0')
+            digits = digits[1..];
+
+        return digits.Length == PhoneMatchDigits;
+    }
+
+    /// <summary>
     /// Yalnızca rakamlar, son 10 hane: "+90 (532) 123 45 67" ve "0532 123 4567" aynı numaradır.
     /// Rakam yoksa <c>null</c>.
     /// </summary>

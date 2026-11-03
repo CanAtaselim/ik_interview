@@ -7,7 +7,7 @@ namespace Recruitment.Application.Features.Positions.CreatePosition;
 public sealed record CreatePositionCommand(
     string Title,
     Guid DepartmentId,
-    Guid LevelId,
+    Guid? LevelId,
     int Headcount,
     string? JobDescription,
     Guid? ResponsibleHrUserId) : ICommand<Guid>;
@@ -18,7 +18,6 @@ internal sealed class CreatePositionCommandValidator : AbstractValidator<CreateP
     {
         RuleFor(c => c.Title).PositionTitle();
         RuleFor(c => c.DepartmentId).NotEmpty().WithMessage("Birim seçmelisiniz.");
-        RuleFor(c => c.LevelId).NotEmpty().WithMessage("Seviye seçmelisiniz.");
         RuleFor(c => c.Headcount).PositionHeadcount();
         RuleFor(c => c.JobDescription).PositionJobDescription();
     }

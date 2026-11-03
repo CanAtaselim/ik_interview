@@ -3,6 +3,7 @@ import { formatMonths, formatMoneyRange } from '@/shared/utils/format';
 import { districtsOf, PROVINCES } from '@/shared/data/turkeyLocations';
 import {
   cvPrefillPatch,
+  isValidPhone,
   joinMonths,
   splitMonths,
   toScreeningForm,
@@ -202,10 +203,24 @@ describe('CV’den formu önceden doldurma', () => {
   it('etiket sınırını (20) aşmaz', () => {
     const current = { tags: Array.from({ length: 19 }, (_, i) => `etiket${i}`) };
     expect(cvPrefillPatch(current, { skills: ['A', 'B', 'C'] }).tags).toEqual(['A']);
-    expect(cvPrefillPatch({ tags: Array(20).fill('x') }, { skills: ['A'] })).not.toHaveProperty('tags');
+    expect(cvPrefillPatch({ tags: Array(20).fill('x') }, { skills: ['A'] })).not.toHaveProperty(
+      'tags',
+    );
   });
 
   it('yetenek yoksa tags eklemez', () => {
     expect(cvPrefillPatch({ tags: [] }, { skills: [] })).not.toHaveProperty('tags');
   });
+});
+
+describe('isValidPhone', () => {
+  it.each(['0532 123 45 67', '+90 (532) 123 45 67', '5321234567', '905321234567'])(
+    '%s geçerlidir',
+    (phone) => expect(isValidPhone(phone)).toBe(true),
+  );
+
+  it.each(['12', '532 123 45', '0532 123 45 678', '+90 532 123', '05321234'])(
+    '%s geçersizdir',
+    (phone) => expect(isValidPhone(phone)).toBe(false),
+  );
 });

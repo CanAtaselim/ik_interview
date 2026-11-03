@@ -1,7 +1,12 @@
 import { z } from 'zod';
 
-const MIN_PHONE_DIGITS = 7;
-const countDigits = (value) => value.replace(/\D/g, '').length;
+/** Tam 10 hane; başındaki "0" veya "+90" sayılmaz (backend ContactNormalizer.IsValidPhone ile aynı kural). */
+export function isValidPhone(value) {
+  let digits = value.replace(/\D/g, '');
+  if (digits.length === 12 && digits.startsWith('90')) digits = digits.slice(2);
+  else if (digits.length === 11 && digits.startsWith('0')) digits = digits.slice(1);
+  return digits.length === 10;
+}
 
 const optionalUrl = (siteName) =>
   z
@@ -36,8 +41,8 @@ export const candidateSchema = z
       .string()
       .trim()
       .max(30, 'Telefon en fazla 30 karakter olabilir.')
-      .refine((value) => value === '' || countDigits(value) >= MIN_PHONE_DIGITS, {
-        message: 'Geçerli bir telefon numarası yazın.',
+      .refine((value) => value === '' || isValidPhone(value), {
+        message: 'Telefon numarası 10 haneli olmalı (örn. 0532 123 45 67).',
       }),
     linkedInUrl: optionalUrl('LinkedIn'),
     gitHubUrl: optionalUrl('GitHub'),

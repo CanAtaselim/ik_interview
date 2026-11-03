@@ -97,6 +97,11 @@ namespace Recruitment.Infrastructure.Persistence.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("candidate_id");
 
+                    b.Property<string>("Detail")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("detail");
+
                     b.Property<Guid?>("DocumentId")
                         .HasColumnType("uuid")
                         .HasColumnName("document_id");
@@ -1188,7 +1193,7 @@ namespace Recruitment.Infrastructure.Persistence.Migrations
                         .HasColumnType("boolean")
                         .HasColumnName("is_deleted");
 
-                    b.Property<Guid>("LevelId")
+                    b.Property<Guid?>("LevelId")
                         .HasColumnType("uuid")
                         .HasColumnName("level_id");
 
@@ -2110,7 +2115,7 @@ namespace Recruitment.Infrastructure.Persistence.Migrations
                         .HasColumnType("text")
                         .HasColumnName("job_description");
 
-                    b.Property<Guid>("LevelId")
+                    b.Property<Guid?>("LevelId")
                         .HasColumnType("uuid")
                         .HasColumnName("level_id");
 
@@ -2989,7 +2994,6 @@ namespace Recruitment.Infrastructure.Persistence.Migrations
                         .WithMany()
                         .HasForeignKey("LevelId")
                         .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired()
                         .HasConstraintName("fk_hiring_requests_dictionary_items_level_id");
 
                     b.HasOne("Recruitment.Domain.Users.User", null)
@@ -3203,7 +3207,6 @@ namespace Recruitment.Infrastructure.Persistence.Migrations
                         .WithMany()
                         .HasForeignKey("LevelId")
                         .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired()
                         .HasConstraintName("fk_positions_dictionary_items_level_id");
 
                     b.HasOne("Recruitment.Domain.Users.User", null)

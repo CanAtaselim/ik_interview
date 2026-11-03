@@ -18,7 +18,7 @@ internal sealed class GetHiringRequestDetailQueryHandler(IAppDbContext db, ICurr
         if (request is null)
             return HiringRequestErrors.NotFound;
 
-        var dictionaryNames = await db.ItemNames([request.DepartmentId, request.LevelId], ct);
+        var dictionaryNames = await db.ItemNames([request.DepartmentId, ..(request.LevelId is { } level ? new[] { level } : [])], ct);
 
         var userIds = request.ApprovalSteps
             .Select(s => s.DecidedByUserId)
@@ -51,7 +51,7 @@ internal sealed class GetHiringRequestDetailQueryHandler(IAppDbContext db, ICurr
             request.DepartmentId,
             dictionaryNames.GetValueOrDefault(request.DepartmentId, string.Empty),
             request.LevelId,
-            dictionaryNames.GetValueOrDefault(request.LevelId, string.Empty),
+            request.LevelId is { } levelId ? dictionaryNames.GetValueOrDefault(levelId, string.Empty) : string.Empty,
             request.Headcount,
             request.Reason,
             request.ReplacedEmployeeName,

@@ -13,7 +13,7 @@ public interface IHiringRequestFields
 {
     string Title { get; }
     Guid DepartmentId { get; }
-    Guid LevelId { get; }
+    Guid? LevelId { get; }
     int Headcount { get; }
     HiringReason Reason { get; }
     string? ReplacedEmployeeName { get; }
@@ -35,7 +35,6 @@ internal abstract class HiringRequestFieldsValidator<T> : AbstractValidator<T>
             .MaximumLength(HiringRequest.TitleMaxLength)
             .WithMessage($"Pozisyon adı en fazla {HiringRequest.TitleMaxLength} karakter olabilir.");
         RuleFor(c => c.DepartmentId).NotEmpty().WithMessage("Birim seçmelisiniz.");
-        RuleFor(c => c.LevelId).NotEmpty().WithMessage("Seviye seçmelisiniz.");
         RuleFor(c => c.Headcount).InclusiveBetween(1, 1000).WithMessage("Kişi sayısı 1 ile 1000 arasında olmalı.");
         RuleFor(c => c.Reason).IsInEnum().WithMessage("Talep nedenini seçmelisiniz.");
         RuleFor(c => c.Urgency).IsInEnum().WithMessage("Aciliyeti seçmelisiniz.");
@@ -82,13 +81,11 @@ internal static class HiringRequestFieldsExtensions
         var errors = new Dictionary<string, string[]>();
 
         // Pozisyon adı serbest metin değil, yönetim ekranındaki "Pozisyon adları" listesinden seçilir.
-        var title = fields.Title.Trim();
-        if (!await db.DictionaryItems.AnyAsync(
-                d => d.Type == DictionaryType.PositionTitle && d.IsActive && d.Name == title, ct))
+        if (!await db.IsSelectablePositionTitle(fields.Title, ct))
             errors["title"] = ["Listeden geçerli bir pozisyon adı seçmelisiniz."];
         if (!await db.IsSelectable(fields.DepartmentId, DictionaryType.Department, ct))
             errors["departmentId"] = ["Geçerli bir birim seçmelisiniz."];
-        if (!await db.IsSelectable(fields.LevelId, DictionaryType.Level, ct))
+        if (fields.LevelId is { } levelId && !await db.IsSelectable(levelId, DictionaryType.Level, ct))
             errors["levelId"] = ["Geçerli bir seviye seçmelisiniz."];
 
         return errors.Count == 0 ? null : Error.Validation(errors);

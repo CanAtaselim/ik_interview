@@ -25,7 +25,9 @@ internal sealed class GetCandidateTimelineQueryHandler(IAppDbContext db)
                 t.Id,
                 t.Type,
                 t.Summary,
-                users.Where(u => u.Id == t.ActorUserId).Select(u => u.DisplayName).FirstOrDefault(),
+                users.Where(u => u.Id == t.ActorUserId)
+                    .Select(u => u.Title == null || u.Title == "" ? u.DisplayName : u.DisplayName + " (" + u.Title + ")")
+                    .FirstOrDefault(),
                 t.OccurredAt))
             .ToPagedResult(query.Page, query.PageSize, ct);
     }

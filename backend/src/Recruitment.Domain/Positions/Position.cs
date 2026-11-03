@@ -14,7 +14,7 @@ public sealed class Position : AggregateRoot
     public Guid? HiringRequestId { get; private set; }
     public string Title { get; private set; } = default!;
     public Guid DepartmentId { get; private set; }
-    public Guid LevelId { get; private set; }
+    public Guid? LevelId { get; private set; }
     public int Headcount { get; private set; }
     public int FilledCount { get; private set; }
     public Guid? ResponsibleHrUserId { get; private set; }
@@ -29,7 +29,7 @@ public sealed class Position : AggregateRoot
     public static Position Open(
         string title,
         Guid departmentId,
-        Guid levelId,
+        Guid? levelId,
         int headcount,
         string? jobDescription,
         Guid? responsibleHrUserId,

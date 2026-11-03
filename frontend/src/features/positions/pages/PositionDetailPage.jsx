@@ -128,7 +128,7 @@ export default function PositionDetailPage() {
             <StatusTag value={position.status} map={POSITION_STATUS} />
           </span>
         }
-        subtitle={`${position.departmentName} · ${position.levelName}`}
+        subtitle={[position.departmentName, position.levelName].filter(Boolean).join(' · ')}
         actions={
           <>
             <Link

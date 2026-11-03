@@ -280,6 +280,7 @@ export const DICTIONARY_TYPES = Object.freeze([
   { value: 'CandidateSource', label: 'Aday kaynakları' },
   { value: 'InterviewType', label: 'Mülakat tipleri' },
   { value: 'Room', label: 'Toplantı odaları' },
+  { value: 'Language', label: 'Yabancı diller' },
 ]);
 
 /**

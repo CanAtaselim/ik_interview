@@ -38,6 +38,15 @@ public sealed class ApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
 
     private readonly ConcurrentDictionary<string, Lazy<Task>> _positionTitles = new();
 
+    // Pozisyon adı listeden seçildiği için testlerin doğrudan pozisyon açarken kullandığı adlar baştan listeye eklenir.
+    private static readonly string[] StandardPositionTitles =
+    [
+        "Backend Geliştirici", "Dashboard Geliştirici", "Filtre Pozisyonu", "Kıdemli Ürün Yöneticisi",
+        "Rapor Geliştirici", "Veri Mühendisi", "Ürün Yöneticisi",
+    ];
+
+    private Lazy<Task>? _standardTitles;
+
     /// <summary>
     /// Kadro talebinde pozisyon adı "Pozisyon adları" listesinden seçilir; testin kullanacağı adı o
     /// listeye (bir kez) ekler ve aynı adı döner.
@@ -46,7 +55,7 @@ public sealed class ApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
     {
         await _positionTitles.GetOrAdd(name, title => new Lazy<Task>(async () =>
         {
-            var manager = await LoginAs("İnsan Kaynakları", Role.HrManager);
+            var manager = await LoginCore(Ldap.AddUserIn("İnsan Kaynakları", Role.HrManager));
             var response = await manager.Post("/api/v1/dictionaries/PositionTitle/items", new { name = title });
             if (response.StatusCode != HttpStatusCode.Conflict)
                 response.EnsureSuccessStatusCode();
@@ -78,6 +87,20 @@ public sealed class ApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
 
     /// <summary>Dizine önceden eklenmiş kullanıcıyla giriş yapar.</summary>
     public async Task<ApiUser> LoginExisting(string username)
+    {
+        var user = await LoginCore(username);
+        await (_standardTitles ??= new Lazy<Task>(AddStandardPositionTitles)).Value;
+        return user;
+    }
+
+    // Sırayla eklenir: ilk girişler eşzamanlı olursa kullanıcı/birim oluşturma yarışır.
+    private async Task AddStandardPositionTitles()
+    {
+        foreach (var title in StandardPositionTitles)
+            await PositionTitle(title);
+    }
+
+    private async Task<ApiUser> LoginCore(string username)
     {
         var client = CreateApiClient();
 
