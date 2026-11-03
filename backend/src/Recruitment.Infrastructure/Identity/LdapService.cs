@@ -109,8 +109,12 @@ internal sealed class LdapService(
 
     private LdapConnection Connect(NetworkCredential credential)
     {
+        var negotiate = _options.AuthMode == LdapAuthMode.Negotiate;
+        if (negotiate && !OperatingSystem.IsWindows())
+            throw new InvalidOperationException("Ldap:AuthMode=Negotiate yalnızca Windows'ta çalışır; Basic kullanın.");
+
         var connection = new LdapConnection(
-            new LdapDirectoryIdentifier(_options.Host, _options.Port), credential, AuthType.Basic)
+            new LdapDirectoryIdentifier(_options.Host, _options.Port), credential, negotiate ? AuthType.Negotiate : AuthType.Basic)
         {
             Timeout = TimeSpan.FromSeconds(_options.TimeoutSeconds),
         };
@@ -120,7 +124,13 @@ internal sealed class LdapService(
             connection.SessionOptions.ProtocolVersion = 3;
             connection.SessionOptions.ReferralChasing = ReferralChasingOptions.None;
 
-            if (_options.UseSsl)
+            if (negotiate)
+            {
+                // Sertifikasız koruma: Kerberos/NTLM ile bağlantı imzalanır ve şifrelenir.
+                connection.SessionOptions.Signing = true;
+                connection.SessionOptions.Sealing = true;
+            }
+            else if (_options.UseSsl)
                 connection.SessionOptions.SecureSocketLayer = true;
             else
                 StartTls(connection);

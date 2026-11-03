@@ -204,6 +204,8 @@ Set-PoolEnv 'Ldap__UseSsl'                           'true'
 Set-PoolEnv 'Ldap__Domain'                           'SIRKET'
 Set-PoolEnv 'Ldap__BaseDn'                           'DC=sirket,DC=local'
 # Servis hesabı gerekmez: kullanıcı bilgisi ve grupları girişte kullanıcının kendi yetkisiyle okunur.
+# Sertifika güvenilmiyorsa (StartTLS "A local error occurred" hatası) Windows kimlik doğrulamasını seçin:
+Set-PoolEnv 'Ldap__AuthMode'                         'Negotiate'   # şifre ağda imzalı+şifreli gider, sertifika gerekmez; yalnızca IIS (Windows) için. Bu modda Port 389, UseSsl false
 
 # E-posta (boş bırakılırsa e-postalar gönderilmez, yalnızca kayda geçer)
 Set-PoolEnv 'Smtp__Host'                             'smtp.sirket.local'
