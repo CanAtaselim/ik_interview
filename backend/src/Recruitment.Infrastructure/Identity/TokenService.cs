@@ -51,12 +51,12 @@ internal sealed class TokenService(IOptions<JwtOptions> options, TimeProvider cl
         return new AccessToken(token, expiresAt);
     }
 
-    public RefreshTokenValue CreateRefreshToken()
+    public RefreshTokenValue CreateRefreshToken(DateTimeOffset? expiresAt = null)
     {
         var value = Base64Url.EncodeToString(RandomNumberGenerator.GetBytes(RefreshTokenBytes));
-        var expiresAt = clock.GetUtcNow().AddDays(_options.RefreshTokenDays);
+        var expiry = expiresAt ?? clock.GetUtcNow().AddDays(_options.RefreshTokenDays);
 
-        return new RefreshTokenValue(value, HashRefreshToken(value), expiresAt);
+        return new RefreshTokenValue(value, HashRefreshToken(value), expiry);
     }
 
     // Token yüksek entropili rastgele bir değer; tuzsuz SHA-256 yeterli ve aranabilir.

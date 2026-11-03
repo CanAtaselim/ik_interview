@@ -24,11 +24,8 @@ internal sealed class FakeLdapService : ILdapService
         Create("calisan", "Can Öztürk", "Yazılım Geliştirme", "Yazılım Geliştirici", "takimlideri"),
     }.ToDictionary(u => u.Username);
 
-    public Task<bool> Authenticate(string username, string password, CancellationToken ct) =>
-        Task.FromResult(Users.ContainsKey(username) && password == Password);
-
-    public Task<LdapUser?> FindUser(string username, CancellationToken ct) =>
-        Task.FromResult(Users.GetValueOrDefault(username));
+    public Task<LdapUser?> Authenticate(string username, string password, CancellationToken ct) =>
+        Task.FromResult(password == Password ? Users.GetValueOrDefault(username) : null);
 
     private static LdapUser Create(
         string username, string displayName, string department, string title, string? manager, params Role[] roles) =>

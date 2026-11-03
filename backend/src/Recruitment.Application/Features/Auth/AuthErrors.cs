@@ -12,7 +12,7 @@ public static class AuthErrors
         "Auth.LockedOut", "Çok fazla hatalı deneme yapıldı. Lütfen 5 dakika sonra tekrar deneyin.");
 
     public static readonly Error NoAccess =
-        Error.Forbidden("Auth.NoAccess", "Şu anda aktif bir referans çağrısı bulunmuyor.");
+        Error.Forbidden("Auth.NoAccess", "Bu uygulamayı kullanma yetkiniz yok. Yetki için İK ile görüşün.");
 
     public static readonly Error SessionExpired =
         Error.Unauthorized("Auth.SessionExpired", "Oturumunuzun süresi doldu. Lütfen tekrar giriş yapın.");

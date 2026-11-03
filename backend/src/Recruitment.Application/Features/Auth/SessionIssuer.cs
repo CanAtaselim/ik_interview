@@ -7,18 +7,13 @@ using Recruitment.Domain.Users;
 namespace Recruitment.Application.Features.Auth;
 
 /// <summary>
-/// Giriş ve yenilemenin ortak adımı: kullanıcıyı dizinden gelen bilgiyle eşitler, rollerini
-/// AD gruplarından yeniden çözer ve yeni token çifti üretir.
+/// Giriş: kullanıcıyı dizinden gelen bilgiyle eşitler (sistemde yoksa kaydeder), rollerini AD gruplarından
+/// çözüp saklar ve token çifti üretir. Yenileme: saklanan rollerle yeni token üretir, dizine gitmez.
+/// Rolü olmayan kullanıcı sisteme kaydedilir ama içeri alınmaz.
 /// </summary>
 internal sealed class SessionIssuer(IAppDbContext db, ITokenService tokens, TimeProvider clock)
 {
-    /// <param name="replaces">Yenilemede kullanılan eski refresh token; her durumda iptal edilir.</param>
-    public async Task<Result<AuthSession>> Issue(
-        LdapUser directoryUser,
-        string? ipAddress,
-        bool isLogin,
-        RefreshToken? replaces,
-        CancellationToken ct)
+    public async Task<Result<AuthSession>> SignIn(LdapUser directoryUser, string? ipAddress, CancellationToken ct)
     {
         var user = await db.Users.FirstOrDefaultAsync(u => u.Username == directoryUser.Username, ct);
         if (user is null)
@@ -40,20 +35,38 @@ internal sealed class SessionIssuer(IAppDbContext db, ITokenService tokens, Time
         var roles = await ResolveRoles(directoryUser, ct);
         user.SyncRoles(roles);
 
-        if (isLogin)
-            user.RecordLogin(clock);
+        user.RecordLogin(clock);
 
         // Faz 3: rol yoksa burada referans çağrısı kuralı devreye girecek (domain.md §2).
         if (roles.Count == 0)
         {
-            replaces?.Revoke(clock);
             await db.SaveChangesAsync(ct);
             return AuthErrors.NoAccess;
         }
 
+        return await Complete(user, roles, ipAddress, replaces: null, ct);
+    }
+
+    /// <summary>Oturum yenileme: roller girişte saklanandır; süre uzamaz, ilk girişten itibaren 1 gün.</summary>
+    public async Task<Result<AuthSession>> Renew(User user, RefreshToken replaces, string? ipAddress, CancellationToken ct)
+    {
+        var roles = user.Roles.Select(r => r.Role).Distinct().Order().ToList();
+        if (roles.Count == 0)
+        {
+            replaces.Revoke(clock);
+            await db.SaveChangesAsync(ct);
+            return AuthErrors.NoAccess;
+        }
+
+        return await Complete(user, roles, ipAddress, replaces, ct);
+    }
+
+    private async Task<Result<AuthSession>> Complete(
+        User user, List<Role> roles, string? ipAddress, RefreshToken? replaces, CancellationToken ct)
+    {
         const AccessScope scope = AccessScope.Full;
         var accessToken = tokens.CreateAccessToken(user, roles, scope);
-        var refreshValue = tokens.CreateRefreshToken();
+        var refreshValue = tokens.CreateRefreshToken(replaces?.ExpiresAt);
         var refreshToken = RefreshToken.Issue(user.Id, refreshValue.Hash, refreshValue.ExpiresAt, ipAddress);
 
         db.RefreshTokens.Add(refreshToken);

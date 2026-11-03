@@ -43,11 +43,8 @@ public sealed class TestLdapService : ILdapService
 
     public void Disable(string username) => _users[username] = _users[username] with { IsEnabled = false };
 
-    public Task<bool> Authenticate(string username, string password, CancellationToken ct) =>
-        Task.FromResult(_users.ContainsKey(username) && password == Password);
-
-    public Task<LdapUser?> FindUser(string username, CancellationToken ct) =>
-        Task.FromResult(_users.GetValueOrDefault(username));
+    public Task<LdapUser?> Authenticate(string username, string password, CancellationToken ct) =>
+        Task.FromResult(password == Password ? _users.GetValueOrDefault(username) : null);
 
     private static HashSet<string> GroupsFor(Role[] roles) =>
         roles.Select(role => $"Recruitment-{role}").ToHashSet(StringComparer.OrdinalIgnoreCase);

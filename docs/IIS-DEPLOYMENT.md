@@ -203,8 +203,7 @@ Set-PoolEnv 'Ldap__Port'                             '636'
 Set-PoolEnv 'Ldap__UseSsl'                           'true'
 Set-PoolEnv 'Ldap__Domain'                           'SIRKET'
 Set-PoolEnv 'Ldap__BaseDn'                           'DC=sirket,DC=local'
-Set-PoolEnv 'Ldap__BindUser'                         'svc_ik_ldap'
-Set-PoolEnv 'Ldap__BindPassword'                     '<servis hesabı şifresi>'
+# Servis hesabı gerekmez: kullanıcı bilgisi ve grupları girişte kullanıcının kendi yetkisiyle okunur.
 
 # E-posta (boş bırakılırsa e-postalar gönderilmez, yalnızca kayda geçer)
 Set-PoolEnv 'Smtp__Host'                             'smtp.sirket.local'

@@ -75,6 +75,11 @@ public sealed class AuthEndpointsTests(ApiFactory factory) : IClassFixture<ApiFa
 
         response.StatusCode.ShouldBe(HttpStatusCode.Forbidden);
         SetCookieHeader(response).ShouldBeEmpty();
+
+        // Rolü olmayan kullanıcı içeri alınmaz ama sisteme kaydedilir.
+        using var scope = factory.Services.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        (await db.Users.AnyAsync(u => u.Username == username)).ShouldBeTrue();
     }
 
     [Fact]
@@ -198,44 +203,53 @@ public sealed class AuthEndpointsTests(ApiFactory factory) : IClassFixture<ApiFa
     }
 
     [Fact]
-    public async Task Refresh_WhenRolesChangedInDirectory_IssuesTokenWithNewRoles()
+    public async Task Refresh_KeepsRolesFromLogin_AndDoesNotAskTheDirectory()
     {
         var username = factory.Ldap.AddUser(Role.HrSpecialist);
         var cookie = RefreshCookie(await Login(username));
+        // Dizinde sonradan olan değişiklik bir sonraki girişe kadar yansımaz.
         factory.Ldap.SetRoles(username, Role.HrManager);
+        factory.Ldap.Disable(username);
 
         var response = await Refresh(cookie);
 
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var body = await response.Content.ReadFromJsonAsync<JsonElement>();
         body.GetProperty("user").GetProperty("roles").EnumerateArray().Select(r => r.GetString())
-            .ShouldBe(["HrManager"]);
+            .ShouldBe(["HrSpecialist"]);
     }
 
     [Fact]
-    public async Task Refresh_WhenAllRolesRemovedInDirectory_Returns403AndEndsSession()
+    public async Task Refresh_DoesNotExtendTheSession_UntilThePasswordIsEnteredAgain()
     {
         var username = factory.Ldap.AddUser(Role.HrSpecialist);
         var cookie = RefreshCookie(await Login(username));
-        factory.Ldap.SetRoles(username);
+        await Refresh(cookie);
 
-        var response = await Refresh(cookie);
+        using var scope = factory.Services.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        var expiries = await db.RefreshTokens
+            .Where(t => db.Users.Any(u => u.Username == username && u.Id == t.UserId))
+            .Select(t => t.ExpiresAt)
+            .Distinct()
+            .ToListAsync();
 
-        response.StatusCode.ShouldBe(HttpStatusCode.Forbidden);
-        factory.Ldap.SetRoles(username, Role.HrSpecialist);
+        expiries.Count.ShouldBe(1);
+        expiries[0].ShouldBeLessThanOrEqualTo(DateTimeOffset.UtcNow.AddDays(1).AddMinutes(1));
+    }
+
+    [Fact]
+    public async Task Refresh_AfterUserIsDeactivatedInTheApp_Returns401()
+    {
+        var username = factory.Ldap.AddUser(Role.HrSpecialist);
+        var cookie = RefreshCookie(await Login(username));
+        using (var scope = factory.Services.CreateScope())
+        {
+            var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+            await db.Database.ExecuteSqlAsync($"update users set is_active = false where username = {username}");
+        }
+
         (await Refresh(cookie)).StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
-    }
-
-    [Fact]
-    public async Task Refresh_WhenUserDisabledInDirectory_Returns401()
-    {
-        var username = factory.Ldap.AddUser(Role.HrSpecialist);
-        var cookie = RefreshCookie(await Login(username));
-        factory.Ldap.Disable(username);
-
-        var response = await Refresh(cookie);
-
-        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     [Fact]

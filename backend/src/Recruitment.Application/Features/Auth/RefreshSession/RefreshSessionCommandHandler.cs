@@ -7,7 +7,6 @@ namespace Recruitment.Application.Features.Auth.RefreshSession;
 
 internal sealed class RefreshSessionCommandHandler(
     IAppDbContext db,
-    ILdapService ldap,
     ITokenService tokens,
     SessionIssuer sessions,
     TimeProvider clock,
@@ -40,17 +39,17 @@ internal sealed class RefreshSessionCommandHandler(
         if (token.IsExpired(clock))
             return AuthErrors.SessionExpired;
 
+        // Yenilemede dizine gidilmez: roller girişte okunup saklanır. Süre mutlaktır (girişten itibaren),
+        // yenileme süreyi uzatmaz; süre dolunca kullanıcı şifresini yeniden girer.
         var user = await db.Users.AsNoTracking().FirstOrDefaultAsync(u => u.Id == token.UserId, ct);
-        var directoryUser = user is null ? null : await ldap.FindUser(user.Username, ct);
-
-        if (directoryUser is null || !directoryUser.IsEnabled)
+        if (user is null || !user.IsActive)
         {
             token.Revoke(clock);
             await db.SaveChangesAsync(ct);
             return AuthErrors.SessionExpired;
         }
 
-        return await sessions.Issue(directoryUser, command.IpAddress, isLogin: false, replaces: token, ct);
+        return await sessions.Renew(user, token, command.IpAddress, ct);
     }
 
     // İptal edilmiş token'ın yeniden kullanılması çalınma işaretidir: kullanıcının tüm oturumları kapatılır.

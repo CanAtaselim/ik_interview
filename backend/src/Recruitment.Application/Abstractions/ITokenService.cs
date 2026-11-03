@@ -12,7 +12,8 @@ public interface ITokenService
 {
     AccessToken CreateAccessToken(User user, IReadOnlyCollection<Role> roles, AccessScope scope);
 
-    RefreshTokenValue CreateRefreshToken();
+    /// <param name="expiresAt">Verilirse süre uzatılmaz, bu bitiş kullanılır (yenilemede ilk girişin bitişi).</param>
+    RefreshTokenValue CreateRefreshToken(DateTimeOffset? expiresAt = null);
 
     string HashRefreshToken(string value);
 }

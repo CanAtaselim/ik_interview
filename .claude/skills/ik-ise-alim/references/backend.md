@@ -233,8 +233,6 @@ Gizli değerler boş bırakılır; geliştirmede `dotnet user-secrets`, sunucuda
     "UseSsl": false,
     "Domain": "",
     "BaseDn": "",
-    "BindUser": "",
-    "BindPassword": "",
     "UserSearchFilter": "(sAMAccountName={0})",
     "TimeoutSeconds": 10
   },
@@ -243,7 +241,7 @@ Gizli değerler boş bırakılır; geliştirmede `dotnet user-secrets`, sunucuda
     "Audience": "recruitment-web",
     "SigningKey": "",
     "AccessTokenMinutes": 15,
-    "RefreshTokenDays": 7
+    "RefreshTokenDays": 1
   },
   "Smtp": {
     "Host": "",

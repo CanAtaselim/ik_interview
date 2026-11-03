@@ -7,12 +7,13 @@ POST /api/v1/auth/login { username, password }
   1. Kullanıcı adını normalize et (küçük harf, "DOMAIN\" veya "@domain" kısmını at).
   2. LdapService.Authenticate: kullanıcının kendi kimliğiyle bind → başarısızsa 401
      "Kullanıcı adı veya şifre hatalı." (hangisinin hatalı olduğunu söyleme)
-  3. LdapService.GetUser: servis hesabıyla (BindUser) kullanıcıyı ara; displayName, mail,
-     department, title, manager, memberOf (iç içe gruplar dahil) oku.
-  4. User kaydını oluştur/güncelle (upsert), LastLoginAt yaz.
-  5. Rolleri çöz: memberOf ∩ RoleGroupMapping.
-  6. Rol yoksa referans kuralı (domain.md §2): aktif kampanya → Referrer;
-     önerisi var → Referrer (read-only); hiçbiri → 403 "Şu anda aktif bir referans çağrısı bulunmuyor."
+  3. Aynı bağlantıdan, yine kullanıcının kendi yetkisiyle displayName, mail, department, title,
+     manager, memberOf (iç içe gruplar dahil) okunur. SERVİS HESABI YOKTUR: AD'de her kullanıcı kendi
+     kaydını ve gruplarını okuyabilir. Dizin yalnızca girişte okunur, oturum yenilemede sorulmaz.
+  4. User kaydını oluştur/güncelle (upsert; sistemde yoksa kaydedilir), LastLoginAt yaz.
+  5. Rolleri çöz: memberOf ∩ RoleGroupMapping (rol AD grubundan gelir; her girişte yeniden çözülür).
+  6. Rol yoksa kullanıcı sisteme kaydedilmiş olur ama içeri alınmaz: 403 "Bu uygulamayı kullanma yetkiniz
+     yok. Yetki için İK ile görüşün." (Faz 3: referans kuralı, domain.md §2.)
   7. Access token + refresh token üret, dön.
 ```
 
@@ -42,11 +43,11 @@ POST /api/v1/auth/login { username, password }
 
 İmza HS256, anahtar `Jwt:SigningKey` (en az 32 byte, user-secrets/ortam değişkeni). `ClockSkew` 30 sn.
 
-**Refresh token (7 gün):**
+**Refresh token (1 gün, mutlak):**
 - Rastgele 64 byte, veritabanında **hash'i** saklanır (`refresh_tokens`: user_id, token_hash, expires_at, created_by_ip, revoked_at, replaced_by).
 - Frontend'e `HttpOnly; Secure; SameSite=Strict` cookie olarak verilir (path `/api/v1/auth`).
 - `POST /api/v1/auth/refresh`: rotasyon — eskisi iptal, yenisi verilir. İptal edilmiş token tekrar kullanılırsa o kullanıcının tüm refresh token'ları iptal edilir (çalınma tespiti).
-- Refresh sırasında roller ve referans kampanyası durumu **yeniden** hesaplanır (kampanya bittiyse scope `referral-readonly`'e düşer, rol AD'den kaldırıldıysa düşer).
+- Refresh sırasında AD'ye gidilmez; girişte saklanan roller kullanılır. Süre **mutlaktır**: yenilenen token ilk girişin bitiş zamanını taşır (uzamaz), 1 gün sonra kullanıcı şifresini yeniden girer. AD'de rol/grup değişikliği veya hesabın kapatılması en geç bu süre içinde etkili olur (`Jwt:RefreshTokenDays`).
 - `POST /api/v1/auth/logout`: refresh token iptal, cookie silinir.
 
 ## Yetki politikaları

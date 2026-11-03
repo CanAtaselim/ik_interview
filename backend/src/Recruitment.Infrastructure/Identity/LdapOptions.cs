@@ -19,11 +19,6 @@ public sealed class LdapOptions
 
     public string BaseDn { get; init; } = string.Empty;
 
-    /// <summary>Kullanıcı ve grup araması yapan servis hesabı.</summary>
-    public string BindUser { get; init; } = string.Empty;
-
-    public string BindPassword { get; init; } = string.Empty;
-
     [Required]
     public string UserSearchFilter { get; init; } = "(sAMAccountName={0})";
 

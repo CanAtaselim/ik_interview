@@ -17,9 +17,10 @@ public sealed record LdapUser(
 
 public interface ILdapService
 {
-    /// <summary>Kullanıcının kendi kimliğiyle bind dener. Boş şifre her zaman reddedilir.</summary>
-    Task<bool> Authenticate(string username, string password, CancellationToken ct);
-
-    /// <summary>Servis hesabıyla kullanıcıyı arar; bulunamazsa <c>null</c>.</summary>
-    Task<LdapUser?> FindUser(string username, CancellationToken ct);
+    /// <summary>
+    /// Kullanıcının kendi kimliğiyle bind dener; başarılıysa profilini ve gruplarını aynı bağlantıdan, yine
+    /// kendi yetkisiyle okuyup döner (servis hesabı gerekmez). Kimlik bilgileri hatalıysa <c>null</c>.
+    /// Boş şifre her zaman reddedilir. Bilgi yalnızca girişte okunur; oturum yenilemede dizine gidilmez.
+    /// </summary>
+    Task<LdapUser?> Authenticate(string username, string password, CancellationToken ct);
 }

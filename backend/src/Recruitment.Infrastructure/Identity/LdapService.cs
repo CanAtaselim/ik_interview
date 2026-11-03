@@ -30,40 +30,44 @@ internal sealed class LdapService(
 
     private readonly LdapOptions _options = options.Value;
 
-    public Task<bool> Authenticate(string username, string password, CancellationToken ct)
+    public Task<LdapUser?> Authenticate(string username, string password, CancellationToken ct)
     {
         // Boş şifreyle bind anonim sayılıp başarılı dönebilir.
         if (string.IsNullOrWhiteSpace(username) || string.IsNullOrEmpty(password))
-            return Task.FromResult(false);
+            return Task.FromResult<LdapUser?>(null);
 
         return Task.Run(
             () =>
             {
                 try
                 {
+                    // Bilgiler kullanıcının kendi yetkisiyle okunur: AD'de her kullanıcı kendi kaydını ve
+                    // grup üyeliklerini okuyabilir, bu yüzden servis hesabı tutulmaz.
                     using var connection = Connect(new NetworkCredential(ToBindName(username), password));
-                    return true;
+                    return Read(connection, username);
                 }
                 catch (LdapException ex) when (ex.ErrorCode == InvalidCredentials)
                 {
-                    return false;
+                    return null;
                 }
             },
             ct);
     }
 
-    public Task<LdapUser?> FindUser(string username, CancellationToken ct) => Task.Run(() => Find(username), ct);
-
-    private LdapUser? Find(string username)
+    private LdapUser Read(LdapConnection connection, string username)
     {
-        using var connection = Connect(new NetworkCredential(_options.BindUser, _options.BindPassword));
-
         var userFilter = string.Format(
             CultureInfo.InvariantCulture, _options.UserSearchFilter, EscapeFilterValue(username));
         var entry = Search(connection, _options.BaseDn, userFilter, SearchScope.Subtree, UserAttributes)
             .FirstOrDefault();
         if (entry is null)
-            return null;
+        {
+            // Kimlik doğrulandı ama kayıt aranan tabanın dışında; grup bilgisi olmadığından rol çıkmaz.
+            logger.LogWarning("Kimliği doğrulanan kullanıcı dizinde bulunamadı: {Username}", username);
+            return new LdapUser(
+                username, username, null, null, null, null, IsEnabled: true,
+                new HashSet<string>(StringComparer.OrdinalIgnoreCase));
+        }
 
         var groups = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         var groupFilter = $"(member:{MatchingRuleInChain}:={EscapeFilterValue(entry.DistinguishedName)})";
