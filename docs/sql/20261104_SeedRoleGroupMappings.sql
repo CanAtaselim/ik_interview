@@ -14,6 +14,7 @@ FROM (VALUES
     -- İK
     ('G_HR',              'HrSpecialist'),
     ('G_HR_LEADER',       'HrManager'),
+    ('G_HR_LEADER',       'SystemAdmin'),   -- İK Yöneticisi aynı zamanda sistem yöneticisi
     -- Takım liderleri
     ('G_DEV_LEADER',      'TeamLead'),
     ('G_IT_LEADER',       'TeamLead'),
@@ -21,9 +22,7 @@ FROM (VALUES
     ('G_DATA_LEADERS',    'TeamLead'),
     -- Birim yöneticileri
     ('G_MANAGERS',        'DepartmentManager')
-    -- Sistem yöneticisi grubu henüz belli değil; adı netleşince satırı açın:
-    -- ,('<SISTEM_ADMIN_GRUBU>', 'SystemAdmin')
-    -- Üst yönetim (Executive) için de grup adı verilirse aynı biçimde eklenir.
+    -- Üst yönetim (Executive) için grup adı verilirse aynı biçimde eklenir.
 ) AS v(group_name, role)
 WHERE NOT EXISTS (
     SELECT 1 FROM role_group_mappings m
