@@ -144,6 +144,63 @@ public sealed class PipelineEndpointsTests(ApiFactory factory) : IClassFixture<A
         card.GetProperty("canUndo").GetBoolean().ShouldBeTrue();
     }
 
+    private async Task<(Guid ApplicationId, string Email)> ProcessWithEmail(ApiUser hr)
+    {
+        var email = $"{Guid.NewGuid():N}@aday.com";
+        var candidateId = await hr.Create("/api/v1/candidates", new { firstName = "Deniz", lastName = "Aday", email });
+        var applicationId = await Start(hr, candidateId, await CreatePosition(hr));
+        return (applicationId, email);
+    }
+
+    [Fact]
+    public async Task Close_AsRejected_SendsTheRejectionEmailOnce_ButWithdrawnSendsNothing()
+    {
+        var hr = await Hr();
+        var reasonId = await hr.DictionaryItemId("RejectionReason", "Deneyim yetersiz");
+        var (rejectedId, rejectedEmail) = await ProcessWithEmail(hr);
+        var (withdrawnId, withdrawnEmail) = await ProcessWithEmail(hr);
+
+        (await hr.Post($"/api/v1/applications/{rejectedId}/close", new { status = "Rejected", rejectionReasonId = reasonId }))
+            .StatusCode.ShouldBe(HttpStatusCode.NoContent);
+        (await hr.Post($"/api/v1/applications/{withdrawnId}/close", new { status = "Withdrawn", rejectionReasonId = reasonId }))
+            .StatusCode.ShouldBe(HttpStatusCode.NoContent);
+        await factory.ProcessOutboxAndEmails();
+        await factory.ProcessOutboxAndEmails();
+
+        var mail = factory.Emails.To(rejectedEmail).Single();
+        mail.Subject.ShouldBe("Başvurunuz hakkında: Backend Geliştirici");
+        mail.HtmlBody.ShouldContain("devam etmemeye karar verdik");
+        factory.Emails.To(withdrawnEmail).ShouldBeEmpty();
+    }
+
+    [Fact]
+    public async Task NotifyOnHold_SendsTheProcessContinuesEmail_OnlyForActiveProcesses()
+    {
+        var hr = await Hr();
+        var (applicationId, email) = await ProcessWithEmail(hr);
+
+        (await hr.Post($"/api/v1/applications/{applicationId}/notify-on-hold")).StatusCode.ShouldBe(HttpStatusCode.NoContent);
+        await factory.ProcessOutboxAndEmails();
+
+        var mail = factory.Emails.To(email).Single();
+        mail.Subject.ShouldBe("Başvuru süreciniz devam ediyor: Backend Geliştirici");
+
+        var reasonId = await hr.DictionaryItemId("RejectionReason", "Deneyim yetersiz");
+        await hr.Post($"/api/v1/applications/{applicationId}/close", new { status = "Withdrawn", rejectionReasonId = reasonId });
+        (await hr.Post($"/api/v1/applications/{applicationId}/notify-on-hold")).StatusCode.ShouldBe(HttpStatusCode.UnprocessableEntity);
+        (await hr.Post($"/api/v1/applications/{Guid.NewGuid()}/notify-on-hold")).StatusCode.ShouldBe(HttpStatusCode.NotFound);
+    }
+
+    [Fact]
+    public async Task NotifyOnHold_ForCandidateWithoutEmail_IsRejected()
+    {
+        var hr = await Hr();
+        var candidateId = await hr.Create("/api/v1/candidates", new { firstName = "Mail", lastName = "Yok", phone = "0532 123 45 67" });
+        var applicationId = await Start(hr, candidateId, await CreatePosition(hr));
+
+        (await hr.Post($"/api/v1/applications/{applicationId}/notify-on-hold")).StatusCode.ShouldBe(HttpStatusCode.UnprocessableEntity);
+    }
+
     [Fact]
     public async Task Close_RequiresReason_ThenMovesCardToClosedList()
     {

@@ -53,3 +53,11 @@ export async function getOpenPositions() {
   const { data } = await http.get('/positions', { params: { status: 'Open', pageSize: 100 } });
   return data.items;
 }
+
+/**
+ * Adaya "süreciniz devam ediyor" e-postasını gönderir (e-posta kuyruğa alınır).
+ * @param {string} applicationId
+ */
+export async function notifyApplicationOnHold(applicationId) {
+  await http.post(`/applications/${applicationId}/notify-on-hold`);
+}

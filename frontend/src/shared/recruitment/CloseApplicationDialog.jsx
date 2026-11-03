@@ -103,6 +103,11 @@ export default function CloseApplicationDialog({ application, onClose, onClosed 
               onChange={(event) => setStatus(event.value)}
             />
           </FormField>
+          {status === 'Rejected' && (
+            <small className="form-field__hint">
+              Adayın e-posta adresi kayıtlıysa olumsuz sonuç e-postası otomatik gönderilir.
+            </small>
+          )}
         </div>
 
         <div className="form-grid__wide">

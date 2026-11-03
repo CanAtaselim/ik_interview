@@ -267,6 +267,7 @@ export default function CandidateDetailPage() {
           <TabPanel header={countLabel('Süreçler', applications.length)}>
             <ApplicationsTab
               applications={applications}
+              candidateEmail={candidate.email}
               onAdd={() => setDialog('add-position')}
               onClose={(application) => setDialog({ close: application })}
             />

@@ -92,6 +92,8 @@ function useRecruitmentMutation(mutationFn) {
 export const useStartApplication = () => useRecruitmentMutation(applications.startApplication);
 
 export const useCloseApplication = () => useRecruitmentMutation(applications.closeApplication);
+export const useNotifyApplicationOnHold = () =>
+  useRecruitmentMutation(applications.notifyApplicationOnHold);
 
 export const useUndoApplicationChange = () =>
   useRecruitmentMutation(applications.undoApplicationChange);

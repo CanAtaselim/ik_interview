@@ -1,21 +1,38 @@
 import { Button } from 'primereact/button';
+import { confirmDialog } from 'primereact/confirmdialog';
 import { Link } from 'react-router';
 import EmptyState from '@/shared/components/EmptyState';
 import StatusTag from '@/shared/components/StatusTag';
 import { useToast } from '@/shared/components/toast';
 import { APPLICATION_STATUS } from '@/shared/constants/labels';
 import { ROUTES } from '@/shared/constants/routes';
-import { useUndoApplicationChange } from '@/shared/recruitment/queries';
+import { useNotifyApplicationOnHold, useUndoApplicationChange } from '@/shared/recruitment/queries';
 import { getErrorMessage } from '@/shared/utils/errors';
 import { formatDate, formatDaysSince } from '@/shared/utils/format';
 
 /**
  * Adayın pozisyonlardaki süreçleri. Aday aynı anda birden çok pozisyonda süreçte olabilir.
- * @param {{ applications: object[], onAdd: () => void, onClose: (application: object) => void }} props
+ * @param {{ applications: object[], candidateEmail?: string | null, onAdd: () => void,
+ *   onClose: (application: object) => void }} props
  */
-export default function ApplicationsTab({ applications, onAdd, onClose }) {
+export default function ApplicationsTab({ applications, candidateEmail, onAdd, onClose }) {
   const toast = useToast();
   const undo = useUndoApplicationChange();
+  const notifyOnHold = useNotifyApplicationOnHold();
+
+  // Adaya "süreciniz devam ediyor" e-postası; yanlışlıkla tıklamaya karşı onay istenir.
+  const askNotifyOnHold = (application) =>
+    confirmDialog({
+      header: 'Aday bilgilendirilsin mi?',
+      message: `${candidateEmail} adresine “${application.positionTitle}” başvurusunun devam ettiğini bildiren e-posta gönderilecek.`,
+      acceptLabel: 'Gönder',
+      rejectLabel: 'Vazgeç',
+      accept: () =>
+        notifyOnHold.mutate(application.id, {
+          onSuccess: () => toast.success('E-posta gönderilmek üzere kuyruğa alındı.'),
+          onError: (error) => toast.error(getErrorMessage(error)),
+        }),
+    });
 
   const addButton = <Button label="Pozisyona ekle" icon="pi pi-plus" onClick={onAdd} />;
 
@@ -72,6 +89,18 @@ export default function ApplicationsTab({ applications, onAdd, onClose }) {
                       onError: (error) => toast.error(getErrorMessage(error)),
                     })
                   }
+                />
+              )}
+              {isActive && (
+                <Button
+                  label="Süreç devam ediyor e-postası"
+                  icon="pi pi-envelope"
+                  outlined
+                  severity="secondary"
+                  disabled={!candidateEmail || notifyOnHold.isPending}
+                  tooltip={candidateEmail ? undefined : 'Adayın e-posta adresi kayıtlı değil'}
+                  tooltipOptions={{ showOnDisabled: true }}
+                  onClick={() => askNotifyOnHold(application)}
                 />
               )}
               {isActive && (

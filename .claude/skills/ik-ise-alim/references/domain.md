@@ -275,7 +275,7 @@ Kurallar: pozisyon bazında zorunlu/opsiyonel; mevcut işveren onay olmadan aran
 ## 17. Bildirimler, sözlükler, audit
 
 > **Bekleyen değişiklikler:**
-> - CR-16/17/18: yeni e-posta şablonları `Rejection` (Olumsuz) ve `OnHold` (Beklemede / süreç devam ediyor). Olumsuz mail aday olumsuz işaretlenince otomatik gider (aday+süreç başına tek); Beklemede maili İK'nın butonuyla manuel gider.
+> - Aday e-postaları: `RejectionCandidate` (Olumsuz) süreç `Rejected` olunca otomatik gider (aday çekilirse gitmez; süreç başına tek; `Recruitment:AutoSendRejectionEmail` ile kapatılır); `OnHoldCandidate` (Süreç devam ediyor) İK'nın aday kartındaki butonuyla elle gider (CR-16/17/18 ✅).
 > - İş günü hesabı yalnızca hafta sonlarını sayar; Resmi Tatiller ekranı yoktur (CR-04 ✅). Sözlükler arasında `Language` (yabancı diller) vardır.
 > - CR-19/20: raporlara filtre; her ekranda o ekrana ait rapor butonu.
 > - "Bekleyen işlerim" listeleri en yeni üstte sıralanır (istemci tarafında; CR-21 ✅).

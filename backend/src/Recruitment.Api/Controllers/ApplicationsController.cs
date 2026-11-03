@@ -6,6 +6,7 @@ using Recruitment.Application.Features.Pipeline.CloseApplication;
 using Recruitment.Application.Features.Pipeline.GetCandidateApplications;
 using Recruitment.Application.Features.Pipeline.GetPositionPipeline;
 using Recruitment.Application.Features.Pipeline.MoveApplication;
+using Recruitment.Application.Features.Pipeline.SendOnHoldEmail;
 using Recruitment.Application.Features.Pipeline.SearchActiveApplications;
 using Recruitment.Application.Features.Pipeline.StartApplication;
 using Recruitment.Application.Features.Pipeline.UndoApplicationChange;
@@ -51,6 +52,11 @@ public sealed class ApplicationsController(IDispatcher dispatcher) : ControllerB
         var command = new CloseApplicationCommand(id, request.Status, request.RejectionReasonId, request.Note);
         return (await dispatcher.Send(command, ct)).ToActionResult(this);
     }
+
+    /// <summary>Adaya "süreciniz devam ediyor" e-postasını elle gönderir.</summary>
+    [HttpPost("applications/{id:guid}/notify-on-hold")]
+    public async Task<IActionResult> NotifyOnHold(Guid id, CancellationToken ct) =>
+        (await dispatcher.Send(new SendOnHoldEmailCommand(id), ct)).ToActionResult(this);
 
     [HttpPost("applications/{id:guid}/undo")]
     public async Task<IActionResult> Undo(Guid id, CancellationToken ct) =>

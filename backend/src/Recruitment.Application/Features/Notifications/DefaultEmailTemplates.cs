@@ -63,6 +63,27 @@ public static class DefaultEmailTemplates
             <p>Yeni bir görüşme planlandığında sizinle iletişime geçeceğiz.</p>
             """,
             "{AdayAdi}, {Pozisyon}, {MulakatTarihi}, {MulakatTipi}"),
+        new(
+            EmailTemplateCodes.RejectionCandidate,
+            "Olumsuz sonuç (adaya)",
+            "Başvurunuz hakkında: {Pozisyon}",
+            """
+            <p>Merhaba {AdayAdi},</p>
+            <p><strong>{Pozisyon}</strong> pozisyonuna gösterdiğiniz ilgi ve süreç boyunca ayırdığınız zaman için teşekkür ederiz.</p>
+            <p>Yaptığımız değerlendirmeler sonucunda bu pozisyon için sizinle devam etmemeye karar verdik. Bu karar, ileride açılacak diğer pozisyonlar için başvurunuzu değerlendirmemize engel değildir.</p>
+            <p>Kariyerinizde başarılar dileriz.</p>
+            """,
+            "{AdayAdi}, {Pozisyon}"),
+        new(
+            EmailTemplateCodes.OnHoldCandidate,
+            "Süreç devam ediyor (adaya)",
+            "Başvuru süreciniz devam ediyor: {Pozisyon}",
+            """
+            <p>Merhaba {AdayAdi},</p>
+            <p><strong>{Pozisyon}</strong> pozisyonu için başvuru süreciniz devam etmektedir.</p>
+            <p>Değerlendirmelerimiz tamamlandığında sizinle yeniden iletişime geçeceğiz. Gösterdiğiniz sabır için teşekkür ederiz.</p>
+            """,
+            "{AdayAdi}, {Pozisyon}"),
     ];
 
     public static Definition? Find(string code) => All.FirstOrDefault(t => t.Code == code);

@@ -22,6 +22,12 @@ public static class PipelineErrors
         ErrorType.BusinessRule,
         Extensions: new Dictionary<string, object?> { ["pendingCount"] = pendingCount, ["canBypass"] = canBypass });
 
+    public static readonly Error OnHoldMailNeedsActiveProcess = Error.BusinessRule(
+        "Application.OnHoldMailNeedsActiveProcess", "“Süreç devam ediyor” e-postası yalnızca devam eden süreçler için gönderilir.");
+
+    public static readonly Error CandidateHasNoEmail = Error.BusinessRule(
+        "Application.CandidateHasNoEmail", "Adayın e-posta adresi kayıtlı değil; e-posta gönderilemez.");
+
     public static readonly Error TemplateMissing = Error.BusinessRule(
         "Application.TemplateMissing", "Süreç aşamaları tanımlı değil. Sistem yöneticinize haber verin.");
 }

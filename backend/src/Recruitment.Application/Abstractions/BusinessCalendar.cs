@@ -11,6 +11,9 @@ public sealed class RecruitmentOptions
     /// <summary>Süre dolduktan kaç iş günü sonra gecikme İK'ya bildirilir.</summary>
     public int CvReviewEscalationBusinessDays { get; init; } = 2;
 
+    /// <summary>Aday olumsuz sonlandığında (Reddedildi) olumsuz e-postası kendiliğinden gönderilsin mi?</summary>
+    public bool AutoSendRejectionEmail { get; init; } = true;
+
     /// <summary>E-postalardaki bağlantıların açacağı uygulama adresi.</summary>
     public string FrontendBaseUrl { get; init; } = "http://localhost:8080";
 }

@@ -42,4 +42,6 @@ public static class EmailTemplateCodes
     public const string InterviewInvitationCandidate = "InterviewInvitationCandidate";
     public const string InterviewUpdatedCandidate = "InterviewUpdatedCandidate";
     public const string InterviewCancelledCandidate = "InterviewCancelledCandidate";
+    public const string RejectionCandidate = "RejectionCandidate";
+    public const string OnHoldCandidate = "OnHoldCandidate";
 }
