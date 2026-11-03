@@ -17,7 +17,13 @@ import { formatFileSize } from '@/shared/utils/format';
 import { findDuplicates, prefillFromCv } from '../api';
 import { useDocumentType } from '../documentTypes';
 import { useCreateCandidate, useUpdateCandidate, useUploadDocument } from '../queries';
-import { candidateSchema, cvPrefillPatch, toCandidateForm, toCandidateInput } from '../schemas';
+import {
+  candidateSchema,
+  cvPrefillPatch,
+  normalizePhone,
+  toCandidateForm,
+  toCandidateInput,
+} from '../schemas';
 import DuplicateWarning from './DuplicateWarning';
 
 const DUPLICATE_CODE = 'Candidate.PossibleDuplicate';
@@ -211,10 +217,15 @@ export default function CandidateFormDialog({ candidate = null, onClose, onSaved
           <InputText
             id="phone"
             type="tel"
+            inputMode="numeric"
             autoComplete="off"
-            placeholder="05xx xxx xx xx"
+            placeholder="5xx xxx xx xx"
             invalid={Boolean(errors.phone)}
-            {...register('phone', { onBlur: checkWarnings })}
+            {...register('phone', {
+              onBlur: checkWarnings,
+              // Yazarken/yapıştırırken: sadece rakam, başında 0 yok, en çok 10 hane.
+              onChange: (event) => setValue('phone', normalizePhone(event.target.value)),
+            })}
           />
         </FormField>
 

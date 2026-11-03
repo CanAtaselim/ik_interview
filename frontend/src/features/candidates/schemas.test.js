@@ -5,6 +5,7 @@ import {
   cvPrefillPatch,
   isValidPhone,
   joinMonths,
+  normalizePhone,
   splitMonths,
   toScreeningForm,
   toScreeningInput,
@@ -200,7 +201,7 @@ describe('CV’den formu önceden doldurma', () => {
       firstName: 'Ayşe',
       lastName: 'Yılmaz',
       email: 'ayse@ornek.com',
-      phone: '0532 123 45 67',
+      phone: '5321234567',
       gitHubUrl: 'https://github.com/ayse',
       city: 'İstanbul',
     });
@@ -246,4 +247,18 @@ describe('isValidPhone', () => {
     '%s geçersizdir',
     (phone) => expect(isValidPhone(phone)).toBe(false),
   );
+});
+
+describe('normalizePhone', () => {
+  it.each([
+    ['0532 123 45 67', '5321234567'],
+    ['+90 (532) 123 45 67', '5321234567'],
+    ['905321234567', '5321234567'],
+    ['5321234567', '5321234567'],
+    ['0', ''],
+    ['00532', '532'],
+    ['abc 532-123', '532123'],
+    ['53212345678999', '5321234567'],
+    [null, ''],
+  ])('%s → %s', (input, expected) => expect(normalizePhone(input)).toBe(expected));
 });

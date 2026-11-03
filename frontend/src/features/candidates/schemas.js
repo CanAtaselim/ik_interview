@@ -1,11 +1,23 @@
 import { z } from 'zod';
 
+/** Yalnızca rakamlar; başındaki "+90" ve "0" atılır ("0532 123 45 67" → "5321234567"). Uzunluğa dokunmaz. */
+function phoneDigits(value) {
+  let digits = String(value ?? '').replace(/\D/g, '');
+  if (digits.length > 10 && digits.startsWith('90')) digits = digits.slice(2);
+  return digits.replace(/^0+/, '');
+}
+
+/**
+ * Telefon alanına yazılan/yapıştırılan değeri 10 haneli, başında 0 olmayan biçime getirir:
+ * sadece rakam kalır, "0" ve "+90" atılır, 10 haneden fazlası kesilir.
+ */
+export function normalizePhone(value) {
+  return phoneDigits(value).slice(0, 10);
+}
+
 /** Tam 10 hane; başındaki "0" veya "+90" sayılmaz (backend ContactNormalizer.IsValidPhone ile aynı kural). */
 export function isValidPhone(value) {
-  let digits = value.replace(/\D/g, '');
-  if (digits.length === 12 && digits.startsWith('90')) digits = digits.slice(2);
-  else if (digits.length === 11 && digits.startsWith('0')) digits = digits.slice(1);
-  return digits.length === 10;
+  return phoneDigits(value).length === 10;
 }
 
 const optionalUrl = (siteName) =>
@@ -42,7 +54,7 @@ export const candidateSchema = z
       .trim()
       .max(30, 'Telefon en fazla 30 karakter olabilir.')
       .refine((value) => value === '' || isValidPhone(value), {
-        message: 'Telefon numarası 10 haneli olmalı (örn. 0532 123 45 67).',
+        message: 'Telefon numarası 10 haneli olmalı, başında 0 olmadan (örn. 532 123 45 67).',
       }),
     linkedInUrl: optionalUrl('LinkedIn'),
     gitHubUrl: optionalUrl('GitHub'),
@@ -64,7 +76,7 @@ export function toCandidateForm(candidate) {
     firstName: candidate?.firstName ?? '',
     lastName: candidate?.lastName ?? '',
     email: candidate?.email ?? '',
-    phone: candidate?.phone ?? '',
+    phone: normalizePhone(candidate?.phone),
     linkedInUrl: candidate?.linkedInUrl ?? '',
     gitHubUrl: candidate?.gitHubUrl ?? '',
     city: candidate?.city ?? '',
@@ -95,7 +107,7 @@ export function cvPrefillPatch(current, profile) {
   const patch = Object.fromEntries(
     CV_PREFILL_FIELDS.filter(
       (field) => profile?.[field] && !String(current?.[field] ?? '').trim(),
-    ).map((field) => [field, profile[field]]),
+    ).map((field) => [field, field === 'phone' ? normalizePhone(profile[field]) : profile[field]]),
   );
 
   const existing = current?.tags ?? [];
@@ -120,7 +132,7 @@ export function toCandidateInput(values, { confirmDuplicate, confirmBlacklist })
   return {
     ...values,
     email: emptyToNull(values.email),
-    phone: emptyToNull(values.phone),
+    phone: emptyToNull(normalizePhone(values.phone)),
     linkedInUrl: emptyToNull(values.linkedInUrl),
     gitHubUrl: emptyToNull(values.gitHubUrl),
     city: emptyToNull(values.city),
