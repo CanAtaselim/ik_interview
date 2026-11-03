@@ -31,6 +31,13 @@ public sealed class LdapOptions
     [Range(1, 120)]
     public int TimeoutSeconds { get; init; } = 10;
 
+    /// <summary>
+    /// Test dönemi: sabit test hesapları (admin, ikyonetici, ikuzman, mudur, takimlideri, yigit, yonetim, calisan;
+    /// şifre Test123!) gerçek dizinin yanında da girişe izin verir. Şifre herkesçe bilindiği için gerçek kullanıma
+    /// geçerken kapatılmalıdır; uygulama her açılışta ve her test girişinde uyarı yazar.
+    /// </summary>
+    public bool EnableTestAccounts { get; init; }
+
     /// <summary>Sabit test kullanıcılarıyla çalışır. Yalnızca Development ortamında izinlidir.</summary>
     public bool UseFake { get; init; }
 }

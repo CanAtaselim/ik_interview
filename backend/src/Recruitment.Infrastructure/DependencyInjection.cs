@@ -5,6 +5,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Recruitment.Application.Abstractions;
 using Recruitment.Application.Features.Reports;
@@ -122,9 +123,19 @@ public static class DependencyInjection
             .ValidateOnStart();
 
         services.AddSingleton<ILdapService>(provider =>
-            provider.GetRequiredService<IOptions<LdapOptions>>().Value.UseFake
-                ? new FakeLdapService()
-                : ActivatorUtilities.CreateInstance<LdapService>(provider));
+        {
+            var options = provider.GetRequiredService<IOptions<LdapOptions>>().Value;
+            if (options.UseFake)
+                return new FakeLdapService();
+
+            var directory = ActivatorUtilities.CreateInstance<LdapService>(provider);
+            if (!options.EnableTestAccounts)
+                return directory;
+
+            var logger = provider.GetRequiredService<ILoggerFactory>().CreateLogger<TestAccountLdapService>();
+            logger.LogWarning("Ldap:EnableTestAccounts AÇIK: şifresi herkesçe bilinen test hesapları girişe açık. Gerçek kullanıma geçerken kapatın.");
+            return new TestAccountLdapService(directory, new FakeLdapService(), logger);
+        });
 
         services.AddSingleton<ITokenService, TokenService>();
         services.AddSingleton<ILoginThrottle, LoginThrottle>();

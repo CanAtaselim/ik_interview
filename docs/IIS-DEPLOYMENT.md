@@ -207,6 +207,11 @@ Set-PoolEnv 'Ldap__BaseDn'                           'DC=sirket,DC=local'
 # Sertifika güvenilmiyorsa (StartTLS "A local error occurred" hatası) Windows kimlik doğrulamasını seçin:
 Set-PoolEnv 'Ldap__AuthMode'                         'Negotiate'   # şifre ağda imzalı+şifreli gider, sertifika gerekmez; yalnızca IIS (Windows) için. Bu modda Port 389, UseSsl false
 
+# GEÇİCİ - test dönemi: test hesaplarıyla (admin, ikyonetici, ikuzman, mudur, takimlideri, yigit, yonetim, calisan / şifre Test123!)
+# gerçek AD'nin yanında girişe izin verir. Şifre herkesçe bilindiği için gerçek kullanıma geçerken KAPATIN.
+# Roller için docs/sql/20261104_TestAccountRoleMappings.sql çalıştırılmış olmalı.
+Set-PoolEnv 'Ldap__EnableTestAccounts'                'true'
+
 # E-posta (boş bırakılırsa e-postalar gönderilmez, yalnızca kayda geçer)
 Set-PoolEnv 'Smtp__Host'                             'smtp.sirket.local'
 Set-PoolEnv 'Smtp__Port'                             '587'
