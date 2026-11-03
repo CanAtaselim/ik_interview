@@ -1,16 +1,36 @@
 import { Button } from 'primereact/button';
 import { Calendar } from 'primereact/calendar';
+import { Dropdown } from 'primereact/dropdown';
+import { InputText } from 'primereact/inputtext';
 import { useState } from 'react';
 import { Link } from 'react-router';
 import DictionarySelect from '@/shared/components/DictionarySelect';
 import PageHeader from '@/shared/components/PageHeader';
+import {
+  APPLICATION_STATUS,
+  BLACKLIST_STATUS,
+  HIRING_REQUEST_STATUS,
+  INTERVIEW_STATUS,
+  POSITION_STATUS,
+  toOptions,
+} from '@/shared/constants/labels';
 import { ROUTES } from '@/shared/constants/routes';
+import { usePositions } from '@/features/positions/queries';
 import { toIsoDate } from '@/features/dashboard/components/DashboardFilters';
 import { downloadListReport } from '../api';
 import { useDownload } from '../useDownload';
 import '../reports.css';
 
-/** Liste raporları. `byDepartment` false ise birim filtresi uygulanmaz (kartta belirtilir). */
+const CV_REVIEW_STATUS_OPTIONS = [
+  { label: 'Karar bekleyen', value: 'Waiting' },
+  { label: 'Sonuçlanan', value: 'Decided' },
+  { label: 'Geciken', value: 'Overdue' },
+];
+
+/**
+ * Liste raporları. `byDepartment` false ise birim ve pozisyon filtresi uygulanmaz (kartta belirtilir).
+ * `statusOptions` varsa kartta o raporun durumuna göre süzme listesi çıkar.
+ */
 const REPORTS = [
   {
     kind: 'candidates',
@@ -23,6 +43,7 @@ const REPORTS = [
   },
   {
     kind: 'applications',
+    statusOptions: toOptions(APPLICATION_STATUS),
     title: 'Süreçler (başvurular)',
     icon: 'pi pi-sitemap',
     description: 'Her aday-pozisyon süreci: aşama, durum, süre, ret nedeni ve kapanış notu.',
@@ -31,6 +52,7 @@ const REPORTS = [
   },
   {
     kind: 'hiring-requests',
+    statusOptions: toOptions(HIRING_REQUEST_STATUS),
     title: 'Kadro talepleri',
     icon: 'pi pi-file-edit',
     description: 'Talep eden, neden, aciliyet, onay adımları ve sonuçları, aranan yetkinlikler.',
@@ -39,6 +61,7 @@ const REPORTS = [
   },
   {
     kind: 'positions',
+    statusOptions: toOptions(POSITION_STATUS),
     title: 'Pozisyonlar',
     icon: 'pi pi-briefcase',
     description: 'Kadro, dolan ve boş sayısı, durum, sorumlu İK ve aktif süreç sayısı.',
@@ -47,6 +70,7 @@ const REPORTS = [
   },
   {
     kind: 'interviews',
+    statusOptions: toOptions(INTERVIEW_STATUS),
     title: 'Mülakatlar',
     icon: 'pi pi-calendar',
     description: 'Aday, pozisyon, mülakatçılar, yer, durum, değerlendirme kararı ve ortalama puan.',
@@ -55,6 +79,7 @@ const REPORTS = [
   },
   {
     kind: 'cv-reviews',
+    statusOptions: CV_REVIEW_STATUS_OPTIONS,
     title: 'CV değerlendirmeleri',
     icon: 'pi pi-id-card',
     description: 'Öneren, değerlendiren, karar, gerekçe, ret nedeni ve süre.',
@@ -63,10 +88,11 @@ const REPORTS = [
   },
   {
     kind: 'blacklist',
+    statusOptions: toOptions(BLACKLIST_STATUS),
     title: 'Kara liste',
     icon: 'pi pi-ban',
     description: 'Neden, açıklama, durum, talep eden ve onaylayan, bitiş ve kaldırma bilgisi.',
-    dateNote: 'Tarih: kayıt tarihi · Birim filtresi uygulanmaz',
+    dateNote: 'Tarih: kayıt tarihi · Birim ve pozisyon filtresi uygulanmaz',
     byDepartment: false,
   },
 ];
@@ -78,27 +104,45 @@ const REPORTS = [
 export default function ReportsPage() {
   const [range, setRange] = useState(null);
   const [departmentId, setDepartmentId] = useState(null);
+  const [positionId, setPositionId] = useState(null);
+  const [searchText, setSearchText] = useState('');
+  // Rapor türüne göre seçilen durum süzgeçleri: { [kind]: değer }
+  const [statuses, setStatuses] = useState({});
   const [activeKind, setActiveKind] = useState(null);
   const { pending, run } = useDownload();
+  const { data: positions } = usePositions({ pageSize: 100 });
 
   const [start, end] = range ?? [];
+  const search = searchText.trim();
   const filters = {
     from: start ? toIsoDate(start) : undefined,
     to: end ? toIsoDate(end) : undefined,
     departmentId: departmentId ?? undefined,
+    positionId: positionId ?? undefined,
+    search: search || undefined,
   };
-  const hasFilters = Boolean(range || departmentId);
+  const hasFilters = Boolean(
+    range || departmentId || positionId || search || Object.values(statuses).some(Boolean),
+  );
 
-  const download = (kind) => {
-    setActiveKind(kind);
-    return run(() => downloadListReport(kind, filters));
+  const download = (report) => {
+    setActiveKind(report.kind);
+    // Birimle ilişkisi olmayan raporlara birim ve pozisyon gönderilmez.
+    const { departmentId: department, positionId: position, ...common } = filters;
+    return run(() =>
+      downloadListReport(report.kind, {
+        ...common,
+        ...(report.byDepartment ? { departmentId: department, positionId: position } : {}),
+        status: statuses[report.kind] ?? undefined,
+      }),
+    );
   };
 
   return (
     <>
       <PageHeader
         title="Raporlar"
-        subtitle="Kayıtları Excel olarak indirin. Filtreler aşağıdaki tüm raporlara uygulanır; boş bırakırsanız tüm kayıtlar gelir."
+        subtitle="Kayıtları Excel olarak indirin. Üstteki filtreler bütün raporlara, her kartın durum seçimi yalnızca o rapora uygulanır; boş bırakırsanız tüm kayıtlar gelir. Her ekranda, o ekrana ait rapor düğmesi de bulunur."
       />
 
       <div className="report-filters" role="group" aria-label="Rapor filtreleri">
@@ -120,6 +164,25 @@ export default function ReportsPage() {
           showClear
           onChange={setDepartmentId}
         />
+        <Dropdown
+          value={positionId}
+          options={positions?.items ?? []}
+          optionLabel="title"
+          optionValue="id"
+          placeholder="Tüm pozisyonlar"
+          aria-label="Pozisyona göre filtrele"
+          showClear
+          filter
+          filterInputAutoFocus
+          onChange={(event) => setPositionId(event.value ?? null)}
+        />
+        <InputText
+          value={searchText}
+          onChange={(event) => setSearchText(event.target.value)}
+          placeholder="Aday adı veya başlık ara"
+          aria-label="Aday adı veya başlık ara"
+          className="report-filters__search"
+        />
         {hasFilters && (
           <Button
             type="button"
@@ -130,6 +193,9 @@ export default function ReportsPage() {
             onClick={() => {
               setRange(null);
               setDepartmentId(null);
+              setPositionId(null);
+              setSearchText('');
+              setStatuses({});
             }}
           />
         )}
@@ -160,6 +226,18 @@ export default function ReportsPage() {
             </header>
             <p className="report-card__text">{report.description}</p>
             <p className="cell-sub">{report.dateNote}</p>
+            {report.statusOptions && (
+              <Dropdown
+                value={statuses[report.kind] ?? null}
+                options={report.statusOptions}
+                placeholder="Tüm durumlar"
+                aria-label={`${report.title} raporu durum filtresi`}
+                showClear
+                onChange={(event) =>
+                  setStatuses((current) => ({ ...current, [report.kind]: event.value ?? null }))
+                }
+              />
+            )}
             <Button
               type="button"
               label="Excel indir"
@@ -167,7 +245,7 @@ export default function ReportsPage() {
               outlined
               loading={pending && activeKind === report.kind}
               disabled={pending}
-              onClick={() => download(report.kind)}
+              onClick={() => download(report)}
             />
           </section>
         ))}

@@ -40,12 +40,40 @@ public sealed class ReportsController(IDispatcher dispatcher) : ControllerBase
 
     [HttpGet("lists/{kind}")]
     public async Task<IActionResult> List(
-        string kind, DateOnly? from, DateOnly? to, Guid? departmentId, Guid? positionId, CancellationToken ct)
+        string kind,
+        DateOnly? from,
+        DateOnly? to,
+        Guid? departmentId,
+        Guid? positionId,
+        string? search,
+        string? status,
+        Guid? sourceId,
+        bool? inTalentPool,
+        string? tag,
+        string? process,
+        bool? blacklisted,
+        string? city,
+        Guid? interviewerUserId,
+        Guid? roomId,
+        CancellationToken ct)
     {
         if (!Kinds.TryGetValue(kind, out var parsed))
             return Error.NotFound("Report.UnknownKind", "Bilinmeyen rapor.").ToProblemResult(this);
 
-        return ToFile(await dispatcher.Query(new ExportListReportQuery(parsed, new ReportFilter(from, to, departmentId, positionId)), ct));
+        var filter = new ReportFilter(from, to, departmentId, positionId)
+        {
+            Search = search,
+            Status = status,
+            SourceId = sourceId,
+            InTalentPool = inTalentPool,
+            Tag = tag,
+            Process = process,
+            Blacklisted = blacklisted,
+            City = city,
+            InterviewerUserId = interviewerUserId,
+            RoomId = roomId,
+        };
+        return ToFile(await dispatcher.Query(new ExportListReportQuery(parsed, filter), ct));
     }
 
     [HttpGet("dashboard")]

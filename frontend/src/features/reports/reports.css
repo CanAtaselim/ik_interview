@@ -57,3 +57,11 @@
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-medium);
 }
+
+.report-filters__search {
+  min-width: 14rem;
+}
+
+.report-card .p-dropdown {
+  width: 100%;
+}

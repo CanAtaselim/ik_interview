@@ -2,6 +2,7 @@ import { Button } from 'primereact/button';
 import { useState } from 'react';
 import { Link, useParams } from 'react-router';
 import EmptyState from '@/shared/components/EmptyState';
+import ReportButton from '@/features/reports/components/ReportButton';
 import PageHeader from '@/shared/components/PageHeader';
 import StatusTag from '@/shared/components/StatusTag';
 import TableSkeleton from '@/shared/components/TableSkeleton';
@@ -111,6 +112,11 @@ export default function PipelinePage() {
         subtitle={`${board.positionTitle} · doluluk ${board.filledCount} / ${board.headcount}`}
         actions={
           <>
+            <ReportButton
+              kind="applications"
+              label="Süreç raporu"
+              filters={{ positionId: board.positionId }}
+            />
             <Link
               to={ROUTES.comparison(board.positionId)}
               className="p-button p-component p-button-outlined link-button"

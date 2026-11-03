@@ -16,6 +16,7 @@ import StatusTag from '@/shared/components/StatusTag';
 import TableSkeleton from '@/shared/components/TableSkeleton';
 import { HIRING_REQUEST_STATUS, ROLE_LABELS, toOptions, URGENCY } from '@/shared/constants/labels';
 import { useUrlFilters } from '@/shared/hooks/useUrlFilters';
+import ReportButton from '@/features/reports/components/ReportButton';
 import { getErrorMessage } from '@/shared/utils/errors';
 import { formatDate } from '@/shared/utils/format';
 import HiringRequestDetailDialog from '../components/HiringRequestDetailDialog';
@@ -104,9 +105,22 @@ export default function HiringRequestListPage() {
         title="Kadro talepleri"
         subtitle="Yeni kadro ihtiyaçlarını buradan açar, onay sürecini buradan izlersiniz."
         actions={
-          canCreate && (
-            <Button label="Yeni talep" icon="pi pi-plus" onClick={() => setEditing(NEW_REQUEST)} />
-          )
+          <>
+            <ReportButton
+              kind="hiring-requests"
+              filters={{ search: search || undefined, status: status || undefined }}
+              disabledReason={
+                awaitingMyDecision ? '“Onayımı bekleyenler” süzgeci rapora uygulanamaz.' : undefined
+              }
+            />
+            {canCreate && (
+              <Button
+                label="Yeni talep"
+                icon="pi pi-plus"
+                onClick={() => setEditing(NEW_REQUEST)}
+              />
+            )}
+          </>
         }
       />
 

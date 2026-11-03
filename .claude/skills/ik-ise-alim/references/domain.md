@@ -277,7 +277,7 @@ Kurallar: pozisyon bazında zorunlu/opsiyonel; mevcut işveren onay olmadan aran
 > **Bekleyen değişiklikler:**
 > - Aday e-postaları: `RejectionCandidate` (Olumsuz) süreç `Rejected` olunca otomatik gider (aday çekilirse gitmez; süreç başına tek; `Recruitment:AutoSendRejectionEmail` ile kapatılır); `OnHoldCandidate` (Süreç devam ediyor) İK'nın aday kartındaki butonuyla elle gider (CR-16/17/18 ✅).
 > - İş günü hesabı yalnızca hafta sonlarını sayar; Resmi Tatiller ekranı yoktur (CR-04 ✅). Sözlükler arasında `Language` (yabancı diller) vardır.
-> - CR-19/20: raporlara filtre; her ekranda o ekrana ait rapor butonu.
+> - Liste raporları ekran filtreleriyle üretilir (`ReportFilter`); her liste ekranında İK'ya `ReportButton` görünür (CR-19/20 ✅).
 > - "Bekleyen işlerim" listeleri en yeni üstte sıralanır (istemci tarafında; CR-21 ✅).
 
 - **Bildirim:** `Notification` (alıcı, tip, başlık, link, okundu). Domain event handler'ları oluşturur, SignalR ile anlık iter. Kullanıcı tercihleri: hangi tipler e-postayla da gelsin.

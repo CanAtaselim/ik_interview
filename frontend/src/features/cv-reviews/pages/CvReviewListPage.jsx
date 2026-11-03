@@ -15,6 +15,7 @@ import TableSkeleton from '@/shared/components/TableSkeleton';
 import { ROUTES } from '@/shared/constants/routes';
 import { useUrlFilters } from '@/shared/hooks/useUrlFilters';
 import { useCvReviews } from '@/shared/recruitment/queries';
+import ReportButton from '@/features/reports/components/ReportButton';
 import { getErrorMessage } from '@/shared/utils/errors';
 import { formatDate } from '@/shared/utils/format';
 import ReviewStatus from '../components/ReviewStatus';
@@ -103,6 +104,12 @@ export default function CvReviewListPage() {
           isLead
             ? 'Size önerilen adayların CV’lerini inceleyip kararınızı verin.'
             : 'Takım liderlerine önerilen adaylar ve kararları.'
+        }
+        actions={
+          <ReportButton
+            kind="cv-reviews"
+            filters={{ status: status === 'All' ? undefined : status, search: search || undefined }}
+          />
         }
       />
 

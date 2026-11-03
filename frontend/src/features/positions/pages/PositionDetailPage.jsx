@@ -10,6 +10,7 @@ import { useToast } from '@/shared/components/toast';
 import { POSITION_STATUS } from '@/shared/constants/labels';
 import { ROUTES } from '@/shared/constants/routes';
 import NotFoundPage from '@/shared/pages/NotFoundPage';
+import ReportButton from '@/features/reports/components/ReportButton';
 import { getErrorMessage } from '@/shared/utils/errors';
 import { formatDate } from '@/shared/utils/format';
 import PositionFormDialog from '../components/PositionFormDialog';
@@ -131,6 +132,11 @@ export default function PositionDetailPage() {
         subtitle={[position.departmentName, position.levelName].filter(Boolean).join(' · ')}
         actions={
           <>
+            <ReportButton
+              kind="applications"
+              label="Süreç raporu"
+              filters={{ positionId: position.id }}
+            />
             <Link
               to={ROUTES.comparison(position.id)}
               className="p-button p-component p-button-outlined link-button"

@@ -143,6 +143,50 @@ public sealed class ReportsEndpointsTests(ApiFactory factory) : IClassFixture<Ap
         empty.Worksheet(1).CellsUsed().Select(c => c.GetFormattedString()).ShouldNotContain(lastName);
     }
 
+    private static async Task<List<string>> Cells(HttpResponseMessage response)
+    {
+        response.StatusCode.ShouldBe(HttpStatusCode.OK, await response.Content.ReadAsStringAsync());
+        using var workbook = new XLWorkbook(await response.Content.ReadAsStreamAsync());
+        return workbook.Worksheet(1).CellsUsed().Select(c => c.GetFormattedString()).ToList();
+    }
+
+    [Fact]
+    public async Task ListReports_ApplyTheSameFiltersAsTheirScreens()
+    {
+        var hr = await Manager();
+        var (_, lastName) = await SeedCandidate(hr);
+        var (_, otherLastName) = await SeedCandidate(hr);
+
+        var bySearch = await Cells(await hr.Client.GetAsync($"/api/v1/reports/lists/candidates?search={Uri.EscapeDataString(lastName)}"));
+        bySearch.ShouldContain(lastName);
+        bySearch.ShouldNotContain(otherLastName);
+
+        var byTag = await Cells(await hr.Client.GetAsync("/api/v1/reports/lists/candidates?tag=Docker&process=Active"));
+        byTag.ShouldContain(lastName);
+        var noProcess = await Cells(await hr.Client.GetAsync("/api/v1/reports/lists/candidates?process=None"));
+        noProcess.ShouldNotContain(lastName);
+
+        var withdrawn = await Cells(await hr.Client.GetAsync("/api/v1/reports/lists/applications?status=Withdrawn"));
+        withdrawn.ShouldNotContain($"Şükrü {lastName}");
+        var active = await Cells(await hr.Client.GetAsync($"/api/v1/reports/lists/applications?status=Active&search={Uri.EscapeDataString(lastName)}"));
+        active.ShouldContain($"Şükrü {lastName}");
+        active.ShouldNotContain($"Şükrü {otherLastName}");
+
+        (await Cells(await hr.Client.GetAsync("/api/v1/reports/lists/positions?status=Closed&search=Rapor"))).ShouldNotContain("Rapor Geliştirici");
+        (await Cells(await hr.Client.GetAsync("/api/v1/reports/lists/positions?search=Rapor"))).ShouldContain("Rapor Geliştirici");
+        (await Cells(await hr.Client.GetAsync("/api/v1/reports/lists/cv-reviews?status=Overdue"))).ShouldNotContain(lastName);
+    }
+
+    [Fact]
+    public async Task ListReports_RejectUnknownStatusValues()
+    {
+        var hr = await Manager();
+        (await hr.Client.GetAsync("/api/v1/reports/lists/applications?status=Bilinmeyen")).StatusCode.ShouldBe(HttpStatusCode.BadRequest);
+        (await hr.Client.GetAsync("/api/v1/reports/lists/candidates?process=Bilinmeyen")).StatusCode.ShouldBe(HttpStatusCode.BadRequest);
+        // Durumu olmayan raporda status yok sayılır.
+        (await hr.Client.GetAsync("/api/v1/reports/lists/candidates?status=Bilinmeyen")).StatusCode.ShouldBe(HttpStatusCode.OK);
+    }
+
     [Fact]
     public async Task DashboardReport_IsExcel_ForManagerOnly()
     {

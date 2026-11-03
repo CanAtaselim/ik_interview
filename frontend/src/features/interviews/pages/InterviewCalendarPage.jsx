@@ -13,6 +13,7 @@ import { INTERVIEW_STATUS } from '@/shared/constants/labels';
 import { ROUTES } from '@/shared/constants/routes';
 import { useInterviews } from '@/shared/recruitment/queries';
 import ScheduleInterviewDialog from '@/shared/recruitment/ScheduleInterviewDialog';
+import ReportButton from '@/features/reports/components/ReportButton';
 import { getErrorMessage } from '@/shared/utils/errors';
 import WeekCalendar from '../components/WeekCalendar';
 
@@ -82,11 +83,24 @@ export default function InterviewCalendarPage() {
         }
         actions={
           isHr && (
-            <Button
-              label="Mülakat planla"
-              icon="pi pi-calendar-plus"
-              onClick={() => setPlanning({})}
-            />
+            <>
+              <ReportButton
+                kind="interviews"
+                label="Haftanın raporu"
+                filters={{
+                  // Takvim bitişi dışlayıcıdır (sonraki haftanın başı); rapor gün bazlı ve iki ucu dahildir.
+                  from: range ? dayjs(range.from).format('YYYY-MM-DD') : undefined,
+                  to: range ? dayjs(range.to).subtract(1, 'minute').format('YYYY-MM-DD') : undefined,
+                  interviewerUserId: interviewerId ?? undefined,
+                  roomId: roomId ?? undefined,
+                }}
+              />
+              <Button
+                label="Mülakat planla"
+                icon="pi pi-calendar-plus"
+                onClick={() => setPlanning({})}
+              />
+            </>
           )
         }
       />

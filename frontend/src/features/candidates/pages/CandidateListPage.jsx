@@ -18,6 +18,7 @@ import TableSkeleton from '@/shared/components/TableSkeleton';
 import { ROUTES } from '@/shared/constants/routes';
 import { useDebounce } from '@/shared/hooks/useDebounce';
 import { useUrlFilters } from '@/shared/hooks/useUrlFilters';
+import ReportButton from '@/features/reports/components/ReportButton';
 import { getErrorMessage } from '@/shared/utils/errors';
 import { formatDate, formatDateTime } from '@/shared/utils/format';
 import { canPreview, openOrDownload } from '@/shared/utils/openDocument';
@@ -244,7 +245,23 @@ export default function CandidateListPage() {
       <PageHeader
         title="Aday Listesi"
         subtitle="Son işlem yapılan aday en üstte. Yeni eklenen aday havuza girer; pozisyona bağlı olmadan da eklenebilir."
-        actions={<Button label="Aday ekle" icon="pi pi-plus" onClick={() => setAdding(true)} />}
+        actions={
+          <>
+            <ReportButton
+              kind="candidates"
+              filters={{
+                search: search || undefined,
+                sourceId: sourceId || undefined,
+                inTalentPool: onlyTalentPool || undefined,
+                tag: tag || undefined,
+                process: process || undefined,
+                blacklisted: blacklist ? blacklist === 'yes' : undefined,
+                city: city || undefined,
+              }}
+            />
+            <Button label="Aday ekle" icon="pi pi-plus" onClick={() => setAdding(true)} />
+          </>
+        }
       />
 
       <section className="card">

@@ -17,6 +17,7 @@ import TableSkeleton from '@/shared/components/TableSkeleton';
 import { POSITION_STATUS, toOptions } from '@/shared/constants/labels';
 import { ROUTES } from '@/shared/constants/routes';
 import { useUrlFilters } from '@/shared/hooks/useUrlFilters';
+import ReportButton from '@/features/reports/components/ReportButton';
 import { getErrorMessage } from '@/shared/utils/errors';
 import PositionFormDialog from '../components/PositionFormDialog';
 import { usePositions } from '../queries';
@@ -79,9 +80,15 @@ export default function PositionListPage() {
         title="Pozisyonlar"
         subtitle="Aday aranan açık kadrolar."
         actions={
-          canManage && (
-            <Button label="Yeni pozisyon" icon="pi pi-plus" onClick={() => setCreating(true)} />
-          )
+          <>
+            <ReportButton
+              kind="positions"
+              filters={{ search: search || undefined, status: status || undefined }}
+            />
+            {canManage && (
+              <Button label="Yeni pozisyon" icon="pi pi-plus" onClick={() => setCreating(true)} />
+            )}
+          </>
         }
       />
 
